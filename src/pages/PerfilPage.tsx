@@ -4,9 +4,11 @@ interface Usuario {
   id: number;
   nome: string;
   sobreNome: string | null;
+  email: string;
   dataNascimento: string | null;
   sexo: string | null;
-  email: string;
+  telefone: string | null;
+  avatarUrl: string | null;
 }
 
 function PerfilPage() {
@@ -47,6 +49,18 @@ function PerfilPage() {
         <p><strong>Data de Nascimento:</strong> {usuario.dataNascimento || "Não informada"}</p>
         <p><strong>Sexo:</strong> {usuario.sexo || "Não informado"}</p>
         <p><strong>Email:</strong> {usuario.email}</p>
+        <p><strong>Telefone:</strong> {usuario.telefone || "Não informado"}</p>
+
+        {usuario.avatarUrl && (
+        <div className="mt-4 flex justify-center">
+            <img
+            src={usuario.avatarUrl}
+            alt="Avatar"
+            className="w-24 h-24 rounded-full object-cover"
+            />
+        </div>
+        )}
+
       </div>
     </div>
   );
