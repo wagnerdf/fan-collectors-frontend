@@ -1,37 +1,43 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [mensagem, setMensagem] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setMensagem('');
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError('');
+  setMensagem('');
 
-    try {
-      const response = await fetch('http://localhost:8080/fanCollectorsMedia/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ login: email, senha: password }),
-      });
+  try {
+    const response = await fetch('http://localhost:8080/fanCollectorsMedia/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ login: email, senha: password }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Login falhou');
-      }
-
-      console.log('Token:', data.token);
-      setMensagem(data.message); // ✅ Aqui a chave correta é `message`
-    } catch (err: any) {
-      setError(err.message || 'Erro desconhecido');
+    if (!response.ok) {
+      throw new Error(data.message || 'Login falhou');
     }
-  };
+
+    // ✅ Salva o token no localStorage
+    localStorage.setItem('token', data.token);
+
+    // ✅ Redireciona para a tela de perfil
+    navigate('/perfil');
+  } catch (err: any) {
+    setError(err.message || 'Erro desconhecido');
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-800 text-white flex items-center justify-center">
