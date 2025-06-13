@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../config";
+import TopBar from "../components/TopBar";
+import Sidebar from "../components/Sidebar";
+import Feed from "../components/Feed";
 
 interface Usuario {
   id: number;
@@ -21,7 +24,7 @@ function PerfilPage() {
     const token = localStorage.getItem("token");
 
     if (token) {
-    fetch(`${API_BASE_URL}/api/cadastros/perfil`, {
+      fetch(`${API_BASE_URL}/api/cadastros/perfil`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -36,50 +39,20 @@ function PerfilPage() {
     return <div className="text-white p-8">Carregando perfil...</div>;
   }
 
-return (
-  <div className="min-h-screen bg-gray-800 text-white flex items-center justify-center p-4">
-    <div className="bg-gray-900 p-8 rounded shadow-md w-full max-w-3xl">
-      <h2 className="text-2xl mb-6 border-b pb-2">Perfil do Usuário</h2>
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-        {usuario.avatarUrl ? (
-          <img
-            src={usuario.avatarUrl}
-            alt="Avatar do usuário"
-            className="w-32 h-32 rounded-full object-cover border-2 border-white"
-          />
-        ) : (
-          <div className="w-32 h-32 flex items-center justify-center bg-gray-700 rounded-full text-gray-300 text-sm">
-            Sem imagem
-          </div>
-        )}
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
 
-        <div className="text-sm md:text-base space-y-2">
-          <p><strong>ID:</strong> {usuario.id}</p>
-          <p><strong>Nome:</strong> {usuario.nome}</p>
-          <p><strong>Sobrenome:</strong> {usuario.sobreNome || "Não informado"}</p>
-          <p><strong>Data de Nascimento:</strong> {usuario.dataNascimento || "Não informada"}</p>
-          <p><strong>Sexo:</strong> {usuario.sexo || "Não informado"}</p>
-          <p><strong>Email:</strong> {usuario.email}</p>
-          <p><strong>Telefone:</strong> {usuario.telefone || "Não informado"}</p>
-        </div>
-      </div>
-
-      {/* Botão de logout */}
-      <div className="mt-8 flex justify-end">
-        <button
-        onClick={() => {
-            localStorage.removeItem("token");
-            navigate("/");
-        }}
-        className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded transition"
-        >
-        Logout
-        </button>
+  return (
+    <div className="min-h-screen bg-gray-800 text-white flex flex-col">
+      <TopBar onLogout={handleLogout} />
+      <div className="flex flex-1 flex-col sm:flex-row gap-4 p-4">
+        <Sidebar usuario={usuario} />
+        <Feed />
       </div>
     </div>
-  </div>
-);
-
+  );
 }
 
 export default PerfilPage;
