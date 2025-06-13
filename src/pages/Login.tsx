@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from "../config";
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -14,7 +15,8 @@ const handleSubmit = async (e: React.FormEvent) => {
   setMensagem('');
 
   try {
-    const response = await fetch('http://localhost:8080/fanCollectorsMedia/auth/login', {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../config";
 
 interface Usuario {
   id: number;
@@ -20,7 +21,7 @@ function PerfilPage() {
     const token = localStorage.getItem("token");
 
     if (token) {
-      fetch("http://localhost:8080/fanCollectorsMedia/api/cadastros/perfil", {
+    fetch(`${API_BASE_URL}/api/cadastros/perfil`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
