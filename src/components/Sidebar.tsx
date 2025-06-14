@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface HobbyDoUsuario {
   id: number;
-  nome: string;
+  nomeHobby: string;
   nivelInteresse: string;
+  descricaoHobby: string;
 }
 
 interface Usuario {
@@ -16,21 +18,47 @@ interface Usuario {
 interface SidebarProps {
   usuario: Usuario;
 }
+
 export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
+  const [hoveredHobby, setHoveredHobby] = useState<HobbyDoUsuario | null>(null);
+  const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [tooltipTimeout, setTooltipTimeout] = useState<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = (hobby: HobbyDoUsuario) => (e: React.MouseEvent) => {
+    const timeout = setTimeout(() => {
+      setHoveredHobby(hobby);
+      setTooltipVisible(true);
+      setTooltipPosition({ x: e.clientX + 16, y: e.clientY - 10 });
+    }, 300); // delay de 300ms
+
+    setTooltipTimeout(timeout);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (hoveredHobby) {
+      setTooltipPosition({ x: e.clientX + 16, y: e.clientY - 10 });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (tooltipTimeout) clearTimeout(tooltipTimeout);
+    setTooltipVisible(false);
+    setHoveredHobby(null);
+  };
+
   return (
-    <div className="bg-gray-900 text-white p-4 w-full sm:w-64 rounded-xl shadow-md space-y-6">
-      {/* Imagem + Nome + Email */}
+    <div className="bg-gray-900 text-white p-4 w-full sm:w-64 rounded-xl shadow-md space-y-6 relative">
       <div className="flex flex-col items-center mb-4">
         <img
-        src={usuario.avatarUrl ?? "/default-user.png"}
-        alt="Foto do usuário"
-        className="w-24 h-24 rounded-full object-cover mb-2"
+          src={usuario.avatarUrl ?? "/default-user.png"}
+          alt="Foto do usuário"
+          className="w-24 h-24 rounded-full object-cover mb-2"
         />
         <h2 className="text-xl font-bold">{usuario.nome}</h2>
         <p className="text-sm text-gray-400">{usuario.email}</p>
       </div>
 
-      {/* Lista de Hobbies */}
       <div>
         <h3 className="text-lg font-semibold mb-2">Hobbies</h3>
         <ul className="space-y-2">
@@ -38,12 +66,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
             usuario.hobbies.map((hobby) => (
               <li
                 key={hobby.id}
-                className="bg-gray-800 rounded-lg p-2 flex justify-between items-center hover:bg-gray-700 transition"
+                onMouseEnter={handleMouseEnter(hobby)}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                className="bg-gray-800 rounded-lg p-2 flex justify-between items-center hover:bg-gray-700 transition relative"
               >
-                <span>{hobby.nome}</span>
-                <span className="text-sm text-gray-400 italic">
-                  {hobby.nivelInteresse}
-                </span>
+                <span>{hobby.nomeHobby}</span>
+                <span className="text-sm text-gray-400 italic">{hobby.nivelInteresse}</span>
               </li>
             ))
           ) : (
@@ -51,6 +80,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
           )}
         </ul>
       </div>
+
+      {/* Tooltip com animação */}
+      <AnimatePresence>
+        {tooltipVisible && hoveredHobby && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            style={{
+              position: "fixed",
+              left: tooltipPosition.x,
+              top: tooltipPosition.y,
+              zIndex: 9999,
+              pointerEvents: "none",
+            }}
+            className="bg-gray-800 text-white text-sm px-3 py-2 rounded-lg shadow-lg max-w-xs"
+          >
+            {hoveredHobby.descricaoHobby}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

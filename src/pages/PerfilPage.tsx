@@ -7,8 +7,9 @@ import Feed from "../components/Feed";
 
 interface HobbyDoUsuario {
   id: number;
-  nome: string;
+  nomeHobby: string;
   nivelInteresse: string;
+  descricaoHobby: string;
 }
 
 interface Usuario {
@@ -28,22 +29,43 @@ function PerfilPage() {
   const navigate = useNavigate();
 
 useEffect(() => {
-  const token = localStorage.getItem("token");
+  const fetchDados = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/");
+      return;
+    }
 
-  if (token) {
-    fetch(`${API_BASE_URL}/api/cadastros/perfil`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Dados recebidos do backend:", data); // 👈 Aqui imprime no console
-        setUsuario(data);
-      })
-      .catch((err) => console.error("Erro ao buscar perfil:", err));
-  }
-}, []);
+    try {
+      const perfilRes = await fetch(`${API_BASE_URL}/api/cadastros/perfil`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!perfilRes.ok) throw new Error("Erro ao buscar perfil");
+
+      const perfilData = await perfilRes.json();
+
+      const hobbiesRes = await fetch(`${API_BASE_URL}/cadastro-hobby/meus`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!hobbiesRes.ok) throw new Error("Erro ao buscar hobbies");
+
+      const hobbiesData = await hobbiesRes.json();
+
+      setUsuario({
+        ...perfilData,
+        hobbies: hobbiesData ?? [],
+      });
+    } catch (err) {
+      console.error("Erro ao buscar dados:", err);
+    }
+  };
+
+  fetchDados();
+}, [navigate]);
 
   if (!usuario) {
     return <div className="text-white p-8">Carregando perfil...</div>;
