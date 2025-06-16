@@ -24,13 +24,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
   const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [tooltipTimeout, setTooltipTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [tooltipText, setTooltipText] = useState<string>("");
 
-  const handleMouseEnter = (hobby: HobbyDoUsuario) => (e: React.MouseEvent) => {
+
+  const handleMouseEnter = (hobby: HobbyDoUsuario, mensagemPersonalizada?: string) => (e: React.MouseEvent) => {
     const timeout = setTimeout(() => {
-      setHoveredHobby(hobby);
+      setHoveredHobby(hobby); // Isso identifica QUAL hobby está sendo mostrado
+      setTooltipText(mensagemPersonalizada ?? hobby.descricaoHobby); // Isso define o QUE será mostrado
       setTooltipVisible(true);
       setTooltipPosition({ x: e.clientX + 16, y: e.clientY - 10 });
-    }, 300); // delay de 300ms
+    }, 300);
 
     setTooltipTimeout(timeout);
   };
@@ -45,7 +48,30 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
     if (tooltipTimeout) clearTimeout(tooltipTimeout);
     setTooltipVisible(false);
     setHoveredHobby(null);
+    setTooltipText(""); // limpa o texto
   };
+
+  const getEmojiByNivel = (nivel: string) => {
+  const mapa: { [key: string]: string } = {
+    "1": "😴",
+    "2": "🙂",
+    "3": "😃",
+    "4": "😁",
+    "5": "😍",
+    };
+    return mapa[nivel] ?? "❓";
+  };
+
+  const getDescricaoNivel = (nivel: string) => {
+  const descricao: { [key: string]: string } = {
+    "1": "Muito baixo interesse",
+    "2": "Baixo interesse",
+    "3": "Interesse moderado",
+    "4": "Alto interesse",
+    "5": "Apaixonado pelo hobby",
+  };
+  return descricao[nivel] ?? "Interesse desconhecido";
+};
 
   return (
     <div className="bg-gray-900 text-white p-4 w-full sm:w-64 rounded-xl shadow-md space-y-6 relative">
@@ -62,28 +88,41 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
       <div>
         <h3 className="text-lg font-semibold mb-2">Hobbies</h3>
         <ul className="space-y-2">
-          {usuario.hobbies && usuario.hobbies.length > 0 ? (
-            usuario.hobbies.map((hobby) => (
+        {usuario.hobbies && usuario.hobbies.length > 0 ? (
+          usuario.hobbies.map((hobby) => {
+            const emoticon = getEmojiByNivel(hobby.nivelInteresse);
+
+            return (
               <li
                 key={hobby.id}
-                onMouseEnter={handleMouseEnter(hobby)}
+                onMouseEnter={handleMouseEnter(hobby)} // mostra descricaoHobby padrão
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
                 className="bg-gray-800 rounded-lg p-2 flex justify-between items-center hover:bg-gray-700 transition relative"
               >
                 <span>{hobby.nomeHobby}</span>
-                <span className="text-sm text-gray-400 italic">{hobby.nivelInteresse}</span>
+                <span
+                  onMouseEnter={handleMouseEnter(hobby, getDescricaoNivel(hobby.nivelInteresse))} // mostra descricao do nível
+                  onMouseMove={handleMouseMove}
+                  onMouseLeave={handleMouseLeave}
+                  className="text-sm text-gray-400 italic flex items-center gap-1"
+                >
+                  {hobby.nivelInteresse} <span>{emoticon}</span>
+                </span>
               </li>
-            ))
-          ) : (
-            <p className="text-gray-500 italic">Nenhum hobby cadastrado.</p>
-          )}
+            );
+          })
+
+        ) : (
+          <p className="text-gray-500 italic">Nenhum hobby cadastrado.</p>
+        )}
+
         </ul>
       </div>
 
       {/* Tooltip com animação */}
       <AnimatePresence>
-        {tooltipVisible && hoveredHobby && (
+        {tooltipVisible && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -98,7 +137,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
             }}
             className="bg-gray-800 text-white text-sm px-3 py-2 rounded-lg shadow-lg max-w-xs"
           >
-            {hoveredHobby.descricaoHobby}
+            {tooltipText}
           </motion.div>
         )}
       </AnimatePresence>
