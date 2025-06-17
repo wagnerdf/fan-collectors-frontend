@@ -30,24 +30,44 @@ function Cadastro() {
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [forcaSenha, setForcaSenha] = useState<'fraca' | 'media' | 'forte' | null>(null);
+  const [senhasConferem, setSenhasConferem] = useState(true);
+
+  // Avalia a força da senha
+  function avaliarForcaSenha(senha: string): 'fraca' | 'media' | 'forte' {
+    let pontuacao = 0;
+    if (senha.length >= 8) pontuacao++;
+    if (/[a-z]/.test(senha)) pontuacao++;
+    if (/[A-Z]/.test(senha)) pontuacao++;
+    if (/[0-9]/.test(senha)) pontuacao++;
+    if (/[^A-Za-z0-9]/.test(senha)) pontuacao++;
+
+    if (pontuacao <= 2) return 'fraca';
+    if (pontuacao === 3 || pontuacao === 4) return 'media';
+    return 'forte';
+  }
 
   // Atualiza os campos conforme o usuário digita
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
     if (name in formData.endereco) {
+      let novoValor = value;
+      // Limitar CEP a 8 dígitos numéricos
+      if (name === 'cep') {
+        novoValor = novoValor.replace(/\D/g, '').slice(0, 8);
+      }
+
       setFormData((prev) => ({
         ...prev,
         endereco: {
           ...prev.endereco,
-          [name]: value,
+          [name]: novoValor,
         },
       }));
 
-      // Se o CEP for alterado e for menos de 8, limpa os demais campos
       if (name === 'cep') {
-        const cleanCep = value.replace(/\D/g, '');
-        if (cleanCep.length < 8) {
+        if (novoValor.length < 8) {
           setFormData((prev) => ({
             ...prev,
             endereco: {
@@ -60,16 +80,25 @@ function Cadastro() {
           }));
         }
       }
-
     } else {
       setFormData((prev) => ({
         ...prev,
         [name]: value,
       }));
     }
+
+    // Validação senha e confirmação em tempo real
+    if (name === 'senha') {
+      const novaForca = avaliarForcaSenha(value);
+      setForcaSenha(novaForca);
+      setSenhasConferem(value === formData.confirmarSenha);
+    }
+    if (name === 'confirmarSenha') {
+      setSenhasConferem(value === formData.senha);
+    }
   };
 
-  // Busca dados do CEP
+  // Busca dados do CEP via ViaCEP
   useEffect(() => {
     const cep = formData.endereco.cep.replace(/\D/g, '');
     if (cep.length === 8) {
@@ -148,6 +177,7 @@ function Cadastro() {
         ].map(({ label, name, type = 'text' }) => (
           <div key={name}>
             {errors[name] && <p className="text-red-500 text-sm mb-1">{errors[name]}</p>}
+
             <input
               type={type}
               name={name}
@@ -156,6 +186,26 @@ function Cadastro() {
               placeholder={label}
               className="w-full px-4 py-2 rounded bg-gray-700 text-white"
             />
+
+            {/* Mensagem de força da senha */}
+            {name === 'senha' && forcaSenha && (
+              <p
+                className={`text-sm font-medium mt-1 ${
+                  forcaSenha === 'fraca'
+                    ? 'text-red-500'
+                    : forcaSenha === 'media'
+                    ? 'text-yellow-400'
+                    : 'text-green-500'
+                }`}
+              >
+                Senha {forcaSenha}
+              </p>
+            )}
+
+            {/* Mensagem se senhas não conferem abaixo do confirmar senha */}
+            {name === 'confirmarSenha' && !senhasConferem && (
+              <p className="text-sm text-red-500 mt-1">As senhas não coincidem.</p>
+            )}
           </div>
         ))}
 
