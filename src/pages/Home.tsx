@@ -31,10 +31,10 @@ function Home() {
         </button>
 
         <button
-          onClick={() => alert('Cadastro em breve...')}
+          onClick={() => navigate('/cadastro')}
           className="bg-green-600 hover:bg-green-700 transition px-6 py-3 rounded-lg flex items-center gap-3"
         >
-          <img src={cadastrarIcon} alt="Cadastrar" className="w-7 h-7" />
+              <img src={cadastrarIcon} alt="Cadastrar" className="w-7 h-7" />
           Cadastrar
         </button>
       </div>

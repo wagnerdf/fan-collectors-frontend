@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from "../config";
 
+import loginIcon from '../assets/login.png';
+import voltarIcon from '../assets/voltarHome.png';
+
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -9,37 +12,32 @@ function Login() {
   const [mensagem, setMensagem] = useState('');
   const navigate = useNavigate();
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError('');
-  setMensagem('');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setMensagem('');
 
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ login: email, senha: password }),
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ login: email, senha: password }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.message || 'Login falhou');
+      if (!response.ok) {
+        throw new Error(data.message || 'Login falhou');
+      }
+
+      localStorage.setItem('token', data.token);
+      navigate('/perfil');
+    } catch (err: any) {
+      setError(err.message || 'Erro desconhecido');
     }
-
-    // ✅ Salva o token no localStorage
-    localStorage.setItem('token', data.token);
-
-    // ✅ Redireciona para a tela de perfil
-    navigate('/perfil');
-  } catch (err: any) {
-    setError(err.message || 'Erro desconhecido');
-  }
-};
-
+  };
 
   return (
     <div className="min-h-screen bg-gray-800 text-white flex items-center justify-center">
@@ -71,15 +69,27 @@ const handleSubmit = async (e: React.FormEvent) => {
             />
           </div>
 
-          {/* ✅ Exibe mensagem de sucesso */}
           {mensagem && <p className="text-green-400 mb-4">{mensagem}</p>}
-
-          {/* ✅ Exibe mensagem de erro */}
           {error && <p className="text-red-500 mb-4">{error}</p>}
 
-          <button type="submit" className="bg-blue-600 px-6 py-2 rounded hover:bg-blue-700 transition w-full">
-            Entrar
-          </button>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 transition px-6 py-2 rounded flex items-center justify-center gap-2 w-full"
+            >
+              <img src={loginIcon} alt="Login" className="w-5 h-5" />
+              Entrar
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="bg-red-600 hover:bg-red-700 transition px-6 py-2 rounded flex items-center justify-center gap-2 w-full"
+            >
+              <img src={voltarIcon} alt="Voltar" className="w-5 h-5" />
+              Voltar
+            </button>
+          </div>
         </form>
       </div>
     </div>
