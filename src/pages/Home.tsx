@@ -1,12 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import amigos from '../assets/amigos.png';
+import loginIcon from '../assets/login.png';
+import cadastrarIcon from '../assets/cadastrar.png';
 
 function Home() {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white flex flex-col items-center justify-center p-6">
-      {/* Logo ou imagem */}
       <img
         src={amigos}
         alt="Logo"
@@ -23,14 +24,17 @@ function Home() {
       <div className="flex flex-col sm:flex-row gap-4">
         <button
           onClick={() => navigate('/login')}
-          className="bg-blue-600 hover:bg-blue-700 transition px-6 py-3 rounded-lg"
+          className="bg-blue-600 hover:bg-blue-700 transition px-6 py-3 rounded-lg flex items-center gap-3"
         >
+          <img src={loginIcon} alt="Login" className="w-7 h-7" />
           Logar
         </button>
+
         <button
           onClick={() => alert('Cadastro em breve...')}
-          className="bg-green-600 hover:bg-green-700 transition px-6 py-3 rounded-lg"
+          className="bg-green-600 hover:bg-green-700 transition px-6 py-3 rounded-lg flex items-center gap-3"
         >
+          <img src={cadastrarIcon} alt="Cadastrar" className="w-7 h-7" />
           Cadastrar
         </button>
       </div>
