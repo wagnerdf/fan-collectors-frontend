@@ -33,6 +33,7 @@ function Cadastro() {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [forcaSenha, setForcaSenha] = useState<'fraca' | 'media' | 'forte' | null>(null);
   const [senhasConferem, setSenhasConferem] = useState(true);
+  const [modalAberto, setModalAberto] = useState(false); // Modal de sucesso
 
   function avaliarForcaSenha(senha: string): 'fraca' | 'media' | 'forte' {
     let pontuacao = 0;
@@ -81,10 +82,6 @@ function Cadastro() {
         ...prev,
         [name]: value,
       }));
-
-      if (name === 'email') {
-        setErrors((prev) => ({ ...prev, email: '' }));
-      }
     }
 
     if (name === 'senha') {
@@ -121,6 +118,7 @@ function Cadastro() {
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
+
     if (!formData.nome.trim()) newErrors.nome = 'Nome é obrigatório.';
     if (!formData.sobreNome.trim()) newErrors.sobreNome = 'Sobrenome é obrigatório.';
     if (!formData.dataNascimento) newErrors.dataNascimento = 'Data de nascimento é obrigatória.';
@@ -156,18 +154,13 @@ function Cadastro() {
 
       if (!response.ok) {
         const erro = await response.json();
-        if (response.status === 400 && erro.error) {
-          setErrors({ email: erro.error });
-        } else {
-          setErrors({ email: "Erro ao cadastrar usuário." });
-        }
+        const mensagemErro = erro.error || erro.mensagem || erro.message || "Erro ao cadastrar usuário.";
+        setErrors({ email: mensagemErro });
         return;
       }
 
-      const data = await response.json();
-      alert("Cadastro realizado com sucesso!");
-      console.log(data);
-      navigate("/login");
+      await response.json();
+      setModalAberto(true); // Abre modal de sucesso
 
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
@@ -177,6 +170,28 @@ function Cadastro() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white flex flex-col items-center justify-center p-6">
+      {/* Modal de sucesso */}
+      {modalAberto && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-60 flex items-center justify-center">
+          <div className="bg-sky-500 text-white rounded-xl p-6 shadow-lg w-full max-w-md text-center">
+            <h2 className="text-2xl font-bold mb-4">Cadastro realizado!</h2>
+            <p className="mb-6">
+              Bem-vindo(a), <strong>{formData.nome} {formData.sobreNome}</strong>! Você sera redirecionado a pagina de Login para entrar no sistema <strong>Fan Collection Midia</strong>.
+            </p>
+            
+            <button
+              onClick={() => {
+                setModalAberto(false);
+                navigate("/login");
+              }}
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
       <h1 className="text-3xl font-bold mb-6 text-center">
         Cadastrar novo Fan Colecionador de Mídia
       </h1>
@@ -194,6 +209,7 @@ function Cadastro() {
           { label: 'Avatar URL', name: 'avatarUrl' },
         ].map(({ label, name, type = 'text' }) => (
           <div key={name}>
+            {errors[name] && <p className="text-red-500 text-sm mb-1">{errors[name]}</p>}
             <input
               type={type}
               name={name}
@@ -202,13 +218,14 @@ function Cadastro() {
               placeholder={label}
               className="w-full px-4 py-2 rounded bg-gray-700 text-white"
             />
-            {errors[name] && <p className="text-red-500 text-sm mt-1">{errors[name]}</p>}
-
             {name === 'senha' && forcaSenha && (
               <p className={`text-sm font-medium mt-1 ${
-                forcaSenha === 'fraca' ? 'text-red-500' :
-                forcaSenha === 'media' ? 'text-yellow-400' :
-                'text-green-500'}`}>
+                forcaSenha === 'fraca'
+                  ? 'text-red-500'
+                  : forcaSenha === 'media'
+                  ? 'text-yellow-400'
+                  : 'text-green-500'
+              }`}>
                 Senha {forcaSenha}
               </p>
             )}
@@ -219,8 +236,8 @@ function Cadastro() {
         ))}
 
         <hr className="border-gray-600 my-4" />
-
         <h2 className="text-xl font-semibold mb-2">Endereço</h2>
+
         {[
           { label: 'CEP', name: 'cep', maxLength: 8 },
           { label: 'Rua', name: 'rua' },
@@ -231,6 +248,7 @@ function Cadastro() {
           { label: 'Estado', name: 'estado' },
         ].map(({ label, name, maxLength }) => (
           <div key={name}>
+            {errors[name] && <p className="text-red-500 text-sm mb-1">{errors[name]}</p>}
             <input
               type="text"
               name={name}
@@ -240,7 +258,6 @@ function Cadastro() {
               maxLength={maxLength}
               className="w-full px-4 py-2 rounded bg-gray-700 text-white"
             />
-            {errors[name] && <p className="text-red-500 text-sm mt-1">{errors[name]}</p>}
           </div>
         ))}
       </div>
