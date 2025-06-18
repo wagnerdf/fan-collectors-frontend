@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../config'; // ajuste o caminho se estiver diferente
+import { API_BASE_URL } from '../config';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import cadastrarIcon from '../assets/cadastrar.png';
@@ -34,7 +34,6 @@ function Cadastro() {
   const [forcaSenha, setForcaSenha] = useState<'fraca' | 'media' | 'forte' | null>(null);
   const [senhasConferem, setSenhasConferem] = useState(true);
 
-  // Avalia a força da senha
   function avaliarForcaSenha(senha: string): 'fraca' | 'media' | 'forte' {
     let pontuacao = 0;
     if (senha.length >= 8) pontuacao++;
@@ -48,13 +47,11 @@ function Cadastro() {
     return 'forte';
   }
 
-  // Atualiza os campos conforme o usuário digita
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
     if (name in formData.endereco) {
       let novoValor = value;
-      // Limitar CEP a 8 dígitos numéricos
       if (name === 'cep') {
         novoValor = novoValor.replace(/\D/g, '').slice(0, 8);
       }
@@ -67,28 +64,29 @@ function Cadastro() {
         },
       }));
 
-      if (name === 'cep') {
-        if (novoValor.length < 8) {
-          setFormData((prev) => ({
-            ...prev,
-            endereco: {
-              ...prev.endereco,
-              rua: '',
-              bairro: '',
-              cidade: '',
-              estado: '',
-            },
-          }));
-        }
+      if (name === 'cep' && novoValor.length < 8) {
+        setFormData((prev) => ({
+          ...prev,
+          endereco: {
+            ...prev.endereco,
+            rua: '',
+            bairro: '',
+            cidade: '',
+            estado: '',
+          },
+        }));
       }
     } else {
       setFormData((prev) => ({
         ...prev,
         [name]: value,
       }));
+
+      if (name === 'email') {
+        setErrors((prev) => ({ ...prev, email: '' }));
+      }
     }
 
-    // Validação senha e confirmação em tempo real
     if (name === 'senha') {
       const novaForca = avaliarForcaSenha(value);
       setForcaSenha(novaForca);
@@ -99,7 +97,6 @@ function Cadastro() {
     }
   };
 
-  // Busca dados do CEP via ViaCEP
   useEffect(() => {
     const cep = formData.endereco.cep.replace(/\D/g, '');
     if (cep.length === 8) {
@@ -122,10 +119,8 @@ function Cadastro() {
     }
   }, [formData.endereco.cep]);
 
-  // Validação dos campos obrigatórios
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
-
     if (!formData.nome.trim()) newErrors.nome = 'Nome é obrigatório.';
     if (!formData.sobreNome.trim()) newErrors.sobreNome = 'Sobrenome é obrigatório.';
     if (!formData.dataNascimento) newErrors.dataNascimento = 'Data de nascimento é obrigatória.';
@@ -144,7 +139,6 @@ function Cadastro() {
     if (!formData.endereco.estado.trim()) newErrors.estado = 'Estado é obrigatório.';
 
     setErrors(newErrors);
-
     return Object.keys(newErrors).length === 0;
   };
 
@@ -156,23 +150,23 @@ function Cadastro() {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/registerFull`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dataToSubmit),
       });
 
       if (!response.ok) {
         const erro = await response.json();
-        alert("Erro no cadastro: " + (erro.message || "verifique os dados."));
+        if (response.status === 400 && erro.error) {
+          setErrors({ email: erro.error });
+        } else {
+          setErrors({ email: "Erro ao cadastrar usuário." });
+        }
         return;
       }
 
       const data = await response.json();
       alert("Cadastro realizado com sucesso!");
       console.log(data);
-
-      // Redireciona para login ou home
       navigate("/login");
 
     } catch (error) {
@@ -200,8 +194,6 @@ function Cadastro() {
           { label: 'Avatar URL', name: 'avatarUrl' },
         ].map(({ label, name, type = 'text' }) => (
           <div key={name}>
-            {errors[name] && <p className="text-red-500 text-sm mb-1">{errors[name]}</p>}
-
             <input
               type={type}
               name={name}
@@ -210,23 +202,16 @@ function Cadastro() {
               placeholder={label}
               className="w-full px-4 py-2 rounded bg-gray-700 text-white"
             />
+            {errors[name] && <p className="text-red-500 text-sm mt-1">{errors[name]}</p>}
 
-            {/* Mensagem de força da senha */}
             {name === 'senha' && forcaSenha && (
-              <p
-                className={`text-sm font-medium mt-1 ${
-                  forcaSenha === 'fraca'
-                    ? 'text-red-500'
-                    : forcaSenha === 'media'
-                    ? 'text-yellow-400'
-                    : 'text-green-500'
-                }`}
-              >
+              <p className={`text-sm font-medium mt-1 ${
+                forcaSenha === 'fraca' ? 'text-red-500' :
+                forcaSenha === 'media' ? 'text-yellow-400' :
+                'text-green-500'}`}>
                 Senha {forcaSenha}
               </p>
             )}
-
-            {/* Mensagem se senhas não conferem abaixo do confirmar senha */}
             {name === 'confirmarSenha' && !senhasConferem && (
               <p className="text-sm text-red-500 mt-1">As senhas não coincidem.</p>
             )}
@@ -246,7 +231,6 @@ function Cadastro() {
           { label: 'Estado', name: 'estado' },
         ].map(({ label, name, maxLength }) => (
           <div key={name}>
-            {errors[name] && <p className="text-red-500 text-sm mb-1">{errors[name]}</p>}
             <input
               type="text"
               name={name}
@@ -256,6 +240,7 @@ function Cadastro() {
               maxLength={maxLength}
               className="w-full px-4 py-2 rounded bg-gray-700 text-white"
             />
+            {errors[name] && <p className="text-red-500 text-sm mt-1">{errors[name]}</p>}
           </div>
         ))}
       </div>
