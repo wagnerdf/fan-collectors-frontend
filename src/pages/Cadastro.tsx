@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config'; // ajuste o caminho se estiver diferente
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import cadastrarIcon from '../assets/cadastrar.png';
@@ -147,14 +148,37 @@ function Cadastro() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate()) return;
 
-    // Remove confirmarSenha antes de enviar
     const { confirmarSenha, ...dataToSubmit } = formData;
 
-    console.log('Dados do formulário:', dataToSubmit);
-    alert('Cadastro enviado (ver console).');
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/registerFull`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSubmit),
+      });
+
+      if (!response.ok) {
+        const erro = await response.json();
+        alert("Erro no cadastro: " + (erro.message || "verifique os dados."));
+        return;
+      }
+
+      const data = await response.json();
+      alert("Cadastro realizado com sucesso!");
+      console.log(data);
+
+      // Redireciona para login ou home
+      navigate("/login");
+
+    } catch (error) {
+      console.error("Erro ao cadastrar:", error);
+      alert("Erro de conexão com o servidor.");
+    }
   };
 
   return (
