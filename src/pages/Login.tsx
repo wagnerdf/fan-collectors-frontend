@@ -32,7 +32,8 @@ function Login() {
         throw new Error(data.message || 'Login falhou');
       }
 
-      localStorage.setItem('token', data.token);
+      localStorage.setItem('fanCollectorsMediaToken', data.token);
+      setMensagem('Login realizado com sucesso!');
       navigate('/perfil');
     } catch (err: any) {
       setError(err.message || 'Erro desconhecido');
