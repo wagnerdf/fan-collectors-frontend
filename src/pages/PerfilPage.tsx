@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { API_BASE_URL } from "../config";
+import api from "../services/api";
 import { TopBar } from "../components/TopBar";
 import { Sidebar } from "../components/Sidebar";
 import Feed from "../components/Feed";
@@ -26,53 +26,48 @@ interface Usuario {
 
 function PerfilPage() {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-useEffect(() => {
+  useEffect(() => {
   const fetchDados = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/");
-      return;
-    }
+      const token = localStorage.getItem("fanCollectorsMediaToken");
+      if (!token) {
+        navigate("/");
+        return;
+      }
 
-    try {
-      const perfilRes = await fetch(`${API_BASE_URL}/api/cadastros/perfil`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!perfilRes.ok) throw new Error("Erro ao buscar perfil");
+      try {
+        const perfilRes = await api.get("/api/cadastros/perfil");
+        const perfilData = perfilRes.data;
 
-      const perfilData = await perfilRes.json();
+        const hobbiesRes = await api.get("/cadastro-hobby/meus");
+        const hobbiesData = hobbiesRes.data ?? [];
 
-      const hobbiesRes = await fetch(`${API_BASE_URL}/cadastro-hobby/meus`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!hobbiesRes.ok) throw new Error("Erro ao buscar hobbies");
+        setUsuario({
+          ...perfilData,
+          hobbies: hobbiesData,
+        });
+      } catch (err: any) {
+        console.error("Erro ao buscar dados:", err);
+        setError("Erro ao carregar dados do perfil.");
+      }
+    };
 
-      const hobbiesData = await hobbiesRes.json();
+    fetchDados();
+  }, [navigate]);
 
-      setUsuario({
-        ...perfilData,
-        hobbies: hobbiesData ?? [],
-      });
-    } catch (err) {
-      console.error("Erro ao buscar dados:", err);
-    }
-  };
 
-  fetchDados();
-}, [navigate]);
+  if (error) {
+    return <div className="text-red-500 p-8">{error}</div>;
+  }
 
   if (!usuario) {
     return <div className="text-white p-8">Carregando perfil...</div>;
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("fanCollectorsMediaToken");
     navigate("/");
   };
 

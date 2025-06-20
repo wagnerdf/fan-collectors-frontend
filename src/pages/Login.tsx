@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { API_BASE_URL } from "../config";
-
 import loginIcon from '../assets/login.png';
 import voltarIcon from '../assets/voltarHome.png';
+import api from '../services/api';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -18,25 +17,23 @@ function Login() {
     setMensagem('');
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ login: email, senha: password }),
+      const response = await api.post('/auth/login', {
+        login: email,
+        senha: password,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login falhou');
-      }
-
-      localStorage.setItem('fanCollectorsMediaToken', data.token);
+      const { token } = response.data;
+      localStorage.setItem('fanCollectorsMediaToken', token);
       setMensagem('Login realizado com sucesso!');
+      localStorage.setItem('fanCollectorsMediaToken', token);
+      console.log('Token salvo:', localStorage.getItem('fanCollectorsMediaToken'));
       navigate('/perfil');
     } catch (err: any) {
-      setError(err.message || 'Erro desconhecido');
+      setError(
+        err.response?.data?.mensagem ||
+        err.message ||
+        'Erro desconhecido'
+      );
     }
   };
 

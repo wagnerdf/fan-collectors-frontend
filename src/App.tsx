@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import PerfilPage from './pages/PerfilPage';
 import Cadastro from './pages/Cadastro';
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
   return (
@@ -10,7 +11,14 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/perfil" element={<PerfilPage />} /> 
+        <Route
+          path="/perfil"
+          element={
+            <PrivateRoute>
+              <PerfilPage />
+            </PrivateRoute>
+          }
+        />
         <Route path="/cadastro" element={<Cadastro />} />
       </Routes>
     </BrowserRouter>
@@ -18,3 +26,4 @@ function App() {
 }
 
 export default App;
+
