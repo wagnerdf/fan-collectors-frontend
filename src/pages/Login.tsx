@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import loginIcon from '../assets/login.png';
 import voltarIcon from '../assets/voltarHome.png';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -10,6 +11,14 @@ function Login() {
   const [error, setError] = useState('');
   const [mensagem, setMensagem] = useState('');
   const navigate = useNavigate();
+  const { login, token } = useAuth();
+
+  useEffect(() => {
+    // Se já estiver logado, redireciona para o perfil (evita loop de recarga)
+    if (token) {
+      navigate("/perfil");
+    }
+  }, [token, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,12 +32,17 @@ function Login() {
       });
 
       const { token } = response.data;
-      localStorage.setItem('fanCollectorsMediaToken', token);
+
+      if (!token) {
+        setError('Token inválido recebido do servidor.');
+        return;
+      }
+
+      login(token); // salva no contexto
       setMensagem('Login realizado com sucesso!');
-      localStorage.setItem('fanCollectorsMediaToken', token);
-      localStorage.setItem("token", response.data.token);
       navigate('/perfil');
     } catch (err: any) {
+      console.error("Erro ao fazer login:", err);
       setError(
         err.response?.data?.mensagem ||
         err.message ||
@@ -54,6 +68,7 @@ function Login() {
               required
             />
           </div>
+
           <div className="mb-6">
             <label htmlFor="password" className="block mb-2">Senha</label>
             <input

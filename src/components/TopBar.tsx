@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Menu, LogOut, User, Pencil } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 interface Usuario {
   nome: string;
@@ -10,14 +9,14 @@ interface Usuario {
 interface TopBarProps {
   onLogout: () => void;
   usuario: Usuario;
+  onSelectPage: (pagina: "home" | "perfil" | "editar" | "hobbys") => void;
 }
 
-export function TopBar({ onLogout, usuario }: TopBarProps) {
+export function TopBar({ onLogout, usuario, onSelectPage }: TopBarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
-  // Fecha ao clicar fora
+  // Fecha o menu ao clicar fora dele
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -28,9 +27,15 @@ export function TopBar({ onLogout, usuario }: TopBarProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Ação ao clicar em uma das opções do menu
+  const handleMenuClick = (pagina: "home" | "perfil" | "editar" | "hobbys") => {
+    onSelectPage(pagina);
+    setMenuOpen(false);
+  };
+
   return (
     <div className="flex items-center justify-between bg-gray-900 px-6 py-4 shadow">
-      {/* Botão de menu */}
+      {/* Botão do menu */}
       <div className="relative" ref={menuRef}>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
@@ -40,6 +45,7 @@ export function TopBar({ onLogout, usuario }: TopBarProps) {
           <span className="hidden sm:inline">Opções</span>
         </button>
 
+        {/* Menu suspenso */}
         {menuOpen && (
           <div
             className="absolute left-0 mt-2 w-60 bg-white text-gray-800 rounded shadow-lg z-50"
@@ -49,30 +55,34 @@ export function TopBar({ onLogout, usuario }: TopBarProps) {
               <p className="font-semibold">{usuario.nome}</p>
               <p className="text-xs text-gray-500">{usuario.email}</p>
             </div>
+
             <button
-              onClick={() => {
-                navigate("/perfil");
-                setMenuOpen(false);
-              }}
+              onClick={() => handleMenuClick("perfil")}
               className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100"
             >
               <User className="w-4 h-4" />
               Ver perfil
             </button>
+
             <button
-              onClick={() => {
-                navigate("/editar-cadastro");
-                setMenuOpen(false);
-              }}
+              onClick={() => handleMenuClick("editar")}
               className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100"
             >
               <Pencil className="w-4 h-4" />
               Editar cadastro
             </button>
+
+            <button
+              onClick={() => handleMenuClick("hobbys")}
+              className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100"
+            >
+              🎯 Meus Hobby's
+            </button>
+
             <button
               onClick={() => {
-                onLogout();
-                setMenuOpen(false);
+                setMenuOpen(false); // Fecha o menu primeiro
+                onLogout();         // Executa o logout depois
               }}
               className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100 text-red-600"
             >
@@ -83,7 +93,7 @@ export function TopBar({ onLogout, usuario }: TopBarProps) {
         )}
       </div>
 
-      {/* Nome do projeto */}
+      {/* Nome do sistema */}
       <h1 className="text-xl font-bold text-white">fanCollectorsMedia</h1>
     </div>
   );

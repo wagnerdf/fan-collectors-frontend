@@ -1,21 +1,31 @@
-// src/routes/PrivateRoute.tsx
-import { Navigate } from "react-router-dom";
-import { ReactNode } from "react";
+import { useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-interface PrivateRouteProps {
-  children: ReactNode;
-}
+function PrivateRoute({ children }: { children: JSX.Element }) {
+  const [redirect, setRedirect] = useState(false);
 
-const PrivateRoute = ({ children }: PrivateRouteProps) => {
-  const token = localStorage.getItem("fanCollectorsMediaToken");
+  useEffect(() => {
+    const token = localStorage.getItem('fanCollectorsMediaToken');
 
-  if (!token) {
-    console.warn("Acesso negado: usuário não autenticado.");
-    return <Navigate to="/login" replace />;
+    if (!token) {
+      toast.warn('Sessão expirada. Faça login novamente.', {
+        position: 'top-center',
+        autoClose: 5000,
+      });
+
+      setTimeout(() => {
+        setRedirect(true);
+      }, 100); // Pequeno atraso para o toast ser renderizado antes do redirecionamento
+    }
+  }, []);
+
+  if (redirect) {
+    return <Navigate to="/login" />;
   }
 
-  return <>{children}</>;
-};
+  const token = localStorage.getItem('fanCollectorsMediaToken');
+  return token ? children : null; // Enquanto espera o setRedirect, retorna null (sem renderizar nada)
+}
 
 export default PrivateRoute;
-
