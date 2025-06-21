@@ -1,9 +1,21 @@
-import { Navigate } from 'react-router-dom';
+// src/routes/PrivateRoute.tsx
+import { Navigate } from "react-router-dom";
+import { ReactNode } from "react";
 
-function PrivateRoute({ children }: { children: JSX.Element }) {
-  const token = localStorage.getItem('fanCollectorsMediaToken');
-  console.log('Token em PrivateRoute:', token);
-  return token ? children : <Navigate to="/" />;
+interface PrivateRouteProps {
+  children: ReactNode;
 }
 
+const PrivateRoute = ({ children }: PrivateRouteProps) => {
+  const token = localStorage.getItem("fanCollectorsMediaToken");
+
+  if (!token) {
+    console.warn("Acesso negado: usuário não autenticado.");
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+};
+
 export default PrivateRoute;
+

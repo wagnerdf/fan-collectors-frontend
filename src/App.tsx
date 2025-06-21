@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
 import Home from './pages/Home';
 import Login from './pages/Login';
 import PerfilPage from './pages/PerfilPage';
@@ -9,8 +10,12 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Rota pública */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/cadastro" element={<Cadastro />} />
+
+        {/* Rota protegida */}
         <Route
           path="/perfil"
           element={
@@ -19,11 +24,11 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route path="/cadastro" element={<Cadastro />} />
       </Routes>
     </BrowserRouter>
   );
 }
 
 export default App;
+
 

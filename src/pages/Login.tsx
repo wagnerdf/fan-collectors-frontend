@@ -26,7 +26,7 @@ function Login() {
       localStorage.setItem('fanCollectorsMediaToken', token);
       setMensagem('Login realizado com sucesso!');
       localStorage.setItem('fanCollectorsMediaToken', token);
-      console.log('Token salvo:', localStorage.getItem('fanCollectorsMediaToken'));
+      localStorage.setItem("token", response.data.token);
       navigate('/perfil');
     } catch (err: any) {
       setError(
