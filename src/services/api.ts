@@ -1,16 +1,31 @@
 import axios from 'axios';
+import { logout } from '../utils/auth';
 
 const api = axios.create({
-  baseURL: "http://localhost:8080/fanCollectorsMedia",
+  baseURL: 'http://localhost:8080/fanCollectorsMedia',
 });
 
+// Adiciona o token em todas as requisições
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('fanCollectorsMediaToken');
-  if (token && config.headers) {
+  if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
+// Trata erros de resposta
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      console.warn('Token expirado ou inválido. Fazendo logout...');
+      logout();
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;
+
 
