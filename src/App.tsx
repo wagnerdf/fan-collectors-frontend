@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import PerfilPage from "./pages/PerfilPage";
+import Cadastro from "./pages/Cadastro"; // ✅ IMPORTAR AQUI
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const { token } = useAuth();
@@ -15,10 +16,8 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route
-        path="/login"
-        element={token ? <Navigate to="/perfil" replace /> : <Login />}
-      />
+      <Route path="/login" element={<Login />} />
+      <Route path="/cadastro" element={<Cadastro />} />
       <Route
         path="/perfil"
         element={
