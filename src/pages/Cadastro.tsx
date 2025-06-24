@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import cadastrarIcon from '../assets/cadastrar.png';
 import voltarIcon from '../assets/voltarHome.png';
+import casaIcon from '../assets/casa.png';
 
 function Cadastro() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ function Cadastro() {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [forcaSenha, setForcaSenha] = useState<'fraca' | 'media' | 'forte' | null>(null);
   const [senhasConferem, setSenhasConferem] = useState(true);
-  const [modalAberto, setModalAberto] = useState(false); // Modal de sucesso
+  const [modalAberto, setModalAberto] = useState(false);
 
   function avaliarForcaSenha(senha: string): 'fraca' | 'media' | 'forte' {
     let pontuacao = 0;
@@ -160,7 +161,7 @@ function Cadastro() {
       }
 
       await response.json();
-      setModalAberto(true); // Abre modal de sucesso
+      setModalAberto(true);
 
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
@@ -169,16 +170,14 @@ function Cadastro() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white flex flex-col items-center justify-center p-6">
-      {/* Modal de sucesso */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-900 to-black text-white flex items-center justify-center transition-colors duration-700 p-4">
       {modalAberto && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-60 flex items-center justify-center">
           <div className="bg-sky-500 text-white rounded-xl p-6 shadow-lg w-full max-w-md text-center">
             <h2 className="text-2xl font-bold mb-4">Cadastro realizado!</h2>
             <p className="mb-6">
-              Bem-vindo(a), <strong>{formData.nome} {formData.sobreNome}</strong>! Você sera redirecionado a pagina de Login para entrar no sistema <strong>Fan Collection Midia</strong>.
+              Bem-vindo(a), <strong>{formData.nome} {formData.sobreNome}</strong>! Você será redirecionado à página de login para entrar no sistema <strong>FanCollectorsMedia</strong>.
             </p>
-            
             <button
               onClick={() => {
                 setModalAberto(false);
@@ -192,92 +191,151 @@ function Cadastro() {
         </div>
       )}
 
-      <h1 className="text-3xl font-bold mb-6 text-center">
-        Cadastrar novo Fan Colecionador de Mídia
-      </h1>
+      <div className="bg-gray-900 bg-opacity-90 p-10 rounded-2xl shadow-2xl w-full max-w-3xl border border-gray-700">
+        <div className="text-center mb-8 flex items-center justify-center gap-3">
+          <img
+            src={cadastrarIcon}
+            alt="Ícone Cadastro"
+            className="w-8 h-8 drop-shadow-md"
+          />focus
+          <h1 className="text-2xl sm:text-3xl font-semibold drop-shadow-sm">
+            Cadastrar Fan Colecionador de Mídia
+          </h1>
+        </div>
 
-      <div className="bg-gray-800 rounded-xl shadow-md p-8 w-full max-w-2xl space-y-4">
-        {[
-          { label: 'Nome', name: 'nome' },
-          { label: 'Sobrenome', name: 'sobreNome' },
-          { label: 'Data de Nascimento', name: 'dataNascimento', type: 'date' },
-          { label: 'Sexo', name: 'sexo' },
-          { label: 'Telefone', name: 'telefone' },
-          { label: 'Email', name: 'email' },
-          { label: 'Senha', name: 'senha', type: 'password' },
-          { label: 'Confirmar Senha', name: 'confirmarSenha', type: 'password' },
-          { label: 'Avatar URL', name: 'avatarUrl' },
-        ].map(({ label, name, type = 'text' }) => (
-          <div key={name}>
-            {errors[name] && <p className="text-red-500 text-sm mb-1">{errors[name]}</p>}
-            <input
-              type={type}
-              name={name}
-              value={(formData as any)[name]}
-              onChange={handleChange}
-              placeholder={label}
-              className="w-full px-4 py-2 rounded bg-gray-700 text-white"
-            />
-            {name === 'senha' && forcaSenha && (
-              <p className={`text-sm font-medium mt-1 ${
-                forcaSenha === 'fraca'
-                  ? 'text-red-500'
-                  : forcaSenha === 'media'
-                  ? 'text-yellow-400'
-                  : 'text-green-500'
-              }`}>
-                Senha {forcaSenha}
-              </p>
-            )}
-            {name === 'confirmarSenha' && !senhasConferem && (
-              <p className="text-sm text-red-500 mt-1">As senhas não coincidem.</p>
-            )}
-          </div>
-        ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Campos do formulário - dados pessoais exceto Avatar e Senhas */}
+          {[
+            { label: 'Nome', name: 'nome' },
+            { label: 'Sobrenome', name: 'sobreNome' },
+            { label: 'Data de Nascimento', name: 'dataNascimento', type: 'date' },
+            { label: 'Sexo', name: 'sexo' },
+            { label: 'Telefone', name: 'telefone' },
+            { label: 'Email', name: 'email' },
+          ].map(({ label, name, type = 'text' }) => (
+            <div key={name} className="col-span-1">
+              {errors[name] && <p className="text-red-500 text-sm mb-1">{errors[name]}</p>}
+              <input
+                type={type}
+                name={name}
+                value={(formData as any)[name]}
+                onChange={handleChange}
+                placeholder={label}
+                className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          ))}
 
-        <hr className="border-gray-600 my-4" />
-        <h2 className="text-xl font-semibold mb-2">Endereço</h2>
-
-        {[
-          { label: 'CEP', name: 'cep', maxLength: 8 },
-          { label: 'Rua', name: 'rua' },
-          { label: 'Número', name: 'numero' },
-          { label: 'Complemento', name: 'complemento' },
-          { label: 'Bairro', name: 'bairro' },
-          { label: 'Cidade', name: 'cidade' },
-          { label: 'Estado', name: 'estado' },
-        ].map(({ label, name, maxLength }) => (
-          <div key={name}>
-            {errors[name] && <p className="text-red-500 text-sm mb-1">{errors[name]}</p>}
+          {/* Avatar URL */}
+          <div className="col-span-2">
+            {errors.avatarUrl && <p className="text-red-500 text-sm mb-1">{errors.avatarUrl}</p>}
             <input
               type="text"
-              name={name}
-              value={(formData.endereco as any)[name]}
+              name="avatarUrl"
+              value={formData.avatarUrl}
               onChange={handleChange}
-              placeholder={label}
-              maxLength={maxLength}
-              className="w-full px-4 py-2 rounded bg-gray-700 text-white"
+              placeholder="Avatar URL"
+              className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-        ))}
-      </div>
+          {/* Senha e Confirmar Senha - coluna única, inputs um abaixo do outro */}
+          <div className="col-span-2 flex flex-col gap-4 items-center">
+            <div className="w-1/2">
+              {errors.senha && <p className="text-red-500 text-sm mb-1">{errors.senha}</p>}
+              <input
+                type="password"
+                name="senha"
+                value={formData.senha}
+                onChange={handleChange}
+                placeholder="Senha"
+                className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {forcaSenha && (
+                <p
+                  className={`text-sm mt-1 ${
+                    forcaSenha === 'fraca'
+                      ? 'text-red-500'
+                      : forcaSenha === 'media'
+                      ? 'text-yellow-400'
+                      : 'text-green-500'
+                  }`}
+                >
+                  Senha {forcaSenha}
+                </p>
+              )}
+            </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 mt-6">
-        <button
-          onClick={handleSubmit}
-          className="bg-green-600 hover:bg-green-700 transition px-6 py-3 rounded-lg flex items-center gap-2"
-        >
-          <img src={cadastrarIcon} alt="Cadastrar" className="w-5 h-5" />
-          Cadastrar
-        </button>
+            <div className="w-1/2">
+              {errors.confirmarSenha && (
+                <p className="text-red-500 text-sm mb-1">{errors.confirmarSenha}</p>
+              )}
+              <input
+                type="password"
+                name="confirmarSenha"
+                value={formData.confirmarSenha}
+                onChange={handleChange}
+                placeholder="Confirmar Senha"
+                className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {!senhasConferem && (
+                <p className="text-sm text-red-500 mt-1">As senhas não coincidem.</p>
+              )}
+            </div>
+          </div>
+        </div>
+        <hr className="border-gray-600 my-6" />
+        <div>
+          <div className="flex items-center gap-3 mb-4 justify-center">
+            <img
+              src={casaIcon}
+              alt="Ícone Endereço"
+              className="w-7 h-7 drop-shadow-md"
+            />
+            <h2 className="text-xl sm:text-2xl font-semibold drop-shadow-sm">Endereço</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {[
+              { label: 'CEP', name: 'cep', maxLength: 8 },
+              { label: 'Rua', name: 'rua' },
+              { label: 'Número', name: 'numero' },
+              { label: 'Complemento', name: 'complemento' },
+              { label: 'Bairro', name: 'bairro' },
+              { label: 'Cidade', name: 'cidade' },
+              { label: 'Estado', name: 'estado' },
+            ].map(({ label, name, maxLength }) => (
+              <div key={name}>
+                {errors[name] && <p className="text-red-500 text-sm mb-1">{errors[name]}</p>}
+                <input
+                  type="text"
+                  name={name}
+                  value={(formData.endereco as any)[name]}
+                  onChange={handleChange}
+                  placeholder={label}
+                  maxLength={maxLength}
+                  className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
 
-        <button
-          onClick={() => navigate('/')}
-          className="bg-red-600 hover:bg-red-700 transition px-6 py-3 rounded-lg flex items-center gap-2"
-        >
-          <img src={voltarIcon} alt="Voltar" className="w-5 h-5" />
-          Voltar
-        </button>
+        <div className="flex flex-col sm:flex-row gap-4 mt-8 justify-center">
+          <button
+            onClick={handleSubmit}
+            className="bg-green-600 hover:bg-green-700 shadow-md transition px-6 py-3 rounded-lg flex items-center justify-center gap-2 font-semibold w-full sm:w-auto"
+          >
+            <img src={cadastrarIcon} alt="Cadastrar" className="w-5 h-5" />
+            Cadastrar
+          </button>
+
+          <button
+            onClick={() => navigate('/')}
+            className="bg-red-600 hover:bg-red-700 shadow-md transition px-6 py-3 rounded-lg flex items-center justify-center gap-2 font-semibold w-full sm:w-auto"
+          >
+            <img src={voltarIcon} alt="Voltar" className="w-5 h-5" />
+            Voltar
+          </button>
+        </div>
       </div>
     </div>
   );
