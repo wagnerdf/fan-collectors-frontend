@@ -71,21 +71,11 @@ function PerfilPage() {
 
   // Muda a página ativa e navega para a rota correspondente
   const handleSelectPage = (pagina: Pagina) => {
-    setPaginaAtiva(pagina);
-    switch (pagina) {
-      case "home":
-        navigate("/");
-        break;
-      case "perfil":
-        navigate("/perfil");
-        break;
-      case "editar":
-        navigate("/perfil/editar");
-        break;
-      case "hobbys":
-        navigate("/perfil/hobbys");
-        break;
+    if (pagina === "home") {
+      navigate("/"); // Só redireciona se for para Home
+      return;
     }
+    setPaginaAtiva(pagina); // Para as outras, só troca o conteúdo mostrado
   };
 
   if (error) {
