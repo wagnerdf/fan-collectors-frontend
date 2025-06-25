@@ -91,16 +91,19 @@ function PerfilPage() {
         usuario={usuario}
         onSelectPage={handleSelectPage}
       />
-      <div className="flex flex-1 flex-col sm:flex-row gap-4 p-4 overflow-hidden">
-        <Sidebar
-          usuario={{
-            ...usuario,
-            avatarUrl: usuario.avatarUrl ?? "/default-user.png",
-            hobbies: usuario.hobbies ?? [],
-          }}
-        />
+     <div className="flex flex-1 flex-col sm:flex-row gap-5 p-4 pl-64">
+      <Sidebar
+        usuario={{
+          ...usuario,
+          avatarUrl: usuario.avatarUrl ?? "/default-user.png",
+          hobbies: usuario.hobbies ?? [],
+        }}
+      />
+      <div className="flex-1 ml-6">
         <Feed paginaAtiva={paginaAtiva} />
       </div>
+    </div>
+
     </div>
   );
 }

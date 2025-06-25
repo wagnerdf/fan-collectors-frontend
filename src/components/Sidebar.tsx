@@ -74,7 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
 };
 
   return (
-    <div className="bg-gray-900 text-white p-4 w-full sm:w-64 rounded-xl shadow-md space-y-6 relative">
+    <div className="fixed left-3 top-[5.2rem] w-64 h-[calc(100vh-5.2rem)] bg-gray-900 p-4 rounded-t-2xl rounded-br-2xl shadow-lg overflow-y-auto">
       <div className="flex flex-col items-center mb-4">
         <img
           src={usuario.avatarUrl ?? "/default-user.png"}
