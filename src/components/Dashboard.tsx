@@ -4,9 +4,36 @@ import Feed from "./Feed";
 
 type Pagina = "home" | "perfil" | "editar" | "hobbys";
 
+// Interface completa (ajustada para compatibilidade com Feed e Perfil)
+interface HobbyDoUsuario {
+  id: number;
+  nomeHobby: string;
+  nivelInteresse: string;
+  descricaoHobby: string;
+}
+
+interface Endereco {
+  cep: string;
+  logradouro: string;
+  numero: string;
+  complemento?: string;
+  bairro: string;
+  cidade: string;
+  estado: string;
+  pais?: string;
+}
+
 interface Usuario {
+  id: number;
   nome: string;
+  sobreNome: string | null;
   email: string;
+  dataNascimento: string | null;
+  sexo: string | null;
+  telefone: string;
+  avatarUrl: string | null;
+  endereco?: Endereco;
+  hobbies?: HobbyDoUsuario[];
 }
 
 interface DashboardProps {
@@ -22,11 +49,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ usuario, onLogout }) => {
       <TopBar
         usuario={usuario}
         onLogout={onLogout}
-        onSelectPage={setPaginaAtiva} // Passa o setter para o TopBar
+        onSelectPage={setPaginaAtiva}
       />
 
       <main className="flex-1 bg-gray-800 text-white p-4">
-        <Feed paginaAtiva={paginaAtiva} />
+        <Feed paginaAtiva={paginaAtiva} usuario={usuario} />
       </main>
     </div>
   );

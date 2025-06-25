@@ -100,7 +100,7 @@ function PerfilPage() {
         }}
       />
       <div className="flex-1 ml-6">
-        <Feed paginaAtiva={paginaAtiva} />
+        <Feed paginaAtiva={paginaAtiva} usuario={usuario} />
       </div>
     </div>
 
