@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { TopBar } from "../components/TopBar";
-import { Sidebar } from "../components/Sidebar";
+import { Sidebar } from "../components/Sidebar";  // corrigido para named import
 import Feed from "../components/Feed";
 import { useAuth } from "../context/AuthContext";
 
@@ -63,19 +63,17 @@ function PerfilPage() {
     fetchDados();
   }, [navigate]);
 
-  // Logout: limpa token e redireciona para Home
   const handleLogout = () => {
     logout();
     navigate("/");
   };
 
-  // Muda a página ativa e navega para a rota correspondente
   const handleSelectPage = (pagina: Pagina) => {
     if (pagina === "home") {
-      navigate("/"); // Só redireciona se for para Home
+      navigate("/");
       return;
     }
-    setPaginaAtiva(pagina); // Para as outras, só troca o conteúdo mostrado
+    setPaginaAtiva(pagina);
   };
 
   if (error) {
@@ -93,7 +91,7 @@ function PerfilPage() {
         usuario={usuario}
         onSelectPage={handleSelectPage}
       />
-      <div className="flex flex-1 flex-col sm:flex-row gap-4 p-4">
+      <div className="flex flex-1 flex-col sm:flex-row gap-4 p-4 overflow-hidden">
         <Sidebar
           usuario={{
             ...usuario,
