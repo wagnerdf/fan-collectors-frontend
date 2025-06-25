@@ -9,7 +9,7 @@ interface HobbyDoUsuario {
 
 interface Endereco {
   cep: string;
-  logradouro: string;
+  rua: string;
   numero: string;
   complemento?: string;
   bairro: string;
@@ -62,7 +62,7 @@ export default function Perfil({ usuario }: PerfilProps) {
           {endereco ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Campo label="CEP" valor={endereco.cep} />
-              <Campo label="Rua" valor={endereco.logradouro} />
+              <Campo label="Rua" valor={endereco.rua} />
               <Campo label="Número" valor={endereco.numero} />
               <Campo label="Complemento" valor={endereco.complemento ?? "-"} />
               <Campo label="Bairro" valor={endereco.bairro} />

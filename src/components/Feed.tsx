@@ -14,7 +14,7 @@ interface HobbyDoUsuario {
 
 interface Endereco {
   cep: string;
-  logradouro: string;
+  rua: string;
   numero: string;
   bairro: string;
   cidade: string;
