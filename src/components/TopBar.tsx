@@ -34,7 +34,7 @@ export function TopBar({ onLogout, usuario, onSelectPage }: TopBarProps) {
   };
 
   return (
-    <div className="flex items-center justify-between bg-gray-900 px-6 py-4 shadow">
+    <div className="flex items-center justify-between bg-gray-900 px-6 py-4 shadow z-50 sticky top-0">
       {/* Botão do menu */}
       <div className="relative" ref={menuRef}>
         <button
