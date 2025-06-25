@@ -36,7 +36,15 @@ interface PerfilProps {
 }
 
 export default function Perfil({ usuario }: PerfilProps) {
-  const { nome, sobreNome, email, telefone, dataNascimento, sexo, endereco } = usuario;
+  const {
+    nome,
+    sobreNome,
+    email,
+    telefone,
+    dataNascimento,
+    sexo,
+    endereco
+  } = usuario;
 
   return (
     <div className="w-full h-full p-0">
@@ -44,8 +52,10 @@ export default function Perfil({ usuario }: PerfilProps) {
         <h2 className="text-2xl font-bold mb-6">Perfil do Usuário</h2>
 
         {/* Bloco 1: Dados Pessoais */}
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold mb-4 text-gray-300">Dados Pessoais</h3>
+        <div className="mb-10">
+          <h3 className="text-xl font-semibold mb-4 text-gray-300 border-b border-gray-700 pb-2">
+            🧍 Dados Pessoais
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Campo label="Nome" valor={nome} />
             <Campo label="Sobrenome" valor={sobreNome ?? "-"} />
@@ -58,7 +68,9 @@ export default function Perfil({ usuario }: PerfilProps) {
 
         {/* Bloco 2: Endereço */}
         <div>
-          <h3 className="text-xl font-semibold mb-4 text-gray-300">Endereço</h3>
+          <h3 className="text-xl font-semibold mb-4 text-gray-300 border-b border-gray-700 pb-2">
+            🏠 Endereço
+          </h3>
           {endereco ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Campo label="CEP" valor={endereco.cep} />
@@ -79,7 +91,7 @@ export default function Perfil({ usuario }: PerfilProps) {
   );
 }
 
-// Componente auxiliar para exibir os campos
+// Componente reutilizável para campo visual
 function Campo({ label, valor }: { label: string; valor: string }) {
   return (
     <div className="flex flex-col">
