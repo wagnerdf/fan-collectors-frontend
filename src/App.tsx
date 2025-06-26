@@ -3,7 +3,8 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import PerfilPage from "./pages/PerfilPage";
-import Cadastro from "./pages/Cadastro"; // ✅ IMPORTAR AQUI
+import Cadastro from "./pages/Cadastro";
+import EditarCadastro from "./pages/EditarCadastro";
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const { token } = useAuth();
@@ -11,13 +12,14 @@ function PrivateRoute({ children }: { children: JSX.Element }) {
 }
 
 function AppRoutes() {
-  const { token } = useAuth();
+  //const { token } = useAuth();
 
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/cadastro" element={<Cadastro />} />
+      <Route path="/editar" element={<EditarCadastro />} />
       <Route
         path="/perfil"
         element={
