@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 export default function EditarCadastro() {
+  const { token } = useAuth();
+
   const [nome, setNome] = useState("");
   const [sobreNome, setSobreNome] = useState("");
   const [email, setEmail] = useState("");
@@ -16,6 +20,38 @@ export default function EditarCadastro() {
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
   const [erro, setErro] = useState("");
+
+  useEffect(() => {
+      async function carregarDados() {
+        try {
+          const response = await api.get("/api/cadastros/perfil");
+
+          const data = response.data;
+
+          setNome(data.nome || "");
+          setSobreNome(data.sobreNome || "");
+          setEmail(data.email || "");
+          setDataNascimento((data.dataNascimento || "").split("T")[0]);
+          setSexo(data.sexo || "");
+          setTelefone(data.telefone || "");
+
+          if (data.endereco) {
+            setCep(data.endereco.cep || "");
+            setRua(data.endereco.rua || "");
+            setNumero(data.endereco.numero || "");
+            setComplemento(data.endereco.complemento || "");
+            setBairro(data.endereco.bairro || "");
+            setCidade(data.endereco.cidade || "");
+            setEstado(data.endereco.estado || "");
+          }
+        } catch (error) {
+          console.error("Erro ao carregar dados do perfil:", error);
+          setErro("Erro ao carregar dados do perfil.");
+        }
+      }
+
+      carregarDados();
+    }, [token]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
