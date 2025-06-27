@@ -11,7 +11,7 @@ export default function EditarCadastro() {
   const [dataNascimento, setDataNascimento] = useState("");
   const [sexo, setSexo] = useState("");
   const [telefone, setTelefone] = useState("");
-  //const [senha, setSenha] = useState("");
+  const [senha, setSenha] = useState("");
   const [cep, setCep] = useState("");
   const [complemento, setComplemento] = useState("");
   const [rua, setRua] = useState("");
@@ -20,6 +20,23 @@ export default function EditarCadastro() {
   const [cidade, setCidade] = useState("");
   const [estado, setEstado] = useState("");
   const [erro, setErro] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [forcaSenha, setForcaSenha] = useState<'fraca' | 'media' | 'forte' | null>(null);
+  const [senhasConferem, setSenhasConferem] = useState(true);
+
+  function avaliarForcaSenha(senha: string): 'fraca' | 'media' | 'forte' {
+    let pontuacao = 0;
+    if (senha.length >= 8) pontuacao++;
+    if (/[a-z]/.test(senha)) pontuacao++;
+    if (/[A-Z]/.test(senha)) pontuacao++;
+    if (/[0-9]/.test(senha)) pontuacao++;
+    if (/[^A-Za-z0-9]/.test(senha)) pontuacao++;
+
+    if (pontuacao <= 2) return 'fraca';
+    if (pontuacao === 3 || pontuacao === 4) return 'media';
+    return 'forte';
+  }
+  
 
   useEffect(() => {
       async function carregarDados() {
@@ -53,33 +70,58 @@ export default function EditarCadastro() {
       carregarDados();
     }, [token]);
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+    function handleSubmit(e: React.FormEvent) {
+      e.preventDefault();
 
-    if (!email || !sobreNome || !nome || !dataNascimento || !sexo || !telefone || !cep || !complemento || !rua || !numero || !bairro || !cidade || !estado) {
-      setErro("Preencha todos os campos obrigatórios.");
-      return;
+      if (!dataNascimento || !sexo || !telefone || !cep || !complemento || !rua || !numero || !bairro || !cidade || !estado) {
+        setErro("Preencha todos os campos obrigatórios.");
+        return;
+      }
+
+      if (senha || confirmarSenha) {
+        if (senha !== confirmarSenha) {
+          setErro("As senhas não coincidem.");
+          return;
+        }
+
+        const forca = avaliarForcaSenha(senha);
+        if (forca === 'fraca') {
+          setErro("A nova senha é muito fraca.");
+          return;
+        }
+      }
+
+      setErro("");
+
+      const payload: any = {
+        dataNascimento,
+        sexo,
+        telefone,
+        cep,
+        rua,
+        numero,
+        complemento,
+        bairro,
+        cidade,
+        estado
+      };
+
+      if (senha) {
+        payload.novaSenha = senha;
+      }
+
+      console.log("Dados a enviar:", payload);
+
+      api.put("/api/cadastros/perfilEditar", payload)
+        .then(() => {
+          alert("Cadastro atualizado com sucesso!");
+        })
+        .catch((err) => {
+          console.error("Erro ao atualizar cadastro:", err);
+          setErro("Erro ao atualizar cadastro.");
+        });
     }
 
-    setErro("");
-    console.log({
-      nome,
-      sobreNome,
-      email,
-      dataNascimento,
-      sexo,
-      telefone,
-      //senha,
-      cep,
-      complemento,
-      rua,
-      numero,
-      bairro,
-      cidade,
-      estado,
-    });
-
-  }
   return (
     <div className="w-full h-full p-0">
       <div className="bg-gray-900 rounded-2xl shadow-md p-6 h-full">
@@ -137,20 +179,47 @@ export default function EditarCadastro() {
             <input type="email" disabled
             value={email}
             onChange={(e) => setEmail(e.target.value)} 
-            className="w-full border rounded p-2 text-black"/>
+            className="w-full border rounded p-2 "/>
           </div>
 
           <div className="col-span-2 flex flex-col gap-4 items-center">
             <div className="w-1/2">
-              <label className="block font-medium">Senha</label>
-              <input type="password" 
-              className="w-full border rounded p-1 text-black" />
+              <label className="block font-medium">Nova Senha</label>
+              <input
+                type="password"
+                value={senha}
+                onChange={(e) => {
+                  setSenha(e.target.value);
+                  setForcaSenha(avaliarForcaSenha(e.target.value));
+                  setSenhasConferem(e.target.value === confirmarSenha);
+                }}
+                className="w-full border rounded p-1 text-black"
+              />
+              {forcaSenha && senha && (
+                <p className={`text-sm mt-1 ${
+                  forcaSenha === 'fraca' ? 'text-red-500' :
+                  forcaSenha === 'media' ? 'text-yellow-500' : 'text-green-500'
+                }`}>
+                  Senha {forcaSenha}
+                </p>
+              )}
             </div>
 
             <div className="w-1/2">
-              <label className="block font-medium">Confirmar senha</label>
-              <input type="password" className="w-full border rounded p-1 text-black" />
-            </div>
+                <label className="block font-medium">Confirmar Nova Senha</label>
+                <input
+                  type="password"
+                  value={confirmarSenha}
+                  onChange={(e) => {
+                    setConfirmarSenha(e.target.value);
+                    setSenhasConferem(senha === e.target.value);
+                  }}
+                  className="w-full border rounded p-1 text-black"
+                />
+                {!senhasConferem && (
+                  <p className="text-sm text-red-500 mt-1">As senhas não coincidem.</p>
+                )}
+              </div>
           </div>
 
           {/* Seção: Endereço */}
