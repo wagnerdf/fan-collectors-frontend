@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function EditarCadastro() {
   const { token } = useAuth();
+  const navigate = useNavigate();
 
   const [nome, setNome] = useState("");
   const [sobreNome, setSobreNome] = useState("");
@@ -23,6 +25,7 @@ export default function EditarCadastro() {
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [forcaSenha, setForcaSenha] = useState<'fraca' | 'media' | 'forte' | null>(null);
   const [senhasConferem, setSenhasConferem] = useState(true);
+  const [sucesso, setSucesso] = useState(false);
 
   function avaliarForcaSenha(senha: string): 'fraca' | 'media' | 'forte' {
     let pontuacao = 0;
@@ -36,64 +39,63 @@ export default function EditarCadastro() {
     if (pontuacao === 3 || pontuacao === 4) return 'media';
     return 'forte';
   }
-  
 
   useEffect(() => {
-      async function carregarDados() {
-        try {
-          const response = await api.get("/api/cadastros/perfil");
+    async function carregarDados() {
+      try {
+        const response = await api.get("/api/cadastros/perfil");
+        const data = response.data;
 
-          const data = response.data;
+        setNome(data.nome || "");
+        setSobreNome(data.sobreNome || "");
+        setEmail(data.email || "");
+        setDataNascimento((data.dataNascimento || "").split("T")[0]);
+        setSexo(data.sexo || "");
+        setTelefone(data.telefone || "");
 
-          setNome(data.nome || "");
-          setSobreNome(data.sobreNome || "");
-          setEmail(data.email || "");
-          setDataNascimento((data.dataNascimento || "").split("T")[0]);
-          setSexo(data.sexo || "");
-          setTelefone(data.telefone || "");
-
-          if (data.endereco) {
-            setCep(data.endereco.cep || "");
-            setRua(data.endereco.rua || "");
-            setNumero(data.endereco.numero || "");
-            setComplemento(data.endereco.complemento || "");
-            setBairro(data.endereco.bairro || "");
-            setCidade(data.endereco.cidade || "");
-            setEstado(data.endereco.estado || "");
-          }
-        } catch (error) {
-          console.error("Erro ao carregar dados do perfil:", error);
-          setErro("Erro ao carregar dados do perfil.");
+        if (data.endereco) {
+          setCep(data.endereco.cep || "");
+          setRua(data.endereco.rua || "");
+          setNumero(data.endereco.numero || "");
+          setComplemento(data.endereco.complemento || "");
+          setBairro(data.endereco.bairro || "");
+          setCidade(data.endereco.cidade || "");
+          setEstado(data.endereco.estado || "");
         }
+      } catch (error) {
+        console.error("Erro ao carregar dados do perfil:", error);
+        setErro("Erro ao carregar dados do perfil.");
       }
+    }
 
-      carregarDados();
-    }, [token]);
+    carregarDados();
+  }, [token]);
 
-    function handleSubmit(e: React.FormEvent) {
-      e.preventDefault();
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
 
-      if (!dataNascimento || !sexo || !telefone || !cep || !complemento || !rua || !numero || !bairro || !cidade || !estado) {
-        setErro("Preencha todos os campos obrigatórios.");
+    if (!dataNascimento || !sexo || !telefone || !cep || !complemento || !rua || !numero || !bairro || !cidade || !estado) {
+      setErro("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    if (senha || confirmarSenha) {
+      if (senha !== confirmarSenha) {
+        setErro("As senhas não coincidem.");
         return;
       }
 
-      if (senha || confirmarSenha) {
-        if (senha !== confirmarSenha) {
-          setErro("As senhas não coincidem.");
-          return;
-        }
-
-        const forca = avaliarForcaSenha(senha);
-        if (forca === 'fraca') {
-          setErro("A nova senha é muito fraca.");
-          return;
-        }
+      const forca = avaliarForcaSenha(senha);
+      if (forca === 'fraca') {
+        setErro("A nova senha é muito fraca.");
+        return;
       }
+    }
 
-      setErro("");
+    setErro("");
 
-      const payload: any = {
+    try {
+      const payload = {
         dataNascimento,
         sexo,
         telefone,
@@ -103,24 +105,20 @@ export default function EditarCadastro() {
         complemento,
         bairro,
         cidade,
-        estado
+        estado,
+        novaSenha: senha || undefined,
       };
-
-      if (senha) {
-        payload.novaSenha = senha;
-      }
 
       console.log("Dados a enviar:", payload);
 
-      api.put("/api/cadastros/perfilEditar", payload)
-        .then(() => {
-          alert("Cadastro atualizado com sucesso!");
-        })
-        .catch((err) => {
-          console.error("Erro ao atualizar cadastro:", err);
-          setErro("Erro ao atualizar cadastro.");
-        });
+      await api.put("/api/cadastros/perfilEditar", payload);
+
+      setSucesso(true);
+    } catch (err) {
+      console.error("Erro ao atualizar cadastro:", err);
+      setErro("Erro ao atualizar cadastro. Verifique os dados e tente novamente.");
     }
+  }
 
   return (
     <div className="w-full h-full p-0">
@@ -297,9 +295,31 @@ export default function EditarCadastro() {
               {erro}
             </div>
           )}
+          {sucesso && (
+            <div className="col-span-full text-green-500 font-medium">
+              Cadastro atualizado com sucesso! Redirecionando...
+            </div>
+          )}
         </form>
-
       </div>
+      {sucesso && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md text-center">
+            <h2 className="text-xl font-bold text-green-600 mb-4">Cadastro atualizado com sucesso!</h2>
+            <p className="mb-6">Você será redirecionado para o perfil.</p>
+            <button
+              type="button"
+              onClick={() => {
+                setSucesso(false);
+                setTimeout(() => navigate("/perfil"), 0);
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

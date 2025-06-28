@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { TopBar } from "../components/TopBar";
-import { Sidebar } from "../components/Sidebar";  // corrigido para named import
+import { Sidebar } from "../components/Sidebar";
 import Feed from "../components/Feed";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate, useLocation } from "react-router-dom";
 
 type Pagina = "home" | "perfil" | "editar" | "hobbys";
 
@@ -33,10 +33,14 @@ function PerfilPage() {
   const [paginaAtiva, setPaginaAtiva] = useState<Pagina>("perfil");
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchDados = async () => {
       const token = localStorage.getItem("fanCollectorsMediaToken");
+      if (location.pathname.includes("/perfil")) {
+        setPaginaAtiva("perfil");
+      }
       if (!token) {
         navigate("/");
         return;
@@ -61,7 +65,8 @@ function PerfilPage() {
     };
 
     fetchDados();
-  }, [navigate]);
+  }, [location, navigate]);
+
 
   const handleLogout = () => {
     logout();
