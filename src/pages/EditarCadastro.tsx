@@ -27,6 +27,7 @@ export default function EditarCadastro() {
   const [senhasConferem, setSenhasConferem] = useState(true);
   const [sucesso, setSucesso] = useState(false);
   const [errosCampos, setErrosCampos] = useState<{ [key: string]: string }>({});
+  const [erroSenha, setErroSenha] = useState("");
 
   function avaliarForcaSenha(senha: string): 'fraca' | 'media' | 'forte' {
     let pontuacao = 0;
@@ -94,12 +95,17 @@ export default function EditarCadastro() {
       return;
     }
 
-
     if (senha || confirmarSenha) {
       if (senha !== confirmarSenha) {
         setErro("As senhas não coincidem.");
         return;
       }
+
+    if (senha.length > 0 && senha.length < 6) {
+      setErroSenha("A senha deve ter no mínimo 6 caracteres.");
+      return;
+    }
+    setErroSenha("");
 
       const forca = avaliarForcaSenha(senha);
       if (forca === 'fraca') {
@@ -232,9 +238,15 @@ export default function EditarCadastro() {
                   setForcaSenha(avaliarForcaSenha(e.target.value));
                   setSenhasConferem(e.target.value === confirmarSenha);
                 }}
-                className="w-full border rounded p-1 text-black"
+                onFocus={() => setErroSenha("")}
+                placeholder={erroSenha || ""}
+                className={`w-full rounded p-1 ${
+                  erroSenha
+                    ? "bg-red-500 text-white placeholder-white border border-red-700"
+                    : "bg-white text-black border border-gray-300"
+                }`}
               />
-              {forcaSenha && senha && (
+              {forcaSenha && senha && !erroSenha && (
                 <p className={`text-sm mt-1 ${
                   forcaSenha === 'fraca' ? 'text-red-500' :
                   forcaSenha === 'media' ? 'text-yellow-500' : 'text-green-500'
