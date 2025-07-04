@@ -26,6 +26,7 @@ export default function EditarCadastro() {
   const [forcaSenha, setForcaSenha] = useState<'fraca' | 'media' | 'forte' | null>(null);
   const [senhasConferem, setSenhasConferem] = useState(true);
   const [sucesso, setSucesso] = useState(false);
+  const [errosCampos, setErrosCampos] = useState<{ [key: string]: string }>({});
 
   function avaliarForcaSenha(senha: string): 'fraca' | 'media' | 'forte' {
     let pontuacao = 0;
@@ -74,10 +75,25 @@ export default function EditarCadastro() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!dataNascimento || !sexo || !telefone || !cep || !complemento || !rua || !numero || !bairro || !cidade || !estado) {
+    const novosErros: { [key: string]: string } = {};
+
+    if (!dataNascimento) novosErros.dataNascimento = "Campo obrigatório";
+    if (!sexo) novosErros.sexo = "Campo obrigatório";
+    if (!telefone) novosErros.telefone = "Campo obrigatório";
+    if (!cep) novosErros.cep = "Campo obrigatório";
+    if (!complemento) novosErros.complemento = "Campo obrigatório";
+    if (!rua) novosErros.rua = "Campo obrigatório";
+    if (!numero) novosErros.numero = "Campo obrigatório";
+    if (!bairro) novosErros.bairro = "Campo obrigatório";
+    if (!cidade) novosErros.cidade = "Campo obrigatório";
+    if (!estado) novosErros.estado = "Campo obrigatório";
+
+    if (Object.keys(novosErros).length > 0) {
+      setErrosCampos(novosErros);
       setErro("Preencha todos os campos obrigatórios.");
       return;
     }
+
 
     if (senha || confirmarSenha) {
       if (senha !== confirmarSenha) {
@@ -93,6 +109,7 @@ export default function EditarCadastro() {
     }
 
     setErro("");
+    setErrosCampos({});
 
     try {
       const payload = {
@@ -146,7 +163,15 @@ export default function EditarCadastro() {
               type="date"
               value={dataNascimento}
               onChange={(e) => setDataNascimento(e.target.value)}
-              className="w-full border rounded p-2 text-black"
+              onFocus={() => {
+              setErrosCampos(prev => ({ ...prev, dataNascimento: ""}));
+            }} 
+            placeholder={errosCampos.dataNascimento ? errosCampos.dataNascimento: ""}
+            className={`w-full rounded p-2 text-black ${
+              errosCampos.dataNascimento 
+                ? "bg-red-500 placeholder-white text-white"
+                : "bg-white text-black"
+            } border ${errosCampos.dataNascimento ? "border-red-700" : "border-gray-300"}`}
             />
           </div>
 
@@ -155,9 +180,16 @@ export default function EditarCadastro() {
             <select
               value={sexo}
               onChange={(e) => setSexo(e.target.value)}
-              className="w-full border rounded p-2.5  text-black"
+              onFocus={() => setErrosCampos((prev) => ({ ...prev, sexo: "" }))}
+              className={`w-full rounded p-2.5 ${
+                errosCampos.sexo
+                  ? "bg-red-500 text-white border border-red-700"
+                  : "bg-white text-black border border-gray-300"
+              }`}
             >
-              <option value="">Selecione</option>
+              <option value="">
+                {errosCampos.sexo ? "Campo obrigatório" : "Selecione"}
+              </option>
               <option value="MASCULINO">Masculino</option>
               <option value="FEMININO">Feminino</option>
               <option value="OUTRO">Outro</option>
@@ -168,8 +200,17 @@ export default function EditarCadastro() {
           <label className="block font-medium">Telefone</label>
             <input type="text"
             value={telefone} 
-            onChange={(e) => setTelefone(e.target.value)} 
-            className="w-full border rounded p-2 text-black"/>
+            onChange={(e) => setTelefone(e.target.value)}
+            onFocus={() => {
+                setErrosCampos(prev => ({ ...prev, telefone: "" }));
+              }}
+              placeholder={errosCampos.telefone ? errosCampos.telefone : ""}
+              className={`w-full rounded p-2 text-black ${
+                errosCampos.telefone
+                  ? "bg-red-500 placeholder-white text-white"
+                  : "bg-white text-black"
+              } border ${errosCampos.telefone ? "border-red-700" : "border-gray-300"}`}
+            />
           </div>
 
           <div>
@@ -227,18 +268,37 @@ export default function EditarCadastro() {
 
           <div>
             <label className="block font-medium">CEP</label>
-            <input type="text" 
-            value={cep} 
-            onChange={(e) => setCep(e.target.value)} 
-            className="w-full border rounded p-2 text-black"/>
+            <input
+              type="text"
+              value={cep}
+              onChange={(e) => setCep(e.target.value)}
+              onFocus={() => {
+                setErrosCampos(prev => ({ ...prev, cep: "" }));
+              }}
+              placeholder={errosCampos.cep ? errosCampos.cep : ""}
+              className={`w-full rounded p-2 text-black ${
+                errosCampos.cep
+                  ? "bg-red-500 placeholder-white text-white"
+                  : "bg-white text-black"
+              } border ${errosCampos.cep ? "border-red-700" : "border-gray-300"}`}
+            />
           </div>
 
           <div>
             <label className="block font-medium">Rua</label>
             <input type="text"
             value={rua} 
-            onChange={(e) => setRua(e.target.value)} 
-            className="w-full border rounded p-2 text-black"/>
+            onChange={(e) => setRua(e.target.value)}
+            onFocus={() => {
+              setErrosCampos(prev => ({ ...prev, rua: ""}));
+            }} 
+            placeholder={errosCampos.rua ? errosCampos.rua: ""}
+            className={`w-full rounded p-2 text-black ${
+              errosCampos.rua 
+                ? "bg-red-500 placeholder-white text-white"
+                : "bg-white text-black"
+            } border ${errosCampos.rua ? "border-red-700" : "border-gray-300"}`}
+            />
           </div>
 
           <div>
@@ -246,7 +306,16 @@ export default function EditarCadastro() {
             <input type="text" 
             value={numero} 
             onChange={(e) => setNumero(e.target.value)} 
-            className="w-full border rounded p-2 text-black"/>
+            onFocus={() => {
+              setErrosCampos(prev => ({ ...prev, numero: ""}));
+            }} 
+            placeholder={errosCampos.numero ? errosCampos.numero: ""}
+            className={`w-full rounded p-2 text-black ${
+              errosCampos.numero
+                ? "bg-red-500 placeholder-white text-white"
+                : "bg-white text-black"
+            } border ${errosCampos.numero ? "border-red-700" : "border-gray-300"}`}
+            />
           </div>
 
           <div>
@@ -262,7 +331,16 @@ export default function EditarCadastro() {
             <input type="text"
             value={bairro} 
             onChange={(e) => setBairro(e.target.value)} 
-            className="w-full border rounded p-2 text-black"/>
+            onFocus={() => {
+              setErrosCampos(prev => ({ ...prev, bairro: ""}));
+            }} 
+            placeholder={errosCampos.bairro ? errosCampos.bairro: ""}
+            className={`w-full rounded p-2 text-black ${
+              errosCampos.bairro 
+                ? "bg-red-500 placeholder-white text-white"
+                : "bg-white text-black"
+            } border ${errosCampos.bairro ? "border-red-700" : "border-gray-300"}`}
+            />
           </div>
 
           <div>
@@ -270,7 +348,16 @@ export default function EditarCadastro() {
             <input type="text"
             value={cidade} 
             onChange={(e) => setCidade(e.target.value)} 
-            className="w-full border rounded p-2 text-black"/>
+            onFocus={() => {
+              setErrosCampos(prev => ({ ...prev, cidade: ""}));
+            }} 
+            placeholder={errosCampos.cidade ? errosCampos.cidade: ""}
+            className={`w-full rounded p-2 text-black ${
+              errosCampos.cidade
+                ? "bg-red-500 placeholder-white text-white"
+                : "bg-white text-black"
+            } border ${errosCampos.cidade ? "border-red-700" : "border-gray-300"}`}
+            />
           </div>
 
           <div>
@@ -278,7 +365,16 @@ export default function EditarCadastro() {
             <input type="text"
             value={estado} 
             onChange={(e) => setEstado(e.target.value)} 
-            className="w-full border rounded p-2 text-black"/>
+            onFocus={() => {
+              setErrosCampos(prev => ({ ...prev, estado: ""}));
+            }} 
+            placeholder={errosCampos.estado ? errosCampos.estado: ""}
+            className={`w-full rounded p-2 text-black ${
+              errosCampos.estado
+                ? "bg-red-500 placeholder-white text-white"
+                : "bg-white text-black"
+            } border ${errosCampos.estado ? "border-red-700" : "border-gray-300"}`}
+            />
           </div>
 
           {/* Botão de salvar */}
