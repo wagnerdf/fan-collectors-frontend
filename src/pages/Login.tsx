@@ -123,6 +123,15 @@ function Login() {
             />
           </div>
 
+          <div className="mb-2 text-right">
+            <span
+              onClick={() => navigate('/recuperar-senha')}
+              className="text-sm text-blue-400 hover:underline cursor-pointer"
+            >
+              Recuperar senha
+            </span>
+          </div>
+
           {mensagem && <p className="text-green-400 mb-4 text-sm">{mensagem}</p>}
           {error && <p className="text-red-500 mb-4 text-sm">{error}</p>}
 
