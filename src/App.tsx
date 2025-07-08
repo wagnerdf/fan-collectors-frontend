@@ -6,6 +6,7 @@ import PerfilPage from "./pages/PerfilPage";
 import Cadastro from "./pages/Cadastro";
 import EditarCadastro from "./pages/EditarCadastro";
 import RecuperarSenha from './pages/RecuperarSenha';
+import ResetarSenha from './pages/ResetarSenha';
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const { token } = useAuth();
@@ -22,6 +23,7 @@ function AppRoutes() {
       <Route path="/cadastro" element={<Cadastro />} />
       <Route path="/editar" element={<EditarCadastro />} />
       <Route path="/recuperar-senha" element={<RecuperarSenha />} />
+      <Route path="/resetar-senha" element={<ResetarSenha />} />
       <Route
         path="/perfil"
         element={
