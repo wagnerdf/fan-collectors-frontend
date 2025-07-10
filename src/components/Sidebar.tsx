@@ -76,11 +76,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
   return (
     <div className="fixed left-3 top-[5.2rem] w-64 h-[calc(100vh-5.2rem)] bg-gray-900 p-4 rounded-t-2xl rounded-br-2xl shadow-lg overflow-y-auto">
       <div className="flex flex-col items-center mb-4">
-        <img
-          src={usuario.avatarUrl ?? "/default-user.png"}
-          alt="Foto do usuário"
-          className="w-24 h-24 rounded-full object-cover mb-2"
-        />
+      <img
+        src={usuario.avatarUrl || "/default-user.png"}
+        alt="Foto do usuário"
+        onError={(e) => {
+          e.currentTarget.src = "/default-user.png";
+        }}
+        className="w-24 h-24 rounded-full object-cover mb-2"
+      />
         <h2 className="text-xl font-bold">{usuario.nome}</h2>
         <p className="text-sm text-gray-400">{usuario.email}</p>
       </div>
