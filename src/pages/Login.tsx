@@ -11,9 +11,17 @@ function Login() {
   const [error, setError] = useState('');
   const [mensagem, setMensagem] = useState('');
   const [showTitle, setShowTitle] = useState(false);
+  const [sessionExpired, setSessionExpired] = useState(false);
 
   const navigate = useNavigate();
   const { login, token } = useAuth();
+
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    if (query.get("expired") === "true") {
+      setSessionExpired(true);
+    }
+  }, []);
 
   useEffect(() => {
     sessionStorage.setItem('loginEmail', email);
@@ -131,6 +139,12 @@ function Login() {
               Recuperar senha
             </span>
           </div>
+
+          {sessionExpired && (
+            <p className="text-yellow-400 mb-4 text-sm">
+              Sua sessão expirou. Faça login novamente.
+            </p>
+          )}
 
           {mensagem && <p className="text-green-400 mb-4 text-sm">{mensagem}</p>}
           {error && <p className="text-red-500 mb-4 text-sm">{error}</p>}
