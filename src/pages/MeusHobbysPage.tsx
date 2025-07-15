@@ -17,7 +17,7 @@ export default function MeusHobbysPage() {
   const [selecionados, setSelecionados] = useState<Record<number, number>>({}); // { [hobbyId]: nivel }
 
   useEffect(() => {
-    api.get("/hobbies") // Endpoint que retorna todos os hobbies
+    api.get("/api/hobbies") // Endpoint que retorna todos os hobbies
       .then((response) => {
         setHobbies(response.data);
       })
@@ -52,12 +52,17 @@ export default function MeusHobbysPage() {
 
         <div className="space-y-4">
           {hobbies.map((hobby) => (
-            <div key={hobby.id} className="bg-gray-800 p-4 rounded-xl text-white">
-              <h3 className="text-lg font-semibold">{hobby.nome}</h3>
-              <p className="text-sm text-gray-300">{hobby.descricao}</p>
+            <div
+              key={hobby.id}
+              className="bg-gray-800 p-4 rounded-xl text-white flex items-center justify-between"
+            >
+              <div>
+                <h3 className="text-lg font-semibold">{hobby.nome}</h3>
+                <p className="text-sm text-gray-300">{hobby.descricao}</p>
+              </div>
 
-              <label className="block mt-2 text-sm">
-                Nível de Interesse:
+              <label className="flex flex-col items-end text-sm">
+                Nível:
                 <select
                   className="ml-2 bg-gray-700 border border-gray-600 rounded px-2 py-1"
                   value={selecionados[hobby.id] || ""}
