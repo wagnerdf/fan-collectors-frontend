@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Menu, LogOut, User, Pencil } from "lucide-react";
+import { LogoutModal } from "./LogoutModal";
 
 interface Usuario {
   nome: string;
@@ -14,6 +15,7 @@ interface TopBarProps {
 
 export function TopBar({ onLogout, usuario, onSelectPage }: TopBarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Fecha o menu ao clicar fora dele
@@ -31,6 +33,11 @@ export function TopBar({ onLogout, usuario, onSelectPage }: TopBarProps) {
   const handleMenuClick = (pagina: "home" | "perfil" | "editar" | "hobbys") => {
     onSelectPage(pagina);
     setMenuOpen(false);
+  };
+
+  const confirmarLogout = () => {
+    setShowLogoutModal(false);
+    onLogout();
   };
 
   return (
@@ -81,8 +88,8 @@ export function TopBar({ onLogout, usuario, onSelectPage }: TopBarProps) {
 
             <button
               onClick={() => {
-                setMenuOpen(false); // Fecha o menu primeiro
-                onLogout();         // Executa o logout depois
+                setMenuOpen(false);
+                setShowLogoutModal(true);
               }}
               className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100 text-red-600"
             >
@@ -95,6 +102,14 @@ export function TopBar({ onLogout, usuario, onSelectPage }: TopBarProps) {
 
       {/* Nome do sistema */}
       <h1 className="text-xl font-bold text-white">fanCollectorsMedia</h1>
+
+      {/* Modal de confirmação de logout */}
+      <LogoutModal
+        open={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={confirmarLogout}
+      />
     </div>
   );
 }
+
