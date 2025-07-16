@@ -17,27 +17,50 @@ export default function MeusHobbysPage() {
   const [selecionados, setSelecionados] = useState<Record<number, number>>({}); // { [hobbyId]: nivel }
 
   useEffect(() => {
-    api.get("/api/hobbies") // Endpoint que retorna todos os hobbies
+    // Buscar todos os hobbies disponíveis
+    api.get("/api/hobbies")
       .then((response) => {
         setHobbies(response.data);
       })
       .catch((error) => {
         console.error("Erro ao buscar hobbies:", error);
       });
+
+    // Buscar hobbies já cadastrados pelo usuário
+    api.get("/cadastro-hobby/meus")
+      .then((response) => {
+        const interesses: Record<number, number> = {};
+        response.data.forEach((item: HobbySelecionado) => {
+          interesses[item.hobbyId] = item.nivelInteresse;
+        });
+        setSelecionados(interesses);
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar hobbies do usuário:", error);
+      });
   }, []);
 
   const handleChangeNivel = (hobbyId: number, nivel: number) => {
-    setSelecionados((prev) => ({ ...prev, [hobbyId]: nivel }));
+    if (isNaN(nivel) || nivel === 0) {
+      // Se o usuário desmarcar (escolher vazio), removemos do objeto
+      setSelecionados((prev) => {
+        const novo = { ...prev };
+        delete novo[hobbyId];
+        return novo;
+      });
+    } else {
+      setSelecionados((prev) => ({ ...prev, [hobbyId]: nivel }));
+    }
   };
 
   const handleSalvar = async () => {
-    const payload = Object.entries(selecionados).map(([hobbyId, nivel]) => ({
-      hobbyId: Number(hobbyId),
-      nivelInteresse: nivel,
+    const payload = hobbies.map((hobby) => ({
+      hobbyId: hobby.id,
+      nivelInteresse: selecionados[hobby.id] ?? null,
     }));
 
     try {
-      await api.post("/cadastro-hobby", payload); // ← Backend deve aceitar lista
+      await api.post("/api/hobbies/lista", payload);
       alert("Hobbies salvos com sucesso!");
     } catch (err) {
       console.error("Erro ao salvar hobbies:", err);
@@ -65,8 +88,10 @@ export default function MeusHobbysPage() {
                 Nível:
                 <select
                   className="ml-2 bg-gray-700 border border-gray-600 rounded px-2 py-1"
-                  value={selecionados[hobby.id] || ""}
-                  onChange={(e) => handleChangeNivel(hobby.id, Number(e.target.value))}
+                  value={selecionados[hobby.id] ?? ""}
+                  onChange={(e) =>
+                    handleChangeNivel(hobby.id, Number(e.target.value))
+                  }
                 >
                   <option value="">Escolha</option>
                   {[1, 2, 3, 4, 5].map((n) => (
