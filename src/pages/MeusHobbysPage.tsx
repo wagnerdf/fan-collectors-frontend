@@ -83,6 +83,12 @@ export default function MeusHobbysPage({ carregarUsuario }: MeusHobbysPageProps)
     }
   };
 
+  const getSelectBgClass = (value: number | "") => {
+    if (value === "") return "bg-yellow-400 text-black"; // fundo amarelo para "Escolha"
+    if (value >= 1 && value <= 5) return "bg-green-600 text-white"; // fundo verde para números
+    return "bg-gray-700 text-white"; // fallback
+  };
+
   const handleFecharModal = () => {
     setModalAberto(false);
     carregarUsuario(); // ← atualiza o usuário no sistema (incluindo o Sidebar)
@@ -107,13 +113,11 @@ export default function MeusHobbysPage({ carregarUsuario }: MeusHobbysPageProps)
               <label className="flex flex-col items-end text-sm">
                 Nível:
                 <select
-                  className="ml-2 bg-gray-700 border border-gray-600 rounded px-2 py-1"
+                  className={`ml-2 border border-gray-600 rounded px-2 py-1 ${getSelectBgClass(selecionados[hobby.id] ?? "")}`}
                   value={selecionados[hobby.id] ?? ""}
-                  onChange={(e) =>
-                    handleChangeNivel(hobby.id, Number(e.target.value))
-                  }
+                  onChange={(e) => handleChangeNivel(hobby.id, Number(e.target.value))}
                 >
-                  <option value="">Escolha</option>
+                  <option value="" className="text-black">Escolhe-Cancelar</option>
                   {[1, 2, 3, 4, 5].map((n) => (
                     <option key={n} value={n}>
                       {n}
