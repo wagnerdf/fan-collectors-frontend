@@ -37,16 +37,17 @@ interface Usuario {
 interface FeedProps {
   paginaAtiva: Pagina;
   usuario: Usuario;
+  carregarUsuario: () => void;
 }
 
-export default function Feed({ paginaAtiva, usuario }: FeedProps) {
+export default function Feed({ paginaAtiva, usuario, carregarUsuario }: FeedProps) {
   switch (paginaAtiva) {
     case "perfil":
       return <Perfil usuario={usuario} />;
     case "editar":
       return <EditarCadastro />;
     case "hobbys":
-      return <MeusHobbysPage />;
+      return <MeusHobbysPage carregarUsuario={carregarUsuario} />;
     case "home":
     default:
       return (

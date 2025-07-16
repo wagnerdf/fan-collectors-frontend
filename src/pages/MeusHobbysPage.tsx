@@ -20,34 +20,41 @@ interface HobbySelecionado {
   nivelInteresse: number;
 }
 
-export default function MeusHobbysPage() {
+interface MeusHobbysPageProps {
+  carregarUsuario: () => void;
+}
+
+export default function MeusHobbysPage({ carregarUsuario }: MeusHobbysPageProps) {
   const [hobbies, setHobbies] = useState<Hobby[]>([]);
   const [selecionados, setSelecionados] = useState<Record<number, number>>({});
   const [modalAberto, setModalAberto] = useState(false);
 
   useEffect(() => {
-    // Buscar todos os hobbies disponíveis
-    api.get("/api/hobbies")
-      .then((response) => {
-        setHobbies(response.data);
-      })
-      .catch((error) => {
-        console.error("Erro ao buscar hobbies:", error);
-      });
-
-    // Buscar hobbies já cadastrados pelo usuário
-    api.get("/cadastro-hobby/meus")
-      .then((response) => {
-        const interesses: Record<number, number> = {};
-        response.data.forEach((item: HobbySelecionado) => {
-          interesses[item.hobbyId] = item.nivelInteresse;
-        });
-        setSelecionados(interesses);
-      })
-      .catch((error) => {
-        console.error("Erro ao buscar hobbies do usuário:", error);
-      });
+    buscarTodosHobbies();
+    buscarHobbiesDoUsuario();
   }, []);
+
+  const buscarTodosHobbies = async () => {
+    try {
+      const response = await api.get("/api/hobbies");
+      setHobbies(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar hobbies:", error);
+    }
+  };
+
+  const buscarHobbiesDoUsuario = async () => {
+    try {
+      const response = await api.get("/cadastro-hobby/meus");
+      const interesses: Record<number, number> = {};
+      response.data.forEach((item: HobbySelecionado) => {
+        interesses[item.hobbyId] = item.nivelInteresse;
+      });
+      setSelecionados(interesses);
+    } catch (error) {
+      console.error("Erro ao buscar hobbies do usuário:", error);
+    }
+  };
 
   const handleChangeNivel = (hobbyId: number, nivel: number) => {
     if (isNaN(nivel) || nivel === 0) {
@@ -69,11 +76,16 @@ export default function MeusHobbysPage() {
 
     try {
       await api.post("/api/hobbies/lista", payload);
-      setModalAberto(true);
+      setModalAberto(true); // abre o modal
     } catch (err) {
       console.error("Erro ao salvar hobbies:", err);
       alert("Erro ao salvar hobbies.");
     }
+  };
+
+  const handleFecharModal = () => {
+    setModalAberto(false);
+    carregarUsuario(); // ← atualiza o usuário no sistema (incluindo o Sidebar)
   };
 
   return (
@@ -125,7 +137,9 @@ export default function MeusHobbysPage() {
             <DialogTitle>Hobbies atualizados com sucesso!</DialogTitle>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="success" onClick={() => setModalAberto(false)}>OK</Button>
+            <Button variant="success" onClick={handleFecharModal}>
+              OK
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

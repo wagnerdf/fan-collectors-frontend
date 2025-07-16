@@ -35,38 +35,37 @@ function PerfilPage() {
   const { logout } = useAuth();
   const location = useLocation();
 
+  const carregarUsuario = async () => {
+    const token = localStorage.getItem("fanCollectorsMediaToken");
+    if (!token) {
+      navigate("/");
+      return;
+    }
+
+    try {
+      const perfilRes = await api.get("/api/cadastros/perfil");
+      const perfilData = perfilRes.data;
+
+      const hobbiesRes = await api.get("/cadastro-hobby/meus");
+      const hobbiesData = hobbiesRes.data ?? [];
+
+      setUsuario({
+        ...perfilData,
+        hobbies: hobbiesData,
+      });
+    } catch (err: any) {
+      console.error("Erro ao buscar dados:", err);
+      setError("Erro ao carregar dados do perfil.");
+    }
+  };
+
   useEffect(() => {
-    const fetchDados = async () => {
-      const token = localStorage.getItem("fanCollectorsMediaToken");
-      if (location.pathname.includes("/perfil")) {
-        setPaginaAtiva("perfil");
-      }
-      if (!token) {
-        navigate("/");
-        return;
-      }
+    if (location.pathname.includes("/perfil")) {
+      setPaginaAtiva("perfil");
+    }
 
-      try {
-        const perfilRes = await api.get("/api/cadastros/perfil");
-        const perfilData = perfilRes.data;
-        console.log("Perfil carregado:", perfilData);
-
-        const hobbiesRes = await api.get("/cadastro-hobby/meus");
-        const hobbiesData = hobbiesRes.data ?? [];
-
-        setUsuario({
-          ...perfilData,
-          hobbies: hobbiesData,
-        });
-      } catch (err: any) {
-        console.error("Erro ao buscar dados:", err);
-        setError("Erro ao carregar dados do perfil.");
-      }
-    };
-
-    fetchDados();
-  }, [location, navigate]);
-
+    carregarUsuario();
+  }, [location]);
 
   const handleLogout = () => {
     logout();
@@ -96,19 +95,18 @@ function PerfilPage() {
         usuario={usuario}
         onSelectPage={handleSelectPage}
       />
-     <div className="flex flex-1 flex-col sm:flex-row gap-5 p-4 pl-64">
-      <Sidebar
-        usuario={{
-          ...usuario,
-          avatarUrl: usuario.avatarUrl ?? "/default-user.png",
-          hobbies: usuario.hobbies ?? [],
-        }}
-      />
-      <div className="flex-1 ml-6">
-        <Feed paginaAtiva={paginaAtiva} usuario={usuario} />
+      <div className="flex flex-1 flex-col sm:flex-row gap-5 p-4 pl-64">
+        <Sidebar
+          usuario={{
+            ...usuario,
+            avatarUrl: usuario.avatarUrl ?? "/default-user.png",
+            hobbies: usuario.hobbies ?? [],
+          }}
+        />
+        <div className="flex-1 ml-6">
+          <Feed paginaAtiva={paginaAtiva} usuario={usuario} carregarUsuario={carregarUsuario} />
+        </div>
       </div>
-    </div>
-
     </div>
   );
 }
