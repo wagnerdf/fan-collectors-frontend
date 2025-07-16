@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../components/ui/dialog";
+import { Button } from "../components/ui/button";
 
 interface Hobby {
   id: number;
@@ -14,7 +22,8 @@ interface HobbySelecionado {
 
 export default function MeusHobbysPage() {
   const [hobbies, setHobbies] = useState<Hobby[]>([]);
-  const [selecionados, setSelecionados] = useState<Record<number, number>>({}); // { [hobbyId]: nivel }
+  const [selecionados, setSelecionados] = useState<Record<number, number>>({});
+  const [modalAberto, setModalAberto] = useState(false);
 
   useEffect(() => {
     // Buscar todos os hobbies disponíveis
@@ -42,7 +51,6 @@ export default function MeusHobbysPage() {
 
   const handleChangeNivel = (hobbyId: number, nivel: number) => {
     if (isNaN(nivel) || nivel === 0) {
-      // Se o usuário desmarcar (escolher vazio), removemos do objeto
       setSelecionados((prev) => {
         const novo = { ...prev };
         delete novo[hobbyId];
@@ -61,7 +69,7 @@ export default function MeusHobbysPage() {
 
     try {
       await api.post("/api/hobbies/lista", payload);
-      alert("Hobbies salvos com sucesso!");
+      setModalAberto(true);
     } catch (err) {
       console.error("Erro ao salvar hobbies:", err);
       alert("Erro ao salvar hobbies.");
@@ -106,14 +114,21 @@ export default function MeusHobbysPage() {
         </div>
 
         <div className="mt-6 flex justify-end">
-          <button
-            onClick={handleSalvar}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
-          >
-            Salvar
-          </button>
+          <Button onClick={handleSalvar}>Salvar</Button>
         </div>
       </div>
+
+      {/* Modal de confirmação */}
+      <Dialog open={modalAberto} onOpenChange={setModalAberto}>
+        <DialogContent className="bg-gray-900 text-white">
+          <DialogHeader>
+            <DialogTitle>Hobbies atualizados com sucesso!</DialogTitle>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="success" onClick={() => setModalAberto(false)}>OK</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
