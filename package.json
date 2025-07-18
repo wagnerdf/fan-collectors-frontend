@@ -1,6 +1,6 @@
 {
   "name": "fan-collectors-frontend",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "private": true,
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",
@@ -29,7 +29,11 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "dev": "vite",
+    "preview": "vite preview",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "eslintConfig": {
     "extends": [
@@ -55,12 +59,15 @@
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.5",
     "tailwindcss": "3.4",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "vite": "^4.5.14"
   },
-    "compilerOptions": {
+  "compilerOptions": {
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["*"]
+      "@/*": [
+        "*"
+      ]
     }
   }
 }

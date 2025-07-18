@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import api from "../services/api";
 import { TopBar } from "../components/TopBar";
 import { Sidebar } from "../components/Sidebar";
 import Feed from "../components/Feed";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
+
 
 type Pagina = "home" | "perfil" | "editar" | "hobbys";
 
@@ -35,7 +36,7 @@ function PerfilPage() {
   const { logout } = useAuth();
   const location = useLocation();
 
-  const carregarUsuario = async () => {
+  const carregarUsuario = useCallback(async () => {
     const token = localStorage.getItem("fanCollectorsMediaToken");
     if (!token) {
       navigate("/");
@@ -57,7 +58,7 @@ function PerfilPage() {
       console.error("Erro ao buscar dados:", err);
       setError("Erro ao carregar dados do perfil.");
     }
-  };
+  }, [navigate]);
 
   useEffect(() => {
     if (location.pathname.includes("/perfil")) {
@@ -65,7 +66,7 @@ function PerfilPage() {
     }
 
     carregarUsuario();
-  }, [location]);
+  }, [location, carregarUsuario]);
 
   const handleLogout = () => {
     logout();
