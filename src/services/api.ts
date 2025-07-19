@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { logout } from '../utils/auth';
 
-const baseURL = import.meta.env.REACT_APP_API_URL;
+const baseURL = process.env.REACT_APP_API_URL;
 
 if (!baseURL) {
   throw new Error(
-    'VITE_API_URL não está definida. Verifique as variáveis de ambiente no painel da Vercel.'
+    'REACT_APP_API_URL não está definida. Verifique as variáveis de ambiente no painel da Vercel ou no .env local.'
   );
 }
 
