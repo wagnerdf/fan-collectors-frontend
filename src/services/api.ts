@@ -1,8 +1,16 @@
 import axios from 'axios';
 import { logout } from '../utils/auth';
 
+const baseURL = import.meta.env.VITE_API_URL;
+
+if (!baseURL) {
+  throw new Error(
+    'VITE_API_URL não está definida. Verifique as variáveis de ambiente no painel da Vercel.'
+  );
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL,
   withCredentials: true,
 });
 
@@ -27,7 +35,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-
-
-
-
