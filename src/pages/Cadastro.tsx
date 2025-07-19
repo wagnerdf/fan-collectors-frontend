@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import cadastrarIcon from '../assets/cadastrar.png';
 import voltarIcon from '../assets/voltarHome.png';
 import casaIcon from '../assets/casa.png';
+import api from '../services/api';
 
 function Cadastro() {
   const navigate = useNavigate();
@@ -146,25 +147,18 @@ function Cadastro() {
     const { confirmarSenha, ...dataToSubmit } = formData;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/registerFull`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dataToSubmit),
-      });
-
-      if (!response.ok) {
-        const erro = await response.json();
-        const mensagemErro = erro.error || erro.mensagem || erro.message || "Erro ao cadastrar usuário.";
-        setErrors({ email: mensagemErro });
-        return;
-      }
-
-      await response.json();
+      console.log('Dados enviados:', dataToSubmit);
+      await api.post('/auth/registerFull', dataToSubmit);
       setModalAberto(true);
+    } catch (error: any) {
+      const mensagemErro =
+        error.response?.data?.error ||
+        error.response?.data?.mensagem ||
+        error.response?.data?.message ||
+        'Erro ao cadastrar usuário.';
 
-    } catch (error) {
-      console.error("Erro ao cadastrar:", error);
-      alert("Erro de conexão com o servidor.");
+      setErrors({ email: mensagemErro });
+      console.error('Erro ao cadastrar:', error);
     }
   };
 
@@ -180,7 +174,7 @@ function Cadastro() {
             <button
               onClick={() => {
                 setModalAberto(false);
-                navigate("/login");
+                navigate('/login');
               }}
               className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded"
             >
@@ -196,14 +190,13 @@ function Cadastro() {
             src={cadastrarIcon}
             alt="Ícone Cadastro"
             className="w-8 h-8 drop-shadow-md"
-          />focus
+          />
           <h1 className="text-2xl sm:text-3xl font-semibold drop-shadow-sm">
             Cadastrar Fan Colecionador de Mídia
           </h1>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {/* Campos do formulário - dados pessoais exceto Avatar e Senhas */}
           {[
             { label: 'Nome', name: 'nome' },
             { label: 'Sobrenome', name: 'sobreNome' },
@@ -225,7 +218,6 @@ function Cadastro() {
             </div>
           ))}
 
-          {/* Avatar URL */}
           <div className="col-span-2">
             {errors.avatarUrl && <p className="text-red-500 text-sm mb-1">{errors.avatarUrl}</p>}
             <input
@@ -237,7 +229,7 @@ function Cadastro() {
               className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          {/* Senha e Confirmar Senha - coluna única, inputs um abaixo do outro */}
+
           <div className="col-span-2 flex flex-col gap-4 items-center">
             <div className="w-1/2">
               {errors.senha && <p className="text-red-500 text-sm mb-1">{errors.senha}</p>}
@@ -282,6 +274,7 @@ function Cadastro() {
             </div>
           </div>
         </div>
+
         <hr className="border-gray-600 my-6" />
         <div>
           <div className="flex items-center gap-3 mb-4 justify-center">
