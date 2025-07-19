@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { logout } from '../utils/auth';
 
-const baseURL = import.meta.env.VITE_API_URL;
+const baseURL = import.meta.env.REACT_APP_API_URL;
 
 if (!baseURL) {
   throw new Error(
