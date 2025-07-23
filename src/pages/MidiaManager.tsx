@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { MidiaForm } from "../components/MidiaForm"; // ajuste o caminho se necessário
 
 export function MidiaManager() {
   const [abaAtiva, setAbaAtiva] = useState<"cadastrar" | "editar" | "excluir">("cadastrar");
@@ -11,7 +12,7 @@ export function MidiaManager() {
       <div className="flex space-x-4 mb-6">
         <button
           className={`px-4 py-2 rounded ${
-            abaAtiva === "cadastrar" ? "bg-blue-600 text-white" : "bg-gray-200"
+            abaAtiva === "cadastrar" ? "bg-blue-800 text-white" : "bg-gray-400"
           }`}
           onClick={() => setAbaAtiva("cadastrar")}
         >
@@ -19,7 +20,7 @@ export function MidiaManager() {
         </button>
         <button
           className={`px-4 py-2 rounded ${
-            abaAtiva === "editar" ? "bg-blue-600 text-white" : "bg-gray-200"
+            abaAtiva === "editar" ? "bg-blue-800 text-white" : "bg-gray-400"
           }`}
           onClick={() => setAbaAtiva("editar")}
         >
@@ -27,7 +28,7 @@ export function MidiaManager() {
         </button>
         <button
           className={`px-4 py-2 rounded ${
-            abaAtiva === "excluir" ? "bg-blue-600 text-white" : "bg-gray-200"
+            abaAtiva === "excluir" ? "bg-blue-800 text-white" : "bg-gray-400"
           }`}
           onClick={() => setAbaAtiva("excluir")}
         >
@@ -38,7 +39,7 @@ export function MidiaManager() {
       {/* Conteúdo das abas */}
       {abaAtiva === "cadastrar" && (
         <div>
-          <p>Formulário para cadastrar nova mídia será aqui.</p>
+          <MidiaForm />
         </div>
       )}
       {abaAtiva === "editar" && (
