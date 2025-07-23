@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const tiposApiTMDB = ["Blu-ray", "DVD", "VHS"];
 
@@ -7,6 +7,7 @@ export function MidiaForm() {
   const [tituloBusca, setTituloBusca] = useState("");
   const [resultadosBusca, setResultadosBusca] = useState<any[]>([]);
   const [dadosSelecionados, setDadosSelecionados] = useState<any>(null);
+  const [isBuscando, setIsBuscando] = useState(false);
 
   const camposTMDB = [
     "nome",
@@ -27,10 +28,24 @@ export function MidiaForm() {
     "capa_url"
   ];
 
-  const buscarTMDB = async () => {
-    if (!tituloBusca) return;
+  const apiKey = "22316a026b9ee70cf67365ca2c63992a";
 
-    const apiKey = "SUA_API_KEY_TMDB"; // Substitua pela sua chave da TMDB
+  // Buscar automaticamente com debounce
+  useEffect(() => {
+    if (!tituloBusca || !tiposApiTMDB.includes(tipoSelecionado)) {
+      setResultadosBusca([]);
+      return;
+    }
+
+    const delayDebounce = setTimeout(() => {
+      buscarTMDB();
+    }, 500); // aguarda 500ms
+
+    return () => clearTimeout(delayDebounce); // limpa o timeout anterior
+  }, [tituloBusca]);
+
+  const buscarTMDB = async () => {
+    setIsBuscando(true);
     const query = encodeURIComponent(tituloBusca);
     const url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${query}&language=pt-BR`;
 
@@ -40,6 +55,8 @@ export function MidiaForm() {
       setResultadosBusca(data.results || []);
     } catch (err) {
       console.error("Erro ao buscar na TMDB:", err);
+    } finally {
+      setIsBuscando(false);
     }
   };
 
@@ -51,7 +68,7 @@ export function MidiaForm() {
       nome_serie: "",
       ano_lancamento: filme.release_date?.split("-")[0] || "",
       formato_video: "HD",
-      artista_diretor: "", // Pode ser buscado com outra chamada
+      artista_diretor: "",
       estudio: "",
       regiao: "1",
       edicao: "",
@@ -65,13 +82,13 @@ export function MidiaForm() {
         : ""
     });
     setResultadosBusca([]);
+    setTituloBusca(""); // limpa o campo
   };
 
   return (
     <div className="space-y-6 text-black">
-      {/* Select + Busca lado a lado */}
+      {/* Linha tipo + busca */}
       <div className="flex flex-col sm:flex-row sm:items-end gap-4">
-        {/* Select de tipo de mídia */}
         <div className="flex-1">
           <label className="block mb-1 font-medium">Tipo de Mídia</label>
           <select
@@ -88,30 +105,24 @@ export function MidiaForm() {
           </select>
         </div>
 
-        {/* Busca só aparece se tipo for suportado */}
         {tiposApiTMDB.includes(tipoSelecionado) && (
           <div className="flex-1">
             <label className="block mb-1 font-medium">Buscar título</label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={tituloBusca}
-                onChange={(e) => setTituloBusca(e.target.value)}
-                className="flex-1 border px-3 py-2 rounded"
-                placeholder="Buscar título na TMDB..."
-              />
-              <button
-                onClick={buscarTMDB}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-              >
-                Buscar
-              </button>
-            </div>
+            <input
+              type="text"
+              value={tituloBusca}
+              onChange={(e) => setTituloBusca(e.target.value)}
+              className="w-full border px-3 py-2 rounded"
+              placeholder="Digite para buscar na TMDB..."
+            />
           </div>
         )}
       </div>
 
       {/* Resultados da busca */}
+      {isBuscando && (
+        <p className="text-sm text-gray-500 italic">Buscando...</p>
+      )}
       {resultadosBusca.length > 0 && (
         <div className="border rounded p-2 bg-gray-100 max-h-60 overflow-auto">
           <ul>
@@ -128,7 +139,7 @@ export function MidiaForm() {
         </div>
       )}
 
-      {/* Campos preenchidos automaticamente */}
+      {/* Campos preenchidos */}
       {dadosSelecionados && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {camposTMDB.map((campo) => (
