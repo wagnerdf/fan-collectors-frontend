@@ -10,7 +10,7 @@ interface Usuario {
 interface TopBarProps {
   onLogout: () => void;
   usuario: Usuario;
-  onSelectPage: (pagina: "home" | "perfil" | "editar" | "hobbys") => void;
+  onSelectPage: (pagina: "home" | "perfil" | "editar" | "hobbys" | "midias") => void;
 }
 
 export function TopBar({ onLogout, usuario, onSelectPage }: TopBarProps) {
@@ -30,7 +30,7 @@ export function TopBar({ onLogout, usuario, onSelectPage }: TopBarProps) {
   }, []);
 
   // Ação ao clicar em uma das opções do menu
-  const handleMenuClick = (pagina: "home" | "perfil" | "editar" | "hobbys") => {
+  const handleMenuClick = (pagina: "home" | "perfil" | "editar" | "hobbys" | "midias") => {
     onSelectPage(pagina);
     setMenuOpen(false);
   };
@@ -84,6 +84,13 @@ export function TopBar({ onLogout, usuario, onSelectPage }: TopBarProps) {
               className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100"
             >
               🎯 Meus Hobby's
+            </button>
+
+            <button
+              onClick={() => handleMenuClick("midias")}
+              className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-100"
+            >
+              📀 Gerenciar Mídia
             </button>
 
             <button

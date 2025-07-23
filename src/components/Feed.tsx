@@ -2,8 +2,9 @@ import React from "react";
 import Perfil from "../pages/Perfil";
 import EditarCadastro from "../pages/EditarCadastro";
 import MeusHobbysPage from "../pages/MeusHobbysPage";
+import { MidiaManager } from "../pages/MidiaManager";
 
-type Pagina = "home" | "perfil" | "editar" | "hobbys";
+type Pagina = "home" | "perfil" | "editar" | "hobbys" | "midias";
 
 interface HobbyDoUsuario {
   id: number;
@@ -48,6 +49,8 @@ export default function Feed({ paginaAtiva, usuario, carregarUsuario }: FeedProp
       return <EditarCadastro />;
     case "hobbys":
       return <MeusHobbysPage carregarUsuario={carregarUsuario} />;
+    case "midias":
+      return <MidiaManager />;
     case "home":
     default:
       return (

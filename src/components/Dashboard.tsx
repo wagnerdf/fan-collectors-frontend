@@ -3,7 +3,7 @@ import { TopBar } from "./TopBar";
 import Feed from "./Feed";
 import api from "../services/api";
 
-type Pagina = "home" | "perfil" | "editar" | "hobbys";
+type Pagina = "home" | "perfil" | "editar" | "hobbys" | "midias";
 
 interface HobbyDoUsuario {
   id: number;

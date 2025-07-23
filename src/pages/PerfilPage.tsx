@@ -6,8 +6,7 @@ import Feed from "../components/Feed";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 
-
-type Pagina = "home" | "perfil" | "editar" | "hobbys";
+type Pagina = "home" | "perfil" | "editar" | "hobbys" | "midias";
 
 interface HobbyDoUsuario {
   id: number;
