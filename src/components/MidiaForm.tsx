@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import api from "../services/api";
 
 const tiposApiTMDB = ["Blu-ray", "DVD", "VHS"];
 
@@ -8,6 +9,7 @@ export function MidiaForm() {
   const [resultadosBusca, setResultadosBusca] = useState<any[]>([]);
   const [dadosSelecionados, setDadosSelecionados] = useState<any>(null);
   const [isBuscando, setIsBuscando] = useState(false);
+  const [tiposMidia, setTiposMidia] = useState<string[]>([]);
 
   const camposTMDB = [
     "nome",
@@ -29,6 +31,18 @@ export function MidiaForm() {
   ];
 
   const apiKey = "22316a026b9ee70cf67365ca2c63992a";
+
+  // Carrega tipos de mídia apenas uma vez
+  useEffect(() => {
+    api
+      .get("/api/midia-tipos/ativos")
+      .then((res) => {
+        console.log("Dados recebidos:", res.data);
+        const tipos = res.data.map((item: any) => item.nome);
+        setTiposMidia(tipos);
+      })
+      .catch((err) => console.error("Erro ao carregar tipos de mídia:", err));
+  }, []);
 
   // Buscar automaticamente com debounce
   useEffect(() => {
@@ -97,7 +111,7 @@ export function MidiaForm() {
             onChange={(e) => setTipoSelecionado(e.target.value)}
           >
             <option value="">Selecione um tipo...</option>
-            {tiposApiTMDB.map((tipo) => (
+            {tiposMidia.map((tipo) => (
               <option key={tipo} value={tipo}>
                 {tipo}
               </option>
@@ -139,28 +153,42 @@ export function MidiaForm() {
         </div>
       )}
 
-      {/* Campos preenchidos */}
+      {/* Campos preenchidos e capa lado a lado */}
       {dadosSelecionados && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {camposTMDB.map((campo) => (
-            <div key={campo}>
-              <label className="block text-sm font-medium capitalize mb-1">
-                {campo.replace(/_/g, " ")}
-              </label>
-              <input
-                type="text"
-                name={campo}
-                className="w-full border px-3 py-2 rounded"
-                value={dadosSelecionados[campo] || ""}
-                onChange={(e) =>
-                  setDadosSelecionados({
-                    ...dadosSelecionados,
-                    [campo]: e.target.value
-                  })
-                }
+        <div className="flex flex-col sm:flex-row gap-6 items-start">
+          {/* Imagem da capa */}
+          {dadosSelecionados.capa_url && (
+            <div className="w-48 flex-shrink-0">
+              <img
+                src={dadosSelecionados.capa_url}
+                alt="Capa da mídia"
+                className="rounded shadow"
               />
             </div>
-          ))}
+          )}
+
+          {/* Campos preenchidos */}
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {camposTMDB.map((campo) => (
+              <div key={campo}>
+                <label className="block text-sm font-medium capitalize mb-1">
+                  {campo.replace(/_/g, " ")}
+                </label>
+                <input
+                  type="text"
+                  name={campo}
+                  className="w-full border px-3 py-2 rounded"
+                  value={dadosSelecionados[campo] || ""}
+                  onChange={(e) =>
+                    setDadosSelecionados({
+                      ...dadosSelecionados,
+                      [campo]: e.target.value
+                    })
+                  }
+                />
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
