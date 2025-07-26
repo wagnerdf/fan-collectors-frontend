@@ -12,13 +12,11 @@ export function MidiaForm() {
   const [tiposMidia, setTiposMidia] = useState<string[]>([]);
 
   const camposTMDB = [
-    "nome",
     "titulo_original",
     "titulo_alternativo",
     "nome_serie",
     "ano_lancamento",
     "formato_video",
-    "artista_diretor",
     "estudio",
     "regiao",
     "edicao",
@@ -27,7 +25,14 @@ export function MidiaForm() {
     "observações",
     "valor_pago",
     "adquirido_em",
-    "capa_url"
+    "capa_url",
+    "sinopse",
+    "generos",
+    "duracao",
+    "linguagem",
+    "nota_media",
+    "artistas",
+    "diretores"
   ];
 
   const apiKey = "22316a026b9ee70cf67365ca2c63992a";
@@ -74,16 +79,32 @@ export function MidiaForm() {
     }
   };
 
-  const selecionarFilme = (filme: any) => {
+  const selecionarFilme = async (filme: any) => {
+    const id = filme.id;
+
+    // Buscar créditos (diretores e artistas)
+    const urlCreditos = `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${apiKey}&language=pt-BR`;
+
+    const resCreditos = await fetch(urlCreditos);
+    const dataCreditos = await resCreditos.json();
+
+    const diretores = dataCreditos.crew
+      .filter((m: any) => m.job === "Director")
+      .map((m: any) => m.name)
+      .join(", ");
+
+    const artistas = dataCreditos.cast
+      .slice(0, 5)
+      .map((a: any) => a.name)
+      .join(", ");
+
     setDadosSelecionados({
-      nome: filme.title,
-      titulo_original: filme.original_title,
-      titulo_alternativo: "",
+      titulo_original: filme.original_title || "",
+      titulo_alternativo: filme.title || "",
       nome_serie: "",
       ano_lancamento: filme.release_date?.split("-")[0] || "",
       formato_video: "HD",
-      artista_diretor: "",
-      estudio: "",
+      estudio: "", // pode vir de outro endpoint
       regiao: "1",
       edicao: "",
       classificacao_etaria: "",
@@ -93,11 +114,20 @@ export function MidiaForm() {
       adquirido_em: "",
       capa_url: filme.poster_path
         ? `https://image.tmdb.org/t/p/w500${filme.poster_path}`
-        : ""
+        : "",
+      sinopse: filme.overview || "",
+      generos: filme.genre_ids?.join(", ") || "", // podemos mapear IDs para nomes se quiser
+      duracao: filme.runtime || "",
+      linguagem: filme.original_language || "",
+      nota_media: filme.vote_average || "",
+      artistas,
+      diretores
     });
+
     setResultadosBusca([]);
-    setTituloBusca(""); // limpa o campo
+    setTituloBusca("");
   };
+
 
   return (
     <div className="space-y-6 text-black">
