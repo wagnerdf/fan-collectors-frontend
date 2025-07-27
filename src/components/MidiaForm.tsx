@@ -10,21 +10,18 @@ export function MidiaForm() {
   const [dadosSelecionados, setDadosSelecionados] = useState<any>(null);
   const [isBuscando, setIsBuscando] = useState(false);
   const [tiposMidia, setTiposMidia] = useState<string[]>([]);
+  const [mediaType, setMediaType] = useState(""); // Filme ou Série
+  const [temporada, setTemporada] = useState(""); // Campo extra para série
 
   const camposTMDB = [
     "titulo_original",
     "titulo_alternativo",
-    "nome_serie",
     "ano_lancamento",
     "formato_video",
     "estudio",
     "regiao",
-    "edicao",
     "classificacao_etaria",
-    "estado_conservacao",
     "observações",
-    "valor_pago",
-    "adquirido_em",
     "capa_url",
     "sinopse",
     "generos",
@@ -37,19 +34,16 @@ export function MidiaForm() {
 
   const apiKey = "22316a026b9ee70cf67365ca2c63992a";
 
-  // Carrega tipos de mídia apenas uma vez
   useEffect(() => {
     api
       .get("/api/midia-tipos/ativos")
       .then((res) => {
-        console.log("Dados recebidos:", res.data);
         const tipos = res.data.map((item: any) => item.nome);
         setTiposMidia(tipos);
       })
       .catch((err) => console.error("Erro ao carregar tipos de mídia:", err));
   }, []);
 
-  // Buscar automaticamente com debounce
   useEffect(() => {
     if (!tituloBusca || !tiposApiTMDB.includes(tipoSelecionado)) {
       setResultadosBusca([]);
@@ -58,15 +52,15 @@ export function MidiaForm() {
 
     const delayDebounce = setTimeout(() => {
       buscarTMDB();
-    }, 500); // aguarda 500ms
+    }, 500);
 
-    return () => clearTimeout(delayDebounce); // limpa o timeout anterior
+    return () => clearTimeout(delayDebounce);
   }, [tituloBusca]);
 
   const buscarTMDB = async () => {
     setIsBuscando(true);
     const query = encodeURIComponent(tituloBusca);
-    const url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${query}&language=pt-BR`;
+    const url = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${query}&language=pt-BR`;
 
     try {
       const res = await fetch(url);
@@ -79,47 +73,77 @@ export function MidiaForm() {
     }
   };
 
-  const selecionarFilme = async (filme: any) => {
-    const id = filme.id;
+  const selecionarFilme = async (item: any) => {
+    const id = item.id;
+    const tipo = item.media_type;
 
-    // Buscar créditos (diretores e artistas)
-    const urlCreditos = `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${apiKey}&language=pt-BR`;
+    setMediaType(tipo === "tv" ? "Série" : "Filme");
 
-    const resCreditos = await fetch(urlCreditos);
+    const detalhesUrl = tipo === "movie"
+      ? `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=pt-BR`
+      : `https://api.themoviedb.org/3/tv/${id}?api_key=${apiKey}&language=pt-BR`;
+
+    const creditosUrl = tipo === "movie"
+      ? `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${apiKey}&language=pt-BR`
+      : `https://api.themoviedb.org/3/tv/${id}/credits?api_key=${apiKey}&language=pt-BR`;
+
+    const classificacaoUrl = tipo === "movie"
+      ? `https://api.themoviedb.org/3/movie/${id}/release_dates?api_key=${apiKey}`
+      : `https://api.themoviedb.org/3/tv/${id}/content_ratings?api_key=${apiKey}`;
+
+    const [resDetalhes, resCreditos, resClassificacao] = await Promise.all([
+      fetch(detalhesUrl),
+      fetch(creditosUrl),
+      fetch(classificacaoUrl)
+    ]);
+
+    const dataDetalhes = await resDetalhes.json();
     const dataCreditos = await resCreditos.json();
+    const dataClassificacao = await resClassificacao.json();
 
     const diretores = dataCreditos.crew
-      .filter((m: any) => m.job === "Director")
+      ?.filter((m: any) => m.job === "Director" || m.job === "Director of Photography")
       .map((m: any) => m.name)
-      .join(", ");
+      .join(", ") || "";
 
     const artistas = dataCreditos.cast
-      .slice(0, 5)
+      ?.slice(0, 5)
       .map((a: any) => a.name)
-      .join(", ");
+      .join(", ") || "";
+
+    let classificacao = "";
+    if (tipo === "movie") {
+      const br = dataClassificacao.results?.find((r: any) => r.iso_3166_1 === "BR");
+      classificacao = br?.release_dates?.[0]?.certification || "";
+    } else {
+      const br = dataClassificacao.results?.find((r: any) => r.iso_3166_1 === "BR");
+      classificacao = br?.rating || "";
+    }
 
     setDadosSelecionados({
-      titulo_original: filme.original_title || "",
-      titulo_alternativo: filme.title || "",
-      nome_serie: "",
-      ano_lancamento: filme.release_date?.split("-")[0] || "",
+      titulo_original: item.original_title || item.original_name || "",
+      titulo_alternativo: item.title || item.name || "",
+      ano_lancamento:
+        item.release_date?.split("-")[0] ||
+        item.first_air_date?.split("-")[0] ||
+        "",
       formato_video: "HD",
-      estudio: "", // pode vir de outro endpoint
+      estudio: dataDetalhes.production_companies?.[0]?.name || "",
       regiao: "1",
       edicao: "",
-      classificacao_etaria: "",
+      classificacao_etaria: classificacao,
       estado_conservacao: "",
       observações: "",
       valor_pago: "",
       adquirido_em: "",
-      capa_url: filme.poster_path
-        ? `https://image.tmdb.org/t/p/w500${filme.poster_path}`
+      capa_url: item.poster_path
+        ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
         : "",
-      sinopse: filme.overview || "",
-      generos: filme.genre_ids?.join(", ") || "", // podemos mapear IDs para nomes se quiser
-      duracao: filme.runtime || "",
-      linguagem: filme.original_language || "",
-      nota_media: filme.vote_average || "",
+      sinopse: item.overview || "",
+      generos: item.genre_ids?.join(", ") || "",
+      duracao: dataDetalhes.runtime || "",
+      linguagem: item.original_language || "",
+      nota_media: item.vote_average || "",
       artistas,
       diretores
     });
@@ -170,13 +194,17 @@ export function MidiaForm() {
       {resultadosBusca.length > 0 && (
         <div className="border rounded p-2 bg-gray-100 max-h-60 overflow-auto">
           <ul>
-            {resultadosBusca.map((filme) => (
+            {resultadosBusca.map((item) => (
               <li
-                key={filme.id}
+                key={item.id}
                 className="p-2 hover:bg-blue-100 cursor-pointer rounded"
-                onClick={() => selecionarFilme(filme)}
+                onClick={() => selecionarFilme(item)}
               >
-                {filme.title} ({filme.release_date?.split("-")[0] || "?"})
+                {item.title || item.name} (
+                {item.release_date?.split("-")[0] ||
+                  item.first_air_date?.split("-")[0] ||
+                  "?"}
+                )
               </li>
             ))}
           </ul>
@@ -199,6 +227,36 @@ export function MidiaForm() {
 
           {/* Campos preenchidos */}
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Campo adicional: Filme ou Série */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Tipo detectado
+              </label>
+              <input
+                type="text"
+                value={mediaType}
+                readOnly
+                className="w-full border px-3 py-2 rounded bg-gray-100"
+              />
+            </div>
+
+            {/* Campo condicional: Temporada (apenas para série) */}
+            {mediaType === "Série" && (
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Temporada da Série
+                </label>
+                <input
+                  type="text"
+                  value={temporada}
+                  onChange={(e) => setTemporada(e.target.value)}
+                  className="w-full border px-3 py-2 rounded"
+                  placeholder="Ex: 1ª Temporada"
+                />
+              </div>
+            )}
+
+            {/* Demais campos vindos da TMDB */}
             {camposTMDB.map((campo) => (
               <div key={campo}>
                 <label className="block text-sm font-medium capitalize mb-1">
