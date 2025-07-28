@@ -38,7 +38,14 @@ function Home() {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
-            onClick={() => navigate('/login')}
+            onClick={() => {
+              const token = localStorage.getItem('token');
+              if (token) {
+                navigate('/perfil');
+              } else {
+                navigate('/login');
+              }
+            }}
             className="bg-blue-600 hover:bg-blue-700 shadow-md transition px-6 py-3 rounded-lg flex items-center justify-center gap-3 w-full font-semibold"
           >
             <img src={loginIcon} alt="Login" className="w-6 h-6" />
