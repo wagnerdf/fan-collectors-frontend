@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../services/api";
-import ENV_CONFIG from "../env-config";
+import { apiKey } from "../env-config";
 
 const tiposApiTMDB = ["Blu-ray", "DVD", "VHS"];
 
@@ -33,7 +33,7 @@ export function MidiaForm() {
     "diretores"
   ];
 
-  const apiKey = ENV_CONFIG.REACT_APP_API_TMDB;
+  const apiKey = process.env.REACT_APP_API_TMDB;
 
   useEffect(() => {
     api
