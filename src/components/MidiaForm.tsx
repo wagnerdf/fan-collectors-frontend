@@ -153,6 +153,63 @@ export function MidiaForm() {
     setTituloBusca("");
   };
 
+  const handleSalvarMidia = async () => {
+    try {
+      // Busca o tipo selecionado para obter o ID correspondente
+      const tiposResponse = await api.get("/api/midia-tipos/ativos");
+      const tipoSelecionadoObj = tiposResponse.data.find(
+        (tipo: any) => tipo.nome === tipoSelecionado
+      );
+
+      if (!tipoSelecionadoObj) {
+        alert("Tipo de mídia inválido ou não encontrado.");
+        return;
+      }
+
+      const payload = {
+        tituloOriginal: dadosSelecionados.titulo_original,
+        tituloAlternativo: dadosSelecionados.titulo_alternativo,
+        edicao: dadosSelecionados.edicao,
+        colecao: "", // Se quiser permitir preenchimento no futuro
+        numeroSerie: "", // idem
+        regiao: dadosSelecionados.regiao,
+        faixas: "", // idem
+        classificacaoEtaria: dadosSelecionados.classificacao_etaria,
+        artistas: dadosSelecionados.artistas,
+        diretores: dadosSelecionados.diretores,
+        estudio: dadosSelecionados.estudio,
+        midiaDigitalInclusa: false, // pode adaptar com checkbox depois
+        formatoAudio: "", // idem
+        formatoVideo: dadosSelecionados.formato_video,
+        observacoes: dadosSelecionados.observações,
+        quantidadeItens: 1, // pode ajustar depois
+        estadoConservacao: dadosSelecionados.estado_conservacao || "Bom",
+        anoLancamento: dadosSelecionados.ano_lancamento,
+        adquiridoEm: dadosSelecionados.adquirido_em,
+        valorPago: dadosSelecionados.valor_pago,
+        capaUrl: dadosSelecionados.capa_url,
+        sinopse: dadosSelecionados.sinopse,
+        generos: dadosSelecionados.generos,
+        duracao: dadosSelecionados.duracao,
+        linguagem: dadosSelecionados.linguagem,
+        notaMedia: dadosSelecionados.nota_media,
+        formatoMidia: "Físico", // valor fixo ou adaptar
+        temporada: temporada,
+        midiaTipoId: tipoSelecionadoObj.id
+      };
+
+      await api.post("/api/midias", payload);
+
+      alert("Mídia salva com sucesso!");
+      setDadosSelecionados(null); // limpa o formulário
+      setTemporada("");
+    } catch (error) {
+      console.error("Erro ao salvar a mídia:", error);
+      alert("Erro ao salvar a mídia.");
+    }
+  };
+
+
 
   return (
     <div className="space-y-6 text-black">
@@ -278,6 +335,16 @@ export function MidiaForm() {
               </div>
             ))}
           </div>
+        </div>
+      )}
+      {dadosSelecionados && (
+        <div className="mt-4">
+          <button
+            onClick={handleSalvarMidia}
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+          >
+            Salvar Mídia
+          </button>
         </div>
       )}
     </div>
