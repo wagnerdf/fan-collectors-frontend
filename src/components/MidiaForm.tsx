@@ -13,6 +13,8 @@ export function MidiaForm() {
   const [tiposMidia, setTiposMidia] = useState<string[]>([]);
   const [mediaType, setMediaType] = useState(""); // Filme ou Série
   const [temporada, setTemporada] = useState(""); // Campo extra para série
+  const [mapaGeneros, setMapaGeneros] = useState<{ [key: number]: string }>({});
+
 
   const camposTMDB = [
     "titulo_original",
@@ -34,6 +36,32 @@ export function MidiaForm() {
   ];
 
   const apiKey = process.env.REACT_APP_API_TMDB;
+
+  useEffect(() => {
+    const carregarGeneros = async () => {
+      try {
+        const [resFilmes, resSeries] = await Promise.all([
+          fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${apiKey}&language=pt-BR`),
+          fetch(`https://api.themoviedb.org/3/genre/tv/list?api_key=${apiKey}&language=pt-BR`)
+        ]);
+
+        const dataFilmes = await resFilmes.json();
+        const dataSeries = await resSeries.json();
+
+        const todosGeneros = [...dataFilmes.genres, ...dataSeries.genres];
+        const mapa: { [key: number]: string } = {};
+        todosGeneros.forEach((g: any) => {
+          mapa[g.id] = g.name;
+        });
+
+        setMapaGeneros(mapa);
+      } catch (err) {
+        console.error("Erro ao carregar gêneros:", err);
+      }
+    };
+
+    carregarGeneros();
+  }, []);
 
   useEffect(() => {
     api
@@ -138,7 +166,10 @@ export function MidiaForm() {
       ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
       : "",
     sinopse: item.overview || "",
-    generos: item.genre_ids?.join(", ") || "",
+    generos: item.genre_ids
+    ?.map((id: number) => mapaGeneros[id])
+    .filter(Boolean)
+    .join(", ") || "",
     duracao:
       dataDetalhes.runtime ||
       (dataDetalhes.episode_run_time?.[0] || "") ||
