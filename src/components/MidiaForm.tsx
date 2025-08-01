@@ -22,7 +22,6 @@ export function MidiaForm() {
     "ano_lancamento",
     "formato_video",
     "estudio",
-    "regiao",
     "classificacao_etaria",
     "observações",
     "capa_url",
@@ -158,7 +157,6 @@ export function MidiaForm() {
       "",
     formato_video: "HD",
     estudio: dataDetalhes.production_companies?.[0]?.name || "",
-    regiao: "1",
     edicao: "",
     classificacao_etaria: classificacao,
     observações: "",
@@ -204,7 +202,6 @@ export function MidiaForm() {
     edicao: dadosSelecionados.edicao,
     colecao: "", // pode abrir input depois
     numeroSerie: "",
-    regiao: dadosSelecionados.regiao,
     faixas: "",
     classificacaoEtaria: dadosSelecionados.classificacao_etaria,
     artistas: dadosSelecionados.artistas,
