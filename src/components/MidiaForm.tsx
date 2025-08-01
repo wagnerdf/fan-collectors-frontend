@@ -241,7 +241,7 @@ export function MidiaForm() {
       {/* Linha tipo + busca */}
       <div className="flex flex-col sm:flex-row sm:items-end gap-4">
         <div className="flex-1">
-          <label className="block mb-1 font-medium">Tipo de Mídia</label>
+          <label className="block mb-1 font-medium text-gray-200">Tipo de Mídia</label>
           <select
             className="w-full border px-3 py-2 rounded bg-white text-black"
             value={tipoSelecionado}
@@ -258,7 +258,7 @@ export function MidiaForm() {
 
         {tiposApiTMDB.includes(tipoSelecionado) && (
           <div className="flex-1">
-            <label className="block mb-1 font-medium">Buscar título</label>
+            <label className="block mb-1 font-medium text-gray-200">Buscar título</label>
             <input
               type="text"
               value={tituloBusca}
@@ -312,7 +312,7 @@ export function MidiaForm() {
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Campo adicional: Filme ou Série */}
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-medium mb-1 text-gray-200">
                 Tipo detectado
               </label>
               <input
@@ -326,7 +326,7 @@ export function MidiaForm() {
             {/* Campo condicional: Temporada (apenas para série) */}
             {mediaType === "Série" && (
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-sm font-medium mb-1 text-gray-200">
                   Temporada da Série
                 </label>
                 <input
@@ -342,7 +342,7 @@ export function MidiaForm() {
             {/* Demais campos vindos da TMDB */}
             {camposTMDB.map((campo) => (
               <div key={campo}>
-                <label className="block text-sm font-medium capitalize mb-1">
+                <label className="block text-sm font-medium capitalize mb-1 text-gray-200">
                   {campo.replace(/_/g, " ")}
                 </label>
                 <input

@@ -1,46 +1,163 @@
-# Getting Started with Create React App
+# 🎥 fanCollectorsMedia
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Sistema completo para colecionadores de mídias físicas (Blu-ray, DVD, VHS, LP, CD...), permitindo cadastro detalhado para midia fśicas, salvando, editando, deletando e visualizando todos registro de cada usuário, integração com a API TMDB e outras que serão acresentadas com o desenvolvimento da aplicação web, autenticação de usuários, e muito mais!
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 📸 Demonstrações
 
-### `npm start`
+<div align="center">
+  <img src="https://i.imgur.com/aZ7RXPZ.png" width="600" alt="Tela apresentação" />
+  <br/>
+  <img src="https://i.imgur.com/mJbJwTE.png" width="600" alt="Tela de Login" />
+  <br/>
+  <img src="https://i.imgur.com/F621Hxb.png" width="600" alt="Cadastro de Mídia" />
+</div>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+---
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 🚀 Tecnologias
 
-### `npm test`
+### 🧠 Backend (Java + Spring Boot)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Spring Boot 3+
+- Spring Security com JWT
+- Spring Data JPA
+- Flyway (migrações de banco)
+- PostgreSQL
+- Lombok
+- Bean Validation
+- ModelMapper (ou MapStruct - futuro)
+- Integração com [TMDB API](https://www.themoviedb.org/documentation/api)
 
-### `npm run build`
+### 💻 Frontend (React + TypeScript)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- React 18+
+- TypeScript
+- TailwindCSS
+- Axios
+- React Router DOM
+- Formulários com validação
+- Context API + Token JWT
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🧩 Funcionalidades
 
-### `npm run eject`
+- [x] Autenticação com JWT (Login, Cadastro, Validação)
+- [x] Perfil do usuário com edição
+- [x] Cadastro de mídias com dados preenchidos automaticamente via TMDB
+- [ ] Cadastro de mídias com dados preenchidos automaticamente MusicBrainz API  (em breve)
+- [x] Upload de imagem de capa
+- [x] Validação de campos obrigatórios
+- [x] Dashboard com exibição das mídias cadastradas
+- [ ] Filtro e busca por título (em breve)
+- [ ] Edição de titulo (em breve)
+- [ ] Exlusão de título (em breve)
+- [ ] Postagens e publicação de midias dos usuários compartilhados (em breve)
+- [ ] Responsividade para mobile (em andamento)
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+---
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🛠️ Como rodar localmente
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### 📦 Backend
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```bash
+# Clone o projeto e navegue até a pasta backend
+cd fanCollectorsMedia
 
-## Learn More
+# Configure o banco PostgreSQL
+# Altere application.properties conforme necessário
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# Rode o projeto com o Spring Tool Suite ou com:
+./mvnw spring-boot:run
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 💻 Frontend
+
+```bash
+# Clone o projeto e navegue até a pasta frontend
+cd fan-collectors-frontend
+
+# Instale as dependências
+npm install
+
+# Configure as variáveis de ambiente
+cp .env.example .env
+# Edite a URL da API e a API_KEY do TMDB
+
+# Rode o frontend
+npm start
+```
+
+---
+
+## 🔐 Variáveis de Ambiente (.env)
+
+**Frontend**
+```env
+REACT_APP_API_URL=http://localhost:8080/fanCollectorsMedia/api
+REACT_APP_API_TMDB=SUA_CHAVE_TMDB
+```
+
+**Backend (application.properties)**
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/fanCollectorsMedia
+spring.datasource.username=seu_usuario
+spring.datasource.password=sua_senha
+spring.jpa.hibernate.ddl-auto=validate
+```
+
+---
+
+## 🧪 Testes
+
+- Testes unitários no backend com JUnit e Mockito
+- Testes de integração (usuário + autenticação)
+
+---
+
+## 👤 Autor
+
+<p align="left">
+  <img src="https://avatars.githubusercontent.com/u/52794588?v=1" width="120" alt="WagnerDf"/>
+</p>
+
+| **Wagner Andrade (WagnerDf)** |
+</br>
+| Desenvolvedor Fullstack Java & React |
+</br>
+| [LinkedIn](https://www.linkedin.com/in/wagner-andrade-876b6460) |
+</br> 
+| [GitHub](https://github.com/WagnerDf) |
+
+---
+
+## 📝 Licença
+
+Este projeto está sob a licença MIT.  
+Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+---
+
+## 🤝 Contribuição
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir uma _issue_, enviar _pull requests_ ou sugerir melhorias.
+
+---
+
+## 🌐 API TMDB
+
+Este projeto usa a API pública do [TMDB](https://www.themoviedb.org/).  
+Você precisa gerar uma **chave de API** gratuita para usar os recursos de busca automática de filmes e séries.
+
+---
+
+## 💡 Inspiração
+
+Este sistema foi idealizado para organizar coleções pessoais de mídia física com praticidade, visual moderno e dados completos.
+
+---
+
+> Criado com 💙 por WagnerDf
