@@ -121,33 +121,34 @@ export function MidiaForm() {
       classificacao = br?.rating || "";
     }
 
-    setDadosSelecionados({
-      titulo_original: item.original_title || item.original_name || "",
-      titulo_alternativo: item.title || item.name || "",
-      ano_lancamento:
-        item.release_date?.split("-")[0] ||
-        item.first_air_date?.split("-")[0] ||
-        "",
-      formato_video: "HD",
-      estudio: dataDetalhes.production_companies?.[0]?.name || "",
-      regiao: "1",
-      edicao: "",
-      classificacao_etaria: classificacao,
-      estado_conservacao: "",
-      observações: "",
-      valor_pago: "",
-      adquirido_em: "",
-      capa_url: item.poster_path
-        ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-        : "",
-      sinopse: item.overview || "",
-      generos: item.genre_ids?.join(", ") || "",
-      duracao: dataDetalhes.runtime || "",
-      linguagem: item.original_language || "",
-      nota_media: item.vote_average || "",
-      artistas,
-      diretores
-    });
+  setDadosSelecionados({
+    titulo_original: item.original_title || item.original_name || "",
+    titulo_alternativo: item.title || item.name || "",
+    ano_lancamento:
+      item.release_date?.split("-")[0] ||
+      item.first_air_date?.split("-")[0] ||
+      "",
+    formato_video: "HD",
+    estudio: dataDetalhes.production_companies?.[0]?.name || "",
+    regiao: "1",
+    edicao: "",
+    classificacao_etaria: classificacao,
+    observações: "",
+    capa_url: item.poster_path
+      ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
+      : "",
+    sinopse: item.overview || "",
+    generos: item.genre_ids?.join(", ") || "",
+    duracao:
+      dataDetalhes.runtime ||
+      (dataDetalhes.episode_run_time?.[0] || "") ||
+      "",
+    linguagem: item.original_language || "",
+    nota_media: item.vote_average || "",
+    artistas,
+    diretores
+  });
+
 
     setResultadosBusca([]);
     setTituloBusca("");
@@ -166,37 +167,33 @@ export function MidiaForm() {
         return;
       }
 
-      const payload = {
-        tituloOriginal: dadosSelecionados.titulo_original,
-        tituloAlternativo: dadosSelecionados.titulo_alternativo,
-        edicao: dadosSelecionados.edicao,
-        colecao: "", // Se quiser permitir preenchimento no futuro
-        numeroSerie: "", // idem
-        regiao: dadosSelecionados.regiao,
-        faixas: "", // idem
-        classificacaoEtaria: dadosSelecionados.classificacao_etaria,
-        artistas: dadosSelecionados.artistas,
-        diretores: dadosSelecionados.diretores,
-        estudio: dadosSelecionados.estudio,
-        midiaDigitalInclusa: false, // pode adaptar com checkbox depois
-        formatoAudio: "", // idem
-        formatoVideo: dadosSelecionados.formato_video,
-        observacoes: dadosSelecionados.observações,
-        quantidadeItens: 1, // pode ajustar depois
-        estadoConservacao: dadosSelecionados.estado_conservacao || "Bom",
-        anoLancamento: dadosSelecionados.ano_lancamento,
-        adquiridoEm: dadosSelecionados.adquirido_em,
-        valorPago: dadosSelecionados.valor_pago,
-        capaUrl: dadosSelecionados.capa_url,
-        sinopse: dadosSelecionados.sinopse,
-        generos: dadosSelecionados.generos,
-        duracao: dadosSelecionados.duracao,
-        linguagem: dadosSelecionados.linguagem,
-        notaMedia: dadosSelecionados.nota_media,
-        formatoMidia: "Físico", // valor fixo ou adaptar
-        temporada: temporada,
-        midiaTipoId: tipoSelecionadoObj.id
-      };
+  const payload = {
+    tituloOriginal: dadosSelecionados.titulo_original,
+    tituloAlternativo: dadosSelecionados.titulo_alternativo,
+    edicao: dadosSelecionados.edicao,
+    colecao: "", // pode abrir input depois
+    numeroSerie: "",
+    regiao: dadosSelecionados.regiao,
+    faixas: "",
+    classificacaoEtaria: dadosSelecionados.classificacao_etaria,
+    artistas: dadosSelecionados.artistas,
+    diretores: dadosSelecionados.diretores,
+    estudio: dadosSelecionados.estudio,
+    formatoAudio: "",
+    formatoVideo: dadosSelecionados.formato_video,
+    observacoes: dadosSelecionados.observações,
+    quantidadeItens: 1,
+    anoLancamento: dadosSelecionados.ano_lancamento,
+    capaUrl: dadosSelecionados.capa_url,
+    sinopse: dadosSelecionados.sinopse,
+    generos: dadosSelecionados.generos,
+    duracao: dadosSelecionados.duracao,
+    linguagem: dadosSelecionados.linguagem,
+    notaMedia: dadosSelecionados.nota_media,
+    formatoMidia: "Físico",
+    temporada: temporada,
+    midiaTipoId: tipoSelecionadoObj.id
+  };
 
       await api.post("/api/midias", payload);
 
