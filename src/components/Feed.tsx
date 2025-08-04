@@ -3,8 +3,10 @@ import Perfil from "../pages/Perfil";
 import EditarCadastro from "../pages/EditarCadastro";
 import MeusHobbysPage from "../pages/MeusHobbysPage";
 import { MidiaManager } from "../pages/MidiaManager";
+import MidiaListPage from "../pages/MidiaListPage";
 
-type Pagina = "home" | "perfil" | "editar" | "hobbys" | "midias";
+
+type Pagina = "home" | "perfil" | "editar" | "hobbys" | "midias" | "visualizarMidias";
 
 interface HobbyDoUsuario {
   id: number;
@@ -51,6 +53,8 @@ export default function Feed({ paginaAtiva, usuario, carregarUsuario }: FeedProp
       return <MeusHobbysPage carregarUsuario={carregarUsuario} />;
     case "midias":
       return <MidiaManager />;
+    case "visualizarMidias":
+      return <MidiaListPage />;
     case "home":
     default:
       return (
