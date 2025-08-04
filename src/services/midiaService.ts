@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../services/api";
 const token = localStorage.getItem("fanCollectorsMediaToken");
 
 export interface MidiaResponse {
@@ -29,10 +29,8 @@ export interface MidiaResponse {
   temporada: string | null;
 }
 
-const baseURL = process.env.REACT_APP_API_URL;
-
 export const buscarMidiasDoUsuario = async (): Promise<MidiaResponse[]> => {
-    const response = await axios.get(`${baseURL}/api/midias/usuario`, {
+    const response = await api.get("/api/midias/usuario", {
     headers: {
         Authorization: `Bearer ${token}`,
     },
