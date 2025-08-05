@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../services/api";
-import { apiKey } from "../env-config";
+//import { apiKey } from "../env-config";
+import SuccessModal from "./SuccessModal";
 
 const tiposApiTMDB = ["Blu-ray", "DVD", "VHS"];
 
@@ -14,6 +15,8 @@ export function MidiaForm() {
   const [mediaType, setMediaType] = useState(""); // Filme ou Série
   const [temporada, setTemporada] = useState(""); // Campo extra para série
   const [mapaGeneros, setMapaGeneros] = useState<{ [key: number]: string }>({});
+  const [mostrarModalSucesso, setMostrarModalSucesso] = useState(false);
+
 
 
   const camposTMDB = [
@@ -225,7 +228,7 @@ export function MidiaForm() {
 
       await api.post("/api/midias", payload);
 
-      alert("Mídia salva com sucesso!");
+      setMostrarModalSucesso(true);
       setDadosSelecionados(null); // limpa o formulário
       setTemporada("");
     } catch (error) {
@@ -372,6 +375,11 @@ export function MidiaForm() {
           </button>
         </div>
       )}
+      <SuccessModal
+        show={mostrarModalSucesso}
+        message="Mídia salva com sucesso!"
+        onClose={() => setMostrarModalSucesso(false)}
+      />
     </div>
   );
 }

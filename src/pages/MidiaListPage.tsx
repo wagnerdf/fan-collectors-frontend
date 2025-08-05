@@ -69,7 +69,7 @@ const MidiaListPage: React.FC = () => {
                   className="hover:bg-gray-100 cursor-pointer transition"
                 >
                   <td className="px-4 py-2 border-b text-[#4B3621]">
-                    {midia.tituloOriginal || <span className="italic text-gray-400">Sem título</span>}
+                    {midia.tituloAlternativo || <span className="italic text-gray-400">Sem título</span>}
                   </td>
                   <td className="px-4 py-2 border-b text-[#4B3621]">
                     {midia.generos || <span className="italic text-gray-400">Sem gênero</span>}
