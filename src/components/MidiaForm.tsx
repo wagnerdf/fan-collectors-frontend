@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../services/api";
 //import { apiKey } from "../env-config";
 import SuccessModal from "./SuccessModal";
+import ErrorModal from "./ErrorModal";
 
 const tiposApiTMDB = ["Blu-ray", "DVD", "VHS"];
 
@@ -16,6 +17,8 @@ export function MidiaForm() {
   const [temporada, setTemporada] = useState(""); // Campo extra para série
   const [mapaGeneros, setMapaGeneros] = useState<{ [key: number]: string }>({});
   const [mostrarModalSucesso, setMostrarModalSucesso] = useState(false);
+  const [mostrarModalErro, setMostrarModalErro] = useState(false);
+  const [mensagemErro, setMensagemErro] = useState("");
 
 
 
@@ -231,9 +234,10 @@ export function MidiaForm() {
       setMostrarModalSucesso(true);
       setDadosSelecionados(null); // limpa o formulário
       setTemporada("");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao salvar a mídia:", error);
-      alert("Erro ao salvar a mídia.");
+      setMensagemErro("Erro ao salvar a mídia. Tente novamente.");
+      setMostrarModalErro(true);
     }
   };
 
@@ -379,6 +383,11 @@ export function MidiaForm() {
         show={mostrarModalSucesso}
         message="Mídia salva com sucesso!"
         onClose={() => setMostrarModalSucesso(false)}
+      />
+      <ErrorModal
+        show={mostrarModalErro}
+        message={mensagemErro}
+        onClose={() => setMostrarModalErro(false)}
       />
     </div>
   );
