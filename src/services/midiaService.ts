@@ -29,6 +29,25 @@ export interface MidiaResponse {
   temporada: string | null;
 }
 
+export type PaginaMidias = {
+  content: MidiaResponse[];
+  totalPages: number;
+  totalElements: number;
+};
+
+export async function buscarMidiasPaginadas(
+  page: number = 0,
+  size: number = 25
+): Promise<PaginaMidias> {
+  const response = await api.get(`/api/midias/usuario/paginado?page=${page}&size=${size}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+}
+
+
 export const buscarMidiasDoUsuario = async (): Promise<MidiaResponse[]> => {
     const response = await api.get("/api/midias/usuario", {
     headers: {
