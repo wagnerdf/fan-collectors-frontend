@@ -1,27 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { buscarMidiasDoUsuario, MidiaResponse } from "../services/midiaService";
-import api from "../services/api";
+import { useMemo } from "react";
 
 const MidiaListPage: React.FC = () => {
   const [midias, setMidias] = useState<MidiaResponse[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [modoVisualizacao, setModoVisualizacao] = useState<"tabela" | "capa">("tabela");
   const [tipoSelecionado, setTipoSelecionado] = useState<string>("Todos");
-  const [tiposMidia, setTiposMidia] = useState<string[]>([]);
 
-  useEffect(() => {
-    const buscarTipos = async () => {
-      try {
-        const res = await api.get("/api/midia-tipos/ativos");
-        const data = res.data;
-        setTiposMidia(data.map((item: any) => item.nome));
-      } catch (error) {
-        console.error("Erro ao carregar tipos de mídia:", error);
-      }
-    };
+const tiposMidiaDoUsuario = useMemo(() => {
+  const tiposUnicos = new Set<string>();
+  midias.forEach((midia) => {
+    if (midia.tipoMidia) {
+      tiposUnicos.add(midia.tipoMidia);
+    }
+  });
+  return Array.from(tiposUnicos).sort();
+}, [midias]);
 
-    buscarTipos();
-  }, []);
 
   useEffect(() => {
     const fetchMidias = async () => {
@@ -45,7 +41,7 @@ const MidiaListPage: React.FC = () => {
   if (carregando) return <p className="p-6 text-white">🔄 Carregando mídias...</p>;
 
   return (
-    <div className="p-4">
+    <div id="print-area" className="p-4">
       <h2 className="text-2xl font-bold text-white mb-4">🎞️ Minhas Mídias</h2>
       <div className="flex flex-wrap gap-2 mb-4 items-center">
         <button
@@ -76,12 +72,20 @@ const MidiaListPage: React.FC = () => {
           onChange={(e) => setTipoSelecionado(e.target.value)}
         >
           <option value="Todos">🎯 Todos</option>
-          {tiposMidia.map((tipo) => (
+          {tiposMidiaDoUsuario.map((tipo) => (
             <option key={tipo} value={tipo}>
               {tipo}
             </option>
           ))}
         </select>
+
+        <button
+          onClick={() => window.print()}
+          className="px-3 py-1 rounded text-sm bg-yellow-600 text-white hover:bg-yellow-700 transition"
+        >
+          🖨️ Imprimir
+        </button>
+
       </div>
       {midias.length === 0 ? (
         <p className="text-white">Nenhuma mídia cadastrada ainda.</p>
@@ -96,10 +100,12 @@ const MidiaListPage: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {midiasFiltradas.map((midia) => (
+              {midiasFiltradas.map((midia, index) => (
                 <tr
                   key={midia.id}
-                  className="hover:bg-gray-100 cursor-pointer transition"
+                  className={`cursor-pointer transition ${
+                    index % 2 === 0 ? "bg-white" : "bg-gray-200"
+                  } hover:bg-blue-50`}
                 >
                   <td className="px-4 py-2 border-b text-[#4B3621]">
                     {midia.tituloAlternativo || <span className="italic text-gray-400">Sem título</span>}
