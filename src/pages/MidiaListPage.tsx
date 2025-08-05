@@ -1,10 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { buscarMidiasDoUsuario, MidiaResponse } from "../services/midiaService";
+import api from "../services/api";
 
 const MidiaListPage: React.FC = () => {
   const [midias, setMidias] = useState<MidiaResponse[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [modoVisualizacao, setModoVisualizacao] = useState<"tabela" | "capa">("tabela");
+  const [tipoSelecionado, setTipoSelecionado] = useState<string>("Todos");
+  const [tiposMidia, setTiposMidia] = useState<string[]>([]);
+
+  useEffect(() => {
+    const buscarTipos = async () => {
+      try {
+        const res = await api.get("/api/midia-tipos/ativos");
+        const data = res.data;
+        setTiposMidia(data.map((item: any) => item.nome));
+      } catch (error) {
+        console.error("Erro ao carregar tipos de mídia:", error);
+      }
+    };
+
+    buscarTipos();
+  }, []);
 
   useEffect(() => {
     const fetchMidias = async () => {
@@ -21,13 +38,16 @@ const MidiaListPage: React.FC = () => {
     fetchMidias();
   }, []);
 
+  const midiasFiltradas = tipoSelecionado === "Todos"
+    ? midias
+    : midias.filter((midia) => midia.tipoMidia === tipoSelecionado);
+
   if (carregando) return <p className="p-6 text-white">🔄 Carregando mídias...</p>;
 
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold text-white mb-4">🎞️ Minhas Mídias</h2>
-
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4 items-center">
         <button
           onClick={() => setModoVisualizacao("tabela")}
           className={`px-3 py-1 rounded text-sm ${
@@ -38,6 +58,7 @@ const MidiaListPage: React.FC = () => {
         >
           📝 Ver como lista
         </button>
+
         <button
           onClick={() => setModoVisualizacao("capa")}
           className={`px-3 py-1 rounded text-sm ${
@@ -48,8 +69,20 @@ const MidiaListPage: React.FC = () => {
         >
           🖼️ Ver como capas
         </button>
-      </div>
 
+        <select
+          className="px-3 py-1 rounded border text-sm bg-white text-black"
+          value={tipoSelecionado}
+          onChange={(e) => setTipoSelecionado(e.target.value)}
+        >
+          <option value="Todos">🎯 Todos</option>
+          {tiposMidia.map((tipo) => (
+            <option key={tipo} value={tipo}>
+              {tipo}
+            </option>
+          ))}
+        </select>
+      </div>
       {midias.length === 0 ? (
         <p className="text-white">Nenhuma mídia cadastrada ainda.</p>
       ) : modoVisualizacao === "tabela" ? (
@@ -63,7 +96,7 @@ const MidiaListPage: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {midias.map((midia) => (
+              {midiasFiltradas.map((midia) => (
                 <tr
                   key={midia.id}
                   className="hover:bg-gray-100 cursor-pointer transition"
@@ -85,7 +118,7 @@ const MidiaListPage: React.FC = () => {
             className="flex flex-wrap justify-start gap-4"
             style={{ rowGap: "1rem", columnGap: "1rem" }}
             >
-            {midias.map((midia) => (
+            {midiasFiltradas.map((midia) => (
                 <div
                 key={midia.id}
                 className="bg-white shadow rounded p-2 flex flex-col items-center hover:shadow-lg transition cursor-pointer"
