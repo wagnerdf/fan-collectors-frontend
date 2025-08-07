@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import {
-  buscarMidiasDoUsuario,
+  buscarMidiasDoUsuario,      // Usado para buscar todas sem paginação
   buscarMidiasPaginadas,
   MidiaResponse,
   PaginaMidias,
@@ -16,6 +16,9 @@ const MidiaListPage: React.FC = () => {
   const [tipoSelecionado, setTipoSelecionado] = useState<string>("Todos");
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
+
+  // NOVO: Estado para armazenar TODAS as mídias para imprimir
+  const [midiasParaImprimir, setMidiasParaImprimir] = useState<MidiaResponse[] | null>(null);
 
   useEffect(() => {
     const fetchMidias = async () => {
@@ -52,6 +55,25 @@ const MidiaListPage: React.FC = () => {
   const mudarPagina = (novaPagina: number) => {
     if (novaPagina >= 1 && novaPagina <= totalPaginas) {
       setPaginaAtual(novaPagina);
+    }
+  };
+
+  // NOVO: Função para buscar todas as mídias e imprimir
+  const handlePrintAll = async () => {
+    try {
+      setCarregando(true);
+      const todasMidias = await buscarMidiasDoUsuario(); // Busca todas sem paginação
+      setMidiasParaImprimir(todasMidias);
+
+      // Pequeno delay para renderizar antes do print
+      setTimeout(() => {
+        window.print();
+        setMidiasParaImprimir(null); // Limpa após impressão
+        setCarregando(false);
+      }, 600);
+    } catch (error) {
+      console.error("Erro ao carregar mídias para imprimir:", error);
+      setCarregando(false);
     }
   };
 
@@ -98,11 +120,12 @@ const MidiaListPage: React.FC = () => {
           ))}
         </select>
 
+        {/* ALTERADO: Botão para imprimir TODAS as mídias */}
         <button
-          onClick={() => window.print()}
+          onClick={handlePrintAll}
           className="px-3 py-1 rounded text-sm bg-yellow-600 text-white hover:bg-yellow-700 transition"
         >
-          🖨️ Imprimir
+          🖨️ Imprimir Todas as Mídias
         </button>
       </div>
 
@@ -214,6 +237,42 @@ const MidiaListPage: React.FC = () => {
           </button>
         </div>
       )}
+
+      {/* NOVO: Área oculta para imprimir todas as mídias */}
+      {midiasParaImprimir && (
+        <div className="print-area">
+          {midiasParaImprimir.map((midia) => (
+            <div key={midia.id} style={{ marginBottom: 20 }}>
+              <h2>{midia.tituloOriginal}</h2>
+              <p><strong>Sinopse:</strong> {midia.sinopse}</p>
+              <p><strong>Gêneros:</strong> {midia.generos}</p>
+              <p><strong>Duração:</strong> {midia.duracao} minutos</p>
+              <p><strong>Linguagem:</strong> {midia.linguagem}</p>
+              <p><strong>Nota Média:</strong> {midia.notaMedia}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+
+      {/* CSS para impressão: só mostra print-area no print */}
+      <style>{`
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          .print-area, .print-area * {
+            visibility: visible;
+          }
+          .print-area {
+            display: block !important;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+          }
+        }
+      `}</style>
     </div>
   );
 };
