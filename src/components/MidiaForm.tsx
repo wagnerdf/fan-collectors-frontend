@@ -355,8 +355,13 @@ export function MidiaForm() {
                 <input
                   type="text"
                   name={campo}
-                  className="w-full border px-3 py-2 rounded"
+                  className={`w-full border px-3 py-2 rounded ${
+                    campo !== "observações"
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-white"
+                  }`}
                   value={dadosSelecionados[campo] || ""}
+                  readOnly={campo !== "observações"}
                   onChange={(e) =>
                     setDadosSelecionados({
                       ...dadosSelecionados,
@@ -366,6 +371,8 @@ export function MidiaForm() {
                 />
               </div>
             ))}
+
+
           </div>
         </div>
       )}
