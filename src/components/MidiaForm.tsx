@@ -23,13 +23,13 @@ export function MidiaForm() {
 
 
   const camposTMDB = [
+    "observações",
     "titulo_original",
     "titulo_alternativo",
     "ano_lancamento",
     "formato_video",
     "estudio",
     "classificacao_etaria",
-    "observações",
     "capa_url",
     "sinopse",
     "generos",

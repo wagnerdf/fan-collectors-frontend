@@ -3,6 +3,7 @@ import { MidiaForm } from "../components/MidiaForm"; // ajuste o caminho se nece
 
 export function MidiaManager() {
   const [abaAtiva, setAbaAtiva] = useState<"cadastrar" | "editar" | "excluir">("cadastrar");
+  const [buscaMidia, setBuscaMidia] = useState("");
 
   return (
     <div className="p-6">
@@ -42,11 +43,24 @@ export function MidiaManager() {
           <MidiaForm />
         </div>
       )}
+
       {abaAtiva === "editar" && (
         <div>
-          <p>Funcionalidade de edição de mídia será aqui.</p>
+          <h3 className="text-lg font-semibold mb-4">Buscar Mídia para Edição</h3>
+          <input
+            type="text"
+            value={buscaMidia}
+            onChange={(e) => setBuscaMidia(e.target.value)}
+            placeholder="Digite o nome da mídia..."
+            className="border border-gray-400 rounded px-4 py-2 w-full mb-4 focus:outline-none focus:border-blue-500 text-black"
+          />
+          {/* Área futura onde listaremos resultados */}
+          <div className="text-gray-600 italic">
+            Resultados da busca aparecerão aqui...
+          </div>
         </div>
       )}
+
       {abaAtiva === "excluir" && (
         <div>
           <p>Funcionalidade de exclusão de mídia será aqui.</p>
