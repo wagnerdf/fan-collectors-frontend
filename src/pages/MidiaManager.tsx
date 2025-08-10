@@ -1,9 +1,26 @@
 import React, { useState } from "react";
-import { MidiaForm } from "../components/MidiaForm"; // ajuste o caminho se necessário
+import { MidiaForm } from "../components/MidiaForm"; 
+import { MidiaFormFilmeSerie } from "../components/MidiaFormFilmeSerie";
 
 export function MidiaManager() {
   const [abaAtiva, setAbaAtiva] = useState<"cadastrar" | "editar" | "excluir">("cadastrar");
   const [buscaMidia, setBuscaMidia] = useState("");
+  const [midiaEncontrada, setMidiaEncontrada] = useState<any>(null);
+  const [tipoMidia, setTipoMidia] = useState<string | null>(null);
+
+  // Simulação de busca (mock)
+  const handleBuscarMidia = () => {
+    // Aqui depois faremos chamada ao backend
+    const mock = {
+      midia_tipo: "Filme/Série",
+      titulo_original: "The Matrix",
+      ano_lancamento: 1999,
+      artista_diretor: "Lana Wachowski, Lilly Wachowski",
+      sinopse: "Um hacker descobre a verdade sobre a realidade."
+    };
+    setMidiaEncontrada(mock);
+    setTipoMidia(mock.midia_tipo);
+  };
 
   return (
     <div className="p-6">
@@ -11,33 +28,20 @@ export function MidiaManager() {
 
       {/* Abas */}
       <div className="flex space-x-4 mb-6">
-        <button
-          className={`px-4 py-2 rounded ${
-            abaAtiva === "cadastrar" ? "bg-blue-800 text-white" : "bg-gray-400"
-          }`}
-          onClick={() => setAbaAtiva("cadastrar")}
-        >
-          Cadastrar
-        </button>
-        <button
-          className={`px-4 py-2 rounded ${
-            abaAtiva === "editar" ? "bg-blue-800 text-white" : "bg-gray-400"
-          }`}
-          onClick={() => setAbaAtiva("editar")}
-        >
-          Editar
-        </button>
-        <button
-          className={`px-4 py-2 rounded ${
-            abaAtiva === "excluir" ? "bg-blue-800 text-white" : "bg-gray-400"
-          }`}
-          onClick={() => setAbaAtiva("excluir")}
-        >
-          Excluir
-        </button>
+        {["cadastrar", "editar", "excluir"].map((aba) => (
+          <button
+            key={aba}
+            className={`px-4 py-2 rounded ${
+              abaAtiva === aba ? "bg-blue-800 text-white" : "bg-gray-400"
+            }`}
+            onClick={() => setAbaAtiva(aba as typeof abaAtiva)}
+          >
+            {aba.charAt(0).toUpperCase() + aba.slice(1)}
+          </button>
+        ))}
       </div>
 
-      {/* Conteúdo das abas */}
+      {/* Conteúdo */}
       {abaAtiva === "cadastrar" && (
         <div>
           <MidiaForm />
@@ -47,17 +51,35 @@ export function MidiaManager() {
       {abaAtiva === "editar" && (
         <div>
           <h3 className="text-lg font-semibold mb-4">Buscar Mídia para Edição</h3>
-          <input
-            type="text"
-            value={buscaMidia}
-            onChange={(e) => setBuscaMidia(e.target.value)}
-            placeholder="Digite o nome da mídia..."
-            className="border border-gray-400 rounded px-4 py-2 w-full mb-4 focus:outline-none focus:border-blue-500 text-black"
-          />
-          {/* Área futura onde listaremos resultados */}
-          <div className="text-gray-600 italic">
-            Resultados da busca aparecerão aqui...
+          <div className="flex gap-2 mb-4">
+            <input
+              type="text"
+              value={buscaMidia}
+              onChange={(e) => setBuscaMidia(e.target.value)}
+              placeholder="Digite o nome da mídia..."
+              className="border border-gray-400 rounded px-4 py-2 w-full focus:outline-none focus:border-blue-500 text-black"
+            />
+            <button
+              onClick={handleBuscarMidia}
+              className="bg-green-600 text-white px-4 py-2 rounded"
+            >
+              Buscar
+            </button>
           </div>
+
+          {midiaEncontrada && (
+            <>
+              {tipoMidia === "Filme/Série" && (
+                <MidiaFormFilmeSerie dados={midiaEncontrada} />
+              )}
+              {tipoMidia === "Jogo" && (
+                <p>Formulário específico para Jogos (a implementar)</p>
+              )}
+              {tipoMidia === "Música" && (
+                <p>Formulário específico para Música (a implementar)</p>
+              )}
+            </>
+          )}
         </div>
       )}
 
