@@ -35,6 +35,7 @@ export type PaginaMidias = {
   totalElements: number;
 };
 
+// Paginada
 export async function buscarMidiasPaginadas(
   page: number = 0,
   size: number = 25
@@ -47,12 +48,27 @@ export async function buscarMidiasPaginadas(
   return response.data;
 }
 
-
+// Todas do usuário
 export const buscarMidiasDoUsuario = async (): Promise<MidiaResponse[]> => {
-    const response = await api.get("/api/midias/usuario", {
+  const response = await api.get("/api/midias/usuario", {
     headers: {
-        Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     },
-    });
+  });
   return response.data;
 };
+
+// 🔍 Buscar por termo
+export const buscarMidiasPorTermo = async (
+  termo: string
+): Promise<MidiaResponse[]> => {
+  const token = localStorage.getItem("fanCollectorsMediaToken"); // pegar sempre na hora
+  const response = await api.get(`/api/midias/buscar`, {
+    params: { query: termo }, // nome certo do parâmetro
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
