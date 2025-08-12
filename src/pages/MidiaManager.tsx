@@ -14,7 +14,8 @@ export function MidiaManager() {
   const [midiaSelecionada, setMidiaSelecionada] = useState<MidiaResponse | null>(null);
 
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
-  const buscaPorClique = useRef(false); // <-- flag para saber se veio de clique
+  const buscaPorClique = useRef(false); // flag para saber se veio de clique
+  const inputRef = useRef<HTMLInputElement | null>(null); // ref para focar input ao abrir editar
 
   useEffect(() => {
     if (buscaMidia.trim().length === 0) {
@@ -27,7 +28,7 @@ export function MidiaManager() {
     }
 
     if (buscaPorClique.current) {
-      // reset da flag e não faz busca ao clicar
+      // reset da flag e não faz busca ao clicar (comportamento de seleção por clique)
       buscaPorClique.current = false;
       return;
     }
@@ -56,11 +57,49 @@ export function MidiaManager() {
   }, [buscaMidia]);
 
   const handleSelecionarMidia = (midia: MidiaResponse) => {
+    // Se já está selecionada e clicou de novo -> limpa seleção e volta para busca em branco
+    if (midiaSelecionada?.id === midia.id) {
+      buscaPorClique.current = false;
+      setMidiaSelecionada(null);
+      setBuscaMidia("");
+      setResultados([]);
+      setErro(null);
+
+      // sinaliza carregando rapidinho e foca input
+      setCarregando(true);
+      setTimeout(() => {
+        setCarregando(false);
+        inputRef.current?.focus();
+      }, 150);
+      return;
+    }
+
+    // seleção normal (1º clique)
     buscaPorClique.current = true;
     setMidiaSelecionada(midia);
-    setBuscaMidia(midia.tituloOriginal);
+    setBuscaMidia(midia.tituloOriginal || midia.tituloAlternativo || "");
     setResultados([]); // fecha lista
     setErro(null);
+  };
+
+  const handleAbaClick = (novaAba: "cadastrar" | "editar" | "excluir") => {
+    setAbaAtiva(novaAba);
+
+    // sempre resetar flag para evitar efeitos colaterais do buscaPorClique
+    buscaPorClique.current = false;
+
+    // limpar estados para garantir tela em branco ao abrir "editar"
+    setBuscaMidia("");
+    setResultados([]);
+    setMidiaSelecionada(null);
+    setErro(null);
+    setCarregando(false);
+
+    // se abriu a aba editar, foca o input
+    if (novaAba === "editar") {
+      // foco com setTimeout para garantir que o input esteja montado
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
   };
 
   return (
@@ -75,16 +114,7 @@ export function MidiaManager() {
             className={`px-4 py-2 rounded ${
               abaAtiva === aba ? "bg-blue-800 text-white" : "bg-gray-400"
             }`}
-            onClick={() => {
-              setAbaAtiva(aba as typeof abaAtiva);
-              if (aba !== "editar") {
-                setBuscaMidia("");
-                setResultados([]);
-                setMidiaSelecionada(null);
-                setErro(null);
-                setCarregando(false);
-              }
-            }}
+            onClick={() => handleAbaClick(aba as "cadastrar" | "editar" | "excluir")}
           >
             {aba.charAt(0).toUpperCase() + aba.slice(1)}
           </button>
@@ -99,6 +129,7 @@ export function MidiaManager() {
 
           <div className="relative mb-4">
             <input
+              ref={inputRef}
               type="text"
               value={buscaMidia}
               onChange={(e) => setBuscaMidia(e.target.value)}
