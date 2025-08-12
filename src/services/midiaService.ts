@@ -27,6 +27,7 @@ export interface MidiaResponse {
   notaMedia: number | null;
   formatoMidia: string | null;
   temporada: string | null;
+  midiaTipoId: number;
 }
 
 export type PaginaMidias = {

@@ -6,23 +6,29 @@ import { buscarMidiasPorTermo, MidiaResponse } from "../services/midiaService";
 export function MidiaManager() {
   const [abaAtiva, setAbaAtiva] = useState<"cadastrar" | "editar" | "excluir">("cadastrar");
 
-  // Estado da busca e resultados
   const [buscaMidia, setBuscaMidia] = useState("");
   const [resultados, setResultados] = useState<MidiaResponse[]>([]);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
-  // Mídia selecionada para editar
   const [midiaSelecionada, setMidiaSelecionada] = useState<MidiaResponse | null>(null);
 
-  // Debounce para buscar 300ms após parar de digitar
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+  const buscaPorClique = useRef(false); // <-- flag para saber se veio de clique
 
   useEffect(() => {
     if (buscaMidia.trim().length === 0) {
       setResultados([]);
       setErro(null);
-      setMidiaSelecionada(null);
+      if (!buscaPorClique.current) {
+        setMidiaSelecionada(null);
+      }
+      return;
+    }
+
+    if (buscaPorClique.current) {
+      // reset da flag e não faz busca ao clicar
+      buscaPorClique.current = false;
       return;
     }
 
@@ -34,7 +40,7 @@ export function MidiaManager() {
         .then((res) => {
           setResultados(res);
           setErro(null);
-          setMidiaSelecionada(null); // limpa seleção ao alterar busca
+          setMidiaSelecionada(null);
         })
         .catch(() => {
           setErro("Erro ao buscar mídias.");
@@ -49,11 +55,11 @@ export function MidiaManager() {
     };
   }, [buscaMidia]);
 
-  // Quando usuário clica em resultado da busca
   const handleSelecionarMidia = (midia: MidiaResponse) => {
+    buscaPorClique.current = true;
     setMidiaSelecionada(midia);
-    setResultados([]);
     setBuscaMidia(midia.tituloOriginal);
+    setResultados([]); // fecha lista
     setErro(null);
   };
 
@@ -71,7 +77,6 @@ export function MidiaManager() {
             }`}
             onClick={() => {
               setAbaAtiva(aba as typeof abaAtiva);
-              // Limpa estados da aba editar ao mudar para outra aba
               if (aba !== "editar") {
                 setBuscaMidia("");
                 setResultados([]);
@@ -86,12 +91,7 @@ export function MidiaManager() {
         ))}
       </div>
 
-      {/* Conteúdo */}
-      {abaAtiva === "cadastrar" && (
-        <div>
-          <MidiaForm />
-        </div>
-      )}
+      {abaAtiva === "cadastrar" && <MidiaForm />}
 
       {abaAtiva === "editar" && (
         <div>
@@ -107,7 +107,6 @@ export function MidiaManager() {
               autoComplete="off"
             />
 
-            {/* Dropdown de resultados */}
             {resultados.length > 0 && (
               <ul className="absolute bg-white border border-gray-300 w-full mt-1 max-h-60 overflow-y-auto z-10 rounded shadow-md text-black">
                 {resultados.map((midia) => (
@@ -118,11 +117,10 @@ export function MidiaManager() {
                   >
                     {midia.tituloAlternativo || midia.tituloOriginal}{" "}
                     <span className="text-gray-600">
-                      ({midia.tituloOriginal && midia.tituloAlternativo ? midia.tituloOriginal : ""})
+                      {midia.tituloAlternativo && midia.tituloOriginal ? `(${midia.tituloOriginal})` : ""}
                     </span>
                   </li>
                 ))}
-
               </ul>
             )}
 
@@ -132,33 +130,26 @@ export function MidiaManager() {
               </div>
             )}
 
-            {erro && !carregando && (
-              <p className="text-red-600 mt-2">{erro}</p>
-            )}
+            {erro && !carregando && <p className="text-red-600 mt-2">{erro}</p>}
           </div>
 
-          {/* Formulário de edição */}
           {midiaSelecionada && (
             <>
-              {midiaSelecionada.tipoMidia === "Filme/Série" && (
+              {[1, 2, 6].includes(midiaSelecionada.midiaTipoId) ? (
                 <MidiaFormFilmeSerie dados={midiaSelecionada} />
-              )}
-              {midiaSelecionada.tipoMidia === "Jogo" && (
+              ) : [9, 10, 11].includes(midiaSelecionada.midiaTipoId) ? (
                 <p>Formulário específico para Jogos (a implementar)</p>
-              )}
-              {midiaSelecionada.tipoMidia === "Música" && (
+              ) : [3, 4, 5].includes(midiaSelecionada.midiaTipoId) ? (
                 <p>Formulário específico para Música (a implementar)</p>
+              ) : (
+                <p>Tipo de mídia ainda não implementado</p>
               )}
             </>
           )}
         </div>
       )}
 
-      {abaAtiva === "excluir" && (
-        <div>
-          <p>Funcionalidade de exclusão de mídia será aqui.</p>
-        </div>
-      )}
+      {abaAtiva === "excluir" && <p>Funcionalidade de exclusão de mídia será aqui.</p>}
     </div>
   );
 }
