@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { atualizarCamposLivres } from "../services/midiaService";
 
 export function MidiaFormFilmeSerie({
   dados,
@@ -22,6 +23,7 @@ export function MidiaFormFilmeSerie({
   const [dadosMidia, setDadosMidia] = useState<any>(initial);
   const [temporada, setTemporada] = useState(dados?.temporada || "");
   const [modoEdicao, setModoEdicao] = useState(true);
+  const camposEditaveis = ["observacoes", "temporada"];
 
   useEffect(() => {
     // atualiza quando a prop dados mudar
@@ -29,7 +31,7 @@ export function MidiaFormFilmeSerie({
   }, [initial]);
 
   const camposTMDB = [
-    "observações",
+    "observacoes",
     "tipoMidia",
     "tituloAlternativo",
     "tituloOriginal",
@@ -48,13 +50,27 @@ export function MidiaFormFilmeSerie({
     "diretores"
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (modoEdicao) {
-      // Salvar alterações
-      console.log("🔹 Salvando alterações:", dadosMidia);
-      setModoEdicao(false);
+      try {
+        // Monta objeto com campos editáveis
+        const dto = {
+          observacoes: dadosMidia.observações,
+          temporada: temporada || undefined, // só envia se tiver valor
+        };
+
+        const token = localStorage.getItem("fanCollectorsMediaToken") || "";
+
+        const resposta = await atualizarCamposLivres(dadosMidia.id, dto, token);
+        alert(resposta); // mensagem do backend
+
+        setModoEdicao(false);
+      } catch (error) {
+        console.error(error);
+        alert("Erro ao atualizar a mídia.");
+      }
     } else {
       // Nova busca (limpa os campos)
       setDadosMidia({});
@@ -110,35 +126,38 @@ export function MidiaFormFilmeSerie({
                 type="text"
                 name={campo}
                 className={`w-full border px-3 py-2 rounded ${
-                  campo !== "observações"
-                    ? "bg-gray-300 cursor-not-allowed"
-                    : "bg-white"
+                  !camposEditaveis.includes(campo) ? "bg-gray-300 cursor-not-allowed" : "bg-white"
                 }`}
-                value={dadosMidia[campo] || ""}
-                readOnly={campo !== "observações"}
-                onChange={(e) =>
-                  setDadosMidia({
-                    ...dadosMidia,
-                    [campo]: e.target.value
-                  })
-                }
+                value={campo === "temporada" ? temporada : dadosMidia[campo] || ""}
+                readOnly={!camposEditaveis.includes(campo)}
+                onChange={(e) => {
+                  if (campo === "temporada") {
+                    setTemporada(e.target.value);
+                  } else {
+                    setDadosMidia({
+                      ...dadosMidia,
+                      [campo]: e.target.value
+                    });
+                  }
+                }}
               />
             </div>
           ))}
+
         </div>
       </div>
 
       <button
-        type="button" // evita submit
+        type="submit"
         className={`px-4 py-2 rounded transition text-white ${
           modoEdicao
             ? "bg-blue-800 hover:bg-blue-900"
             : "bg-yellow-600 hover:bg-yellow-700"
         }`}
-        disabled={true} // opcional: deixa visualmente desabilitado
       >
         {modoEdicao ? "Salvar Alterações" : "Nova Busca"}
       </button>
+
     </form>
   );
 }

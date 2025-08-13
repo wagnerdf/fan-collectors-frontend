@@ -1,4 +1,6 @@
 import api from "../services/api";
+
+// Pega token do localStorage
 const token = localStorage.getItem("fanCollectorsMediaToken");
 
 export interface MidiaResponse {
@@ -36,7 +38,7 @@ export type PaginaMidias = {
   totalElements: number;
 };
 
-// Paginada
+// 📄 Paginada
 export async function buscarMidiasPaginadas(
   page: number = 0,
   size: number = 25
@@ -49,7 +51,7 @@ export async function buscarMidiasPaginadas(
   return response.data;
 }
 
-// Todas do usuário
+// 📄 Todas do usuário
 export const buscarMidiasDoUsuario = async (): Promise<MidiaResponse[]> => {
   const response = await api.get("/api/midias/usuario", {
     headers: {
@@ -60,12 +62,10 @@ export const buscarMidiasDoUsuario = async (): Promise<MidiaResponse[]> => {
 };
 
 // 🔍 Buscar por termo
-export const buscarMidiasPorTermo = async (
-  termo: string
-): Promise<MidiaResponse[]> => {
+export const buscarMidiasPorTermo = async (termo: string): Promise<MidiaResponse[]> => {
   const token = localStorage.getItem("fanCollectorsMediaToken"); // pegar sempre na hora
   const response = await api.get(`/api/midias/buscar`, {
-    params: { query: termo }, // nome certo do parâmetro
+    params: { query: termo },
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -73,3 +73,25 @@ export const buscarMidiasPorTermo = async (
   return response.data;
 };
 
+// ✏️ Atualizar campos livres (observacoes e temporada)
+export interface MidiaCamposLivresDto {
+  observacoes?: string;
+  temporada?: string;
+}
+
+export const atualizarCamposLivres = async (
+  id: number,
+  dados: MidiaCamposLivresDto,
+  token: string
+): Promise<string> => {
+  const response = await api.patch(
+    `/api/midias/${id}/editar-campos-livres`,
+    dados,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data; // retorna mensagem do backend
+};
