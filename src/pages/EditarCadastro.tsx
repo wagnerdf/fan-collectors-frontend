@@ -137,10 +137,14 @@ export default function EditarCadastro() {
       await api.put("/api/cadastros/perfilEditar", payload);
 
       setSucesso(true);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Erro ao atualizar cadastro:", err);
-      setErro("Erro ao atualizar cadastro. Verifique os dados e tente novamente.");
+
+      // Agora o TypeScript entende err.response
+      const mensagem = err.response?.data || "Erro ao atualizar cadastro. Verifique os dados e tente novamente.";
+      setErro(mensagem);
     }
+
   }
 
   return (

@@ -83,7 +83,7 @@ export interface MidiaCamposLivresDto {
 // Atualiza apenas os campos livres: observacao e temporada
 export const atualizarCamposLivres = async (
   id: number,
-  dados: { observacao?: string; temporada?: string }
+  dados: { observacao?: string; temporada?: string; formatoMidia?: string }
 ): Promise<void> => {
   const token = localStorage.getItem("fanCollectorsMediaToken");
   await api.patch(`/api/midias/${id}/editar-campos-livres`, dados, {
@@ -92,6 +92,7 @@ export const atualizarCamposLivres = async (
     },
   });
 };
+
 
 
 
