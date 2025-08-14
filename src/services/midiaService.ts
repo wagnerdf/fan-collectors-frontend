@@ -73,25 +73,25 @@ export const buscarMidiasPorTermo = async (termo: string): Promise<MidiaResponse
   return response.data;
 };
 
+
 // ✏️ Atualizar campos livres (observacoes e temporada)
 export interface MidiaCamposLivresDto {
   observacoes?: string;
   temporada?: string;
 }
 
+// Atualiza apenas os campos livres: observacao e temporada
 export const atualizarCamposLivres = async (
   id: number,
-  dados: MidiaCamposLivresDto,
-  token: string
-): Promise<string> => {
-  const response = await api.patch(
-    `/api/midias/${id}/editar-campos-livres`,
-    dados,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  return response.data; // retorna mensagem do backend
+  dados: { observacao?: string; temporada?: string }
+): Promise<void> => {
+  const token = localStorage.getItem("fanCollectorsMediaToken");
+  await api.patch(`/api/midias/${id}/editar-campos-livres`, dados, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
+
+
+

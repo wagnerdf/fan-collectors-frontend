@@ -37,7 +37,8 @@ export function MidiaForm() {
     "linguagem",
     "nota_media",
     "artistas",
-    "diretores"
+    "diretores",
+    "formatoMidia"
   ];
 
   const apiKey = process.env.REACT_APP_API_TMDB;
@@ -171,9 +172,9 @@ export function MidiaForm() {
       : "",
     sinopse: item.overview || "",
     generos: item.genre_ids
-    ?.map((id: number) => mapaGeneros[id])
-    .filter(Boolean)
-    .join(", ") || "",
+      ?.map((id: number) => mapaGeneros[id])
+      .filter(Boolean)
+      .join(", ") || "",
     duracao:
       dataDetalhes.runtime ||
       (dataDetalhes.episode_run_time?.[0] || "") ||
@@ -181,9 +182,9 @@ export function MidiaForm() {
     linguagem: item.original_language || "",
     nota_media: item.vote_average || "",
     artistas,
-    diretores
+    diretores,
+    formatoMidia: tipo === "tv" ? "Série" : "Filme" // <-- AQUI
   });
-
 
     setResultadosBusca([]);
     setTituloBusca("");
@@ -224,7 +225,7 @@ export function MidiaForm() {
     duracao: dadosSelecionados.duracao,
     linguagem: dadosSelecionados.linguagem,
     notaMedia: dadosSelecionados.nota_media,
-    formatoMidia: "Físico",
+    formatoMidia: dadosSelecionados.formatoMidia,
     temporada: temporada,
     midiaTipoId: tipoSelecionadoObj.id
   };
@@ -317,16 +318,21 @@ export function MidiaForm() {
 
           {/* Campos preenchidos */}
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Campo adicional: Filme ou Série */}
+            {/* Campo observações */}
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-200">
-                Tipo detectado
+                Observações
               </label>
               <input
                 type="text"
-                value={mediaType}
-                readOnly
-                className="w-full border px-3 py-2 rounded bg-gray-100"
+                value={dadosSelecionados.observações || ""}
+                onChange={(e) =>
+                  setDadosSelecionados({
+                    ...dadosSelecionados,
+                    observações: e.target.value
+                  })
+                }
+                className="w-full border px-3 py-2 rounded bg-white"
               />
             </div>
 
@@ -346,36 +352,48 @@ export function MidiaForm() {
               </div>
             )}
 
+            {/* Campo adicional: Tipo detectado */}
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-200">
+                Tipo detectado
+              </label>
+              <input
+                type="text"
+                value={mediaType}
+                readOnly
+                className="w-full border px-3 py-2 rounded bg-gray-300 cursor-not-allowed"
+              />
+            </div>
+
             {/* Demais campos vindos da TMDB */}
-            {camposTMDB.map((campo) => (
-              <div key={campo}>
-                <label className="block text-sm font-medium capitalize mb-1 text-gray-200">
-                  {campo.replace(/_/g, " ")}
-                </label>
-                <input
-                  type="text"
-                  name={campo}
-                  className={`w-full border px-3 py-2 rounded ${
-                    campo !== "observações"
-                      ? "bg-gray-300 cursor-not-allowed"
-                      : "bg-white"
-                  }`}
-                  value={dadosSelecionados[campo] || ""}
-                  readOnly={campo !== "observações"}
-                  onChange={(e) =>
-                    setDadosSelecionados({
-                      ...dadosSelecionados,
-                      [campo]: e.target.value
-                    })
-                  }
-                />
-              </div>
+            {camposTMDB
+              .filter((campo) => campo !== "observações") // já exibido acima
+              .map((campo) => (
+                <div key={campo}>
+                  <label className="block text-sm font-medium capitalize mb-1 text-gray-200">
+                    {campo.replace(/_/g, " ")}
+                  </label>
+                  <input
+                    type="text"
+                    name={campo}
+                    className={`w-full border px-3 py-2 rounded ${
+                      campo !== "observações" ? "bg-gray-300 cursor-not-allowed" : "bg-white"
+                    }`}
+                    value={dadosSelecionados[campo] || ""}
+                    readOnly={campo !== "observações"}
+                    onChange={(e) =>
+                      setDadosSelecionados({
+                        ...dadosSelecionados,
+                        [campo]: e.target.value
+                      })
+                    }
+                  />
+                </div>
             ))}
-
-
           </div>
         </div>
       )}
+
       {dadosSelecionados && (
         <div className="mt-4">
           <button

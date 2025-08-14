@@ -23,16 +23,16 @@ export function MidiaFormFilmeSerie({
   const [dadosMidia, setDadosMidia] = useState<any>(initial);
   const [temporada, setTemporada] = useState(dados?.temporada || "");
   const [modoEdicao, setModoEdicao] = useState(true);
-  const camposEditaveis = ["observacoes", "temporada"];
+  const [salvando, setSalvando] = useState(false);
 
   useEffect(() => {
-    // atualiza quando a prop dados mudar
     setDadosMidia(initial);
   }, [initial]);
 
   const camposTMDB = [
     "observacoes",
     "tipoMidia",
+    "formatoMidia",
     "tituloAlternativo",
     "tituloOriginal",
     "temporada",
@@ -53,37 +53,38 @@ export function MidiaFormFilmeSerie({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (modoEdicao) {
-      try {
-        // Monta objeto com campos editáveis
-        const dto = {
-          observacoes: dadosMidia.observações,
-          temporada: temporada || undefined, // só envia se tiver valor
-        };
-
-        const token = localStorage.getItem("fanCollectorsMediaToken") || "";
-
-        const resposta = await atualizarCamposLivres(dadosMidia.id, dto, token);
-        alert(resposta); // mensagem do backend
-
-        setModoEdicao(false);
-      } catch (error) {
-        console.error(error);
-        alert("Erro ao atualizar a mídia.");
-      }
-    } else {
+    if (!modoEdicao) {
       // Nova busca (limpa os campos)
       setDadosMidia({});
       setTemporada("");
       setModoEdicao(true);
       if (onNovaBusca) onNovaBusca();
+      return;
+    }
+
+    try {
+      // Monta o objeto com os campos que podem ser alterados
+      const dto = {
+        observacao: dadosMidia.observacoes,
+        temporada: temporada || undefined, // envia undefined se estiver vazio
+        formatoMidia: dadosMidia.formatoMidia
+      };
+
+      // Chama a função do service
+      await atualizarCamposLivres(dadosMidia.id, dto);
+
+      alert("Mídia atualizada com sucesso!");
+      setModoEdicao(false);
+    } catch (erro) {
+      console.error("Erro ao atualizar mídia:", erro);
+      alert("Ocorreu um erro ao atualizar a mídia. Tente novamente.");
     }
   };
 
   return (
     <form className="space-y-4 text-black" onSubmit={handleSubmit}>
       <div className="flex flex-col sm:flex-row gap-6 items-start">
-        {/* Imagem da capa — usa o campo normalizado capa_url */}
+        {/* Imagem da capa */}
         {dadosMidia?.capa_url ? (
           <div className="w-48 flex-shrink-0">
             <img
@@ -100,8 +101,8 @@ export function MidiaFormFilmeSerie({
 
         {/* Campos lado a lado */}
         <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Temporada (só série) */}
-          {dadosMidia.mediaType === "Série" && (
+          {/* Temporada (apenas para série) */}
+          {dadosMidia.formatoMidia === "tv" && (
             <div>
               <label className="block text-sm font-medium mb-1 text-white">
                 Temporada da Série
@@ -110,39 +111,42 @@ export function MidiaFormFilmeSerie({
                 type="text"
                 value={temporada}
                 onChange={(e) => setTemporada(e.target.value)}
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border px-3 py-2 rounded bg-white"
                 placeholder="Ex: 1ª Temporada"
               />
             </div>
           )}
 
           {/* Campos vindos da TMDB */}
-          {camposTMDB.map((campo) => (
-            <div key={campo}>
-              <label className="block text-sm font-medium capitalize mb-1 text-white">
-                {campo.replace(/_/g, " ")}
-              </label>
-              <input
-                type="text"
-                name={campo}
-                className={`w-full border px-3 py-2 rounded ${
-                  !camposEditaveis.includes(campo) ? "bg-gray-300 cursor-not-allowed" : "bg-white"
-                }`}
-                value={campo === "temporada" ? temporada : dadosMidia[campo] || ""}
-                readOnly={!camposEditaveis.includes(campo)}
-                onChange={(e) => {
-                  if (campo === "temporada") {
-                    setTemporada(e.target.value);
-                  } else {
-                    setDadosMidia({
-                      ...dadosMidia,
-                      [campo]: e.target.value
-                    });
-                  }
-                }}
-              />
-            </div>
-          ))}
+          {camposTMDB.map((campo) => {
+            const isEditable = campo === "observacoes" || campo === "temporada";
+            if (campo === "temporada" && dadosMidia.formatoMidia !== "tv") return null;
+
+            return (
+              <div key={campo}>
+                <label className="block text-sm font-medium capitalize mb-1 text-white">
+                  {campo.replace(/_/g, " ")}
+                </label>
+                <input
+                  type="text"
+                  name={campo}
+                  className={`w-full border px-3 py-2 rounded ${
+                    isEditable ? "bg-white" : "bg-gray-300 cursor-not-allowed"
+                  }`}
+                  value={campo === "temporada" ? temporada : dadosMidia[campo] || ""}
+                  readOnly={!isEditable}
+                  onChange={(e) => {
+                    if (campo === "temporada") setTemporada(e.target.value);
+                    else
+                      setDadosMidia({
+                        ...dadosMidia,
+                        [campo]: e.target.value
+                      });
+                  }}
+                />
+              </div>
+            );
+          })}
 
         </div>
       </div>
@@ -150,14 +154,12 @@ export function MidiaFormFilmeSerie({
       <button
         type="submit"
         className={`px-4 py-2 rounded transition text-white ${
-          modoEdicao
-            ? "bg-blue-800 hover:bg-blue-900"
-            : "bg-yellow-600 hover:bg-yellow-700"
+          modoEdicao ? "bg-blue-800 hover:bg-blue-900" : "bg-yellow-600 hover:bg-yellow-700"
         }`}
+        disabled={salvando}
       >
-        {modoEdicao ? "Salvar Alterações" : "Nova Busca"}
+        {modoEdicao ? (salvando ? "Salvando..." : "Salvar Alterações") : "Nova Busca"}
       </button>
-
     </form>
   );
 }

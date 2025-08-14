@@ -169,7 +169,7 @@ function Cadastro() {
           <div className="bg-sky-500 text-white rounded-xl p-6 shadow-lg w-full max-w-md text-center">
             <h2 className="text-2xl font-bold mb-4">Cadastro realizado!</h2>
             <p className="mb-6">
-              Bem-vindo(a), <strong>{formData.nome} {formData.sobreNome}</strong>! Você será redirecionado à página de login para entrar no sistema <strong>FanCollectorsMedia--</strong>.
+              Bem-vindo(a), <strong>{formData.nome} {formData.sobreNome}</strong>! Você será redirecionado à página de login para entrar no sistema <strong>FanCollectorsMedia</strong>.
             </p>
             <button
               onClick={() => {

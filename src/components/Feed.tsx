@@ -59,7 +59,7 @@ export default function Feed({ paginaAtiva, usuario, carregarUsuario }: FeedProp
     default:
       return (
         <div className="flex-1 p-4 text-white">
-          <h2>Bem-vindo ao fanCollectorsMedia-</h2>
+          <h2>Bem-vindo ao fanCollectorsMedia</h2>
         </div>
       );
   }
