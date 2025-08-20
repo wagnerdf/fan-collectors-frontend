@@ -1,6 +1,7 @@
-# 🎥 fanCollectorsMedia
+# 🎥 fanCollectorsMedia 
+[![NPM](https://img.shields.io/npm/l/react)](https://github.com/wagnerdf/fan-collectors-frontend/LICENSE) 
 
-Sistema completo para colecionadores de mídias físicas (Blu-ray, DVD, VHS, LP, CD...), permitindo cadastro detalhado para midia fśicas, salvando, editando, deletando e visualizando todos registro de cada usuário, integração com a API TMDB e outras que serão acresentadas com o desenvolvimento da aplicação web, autenticação de usuários, e muito mais!
+Sistema para colecionadores de mídias físicas (Blu-ray, DVD, VHS, LP, CD, Cartuchos...), permitindo cadastro detalhado para midia fśicas, salvando, editando, deletando e visualizando todos registro de cada usuário, integração com a API TMDB e outras que serão acresentadas com o desenvolvimento da aplicação web, autenticação de usuários, publicação de potagens e muito mais!
 
 ---
 
@@ -15,7 +16,7 @@ Você pode acessar a aplicação em produção pelo link abaixo:
 
 ---
 
-## 📸 Imagens
+## 🖥️ Layout web
 
 <div align="center">
   <img src="https://i.imgur.com/aZ7RXPZ.png" width="600" alt="Tela apresentação" />
@@ -23,6 +24,20 @@ Você pode acessar a aplicação em produção pelo link abaixo:
   <img src="https://i.imgur.com/mJbJwTE.png" width="600" alt="Tela de Login" />
   <br/>
   <img src="https://i.imgur.com/F621Hxb.png" width="600" alt="Cadastro de Mídia" />
+</div>
+
+---
+
+## 📱 Layout mobile
+
+Em breve
+
+---
+
+## 📊 Modelo lógico/conceitual
+
+<div align="center">
+  <img src="https://i.imgur.com/yeYfyVf.png" width="600" alt="Modelo conceitual" />
 </div>
 
 ---
@@ -36,6 +51,7 @@ Você pode acessar a aplicação em produção pelo link abaixo:
 - Spring Data JPA
 - Flyway (migrações de banco)
 - PostgreSQL
+- Maven
 - Lombok
 - Bean Validation
 - ModelMapper (ou MapStruct - futuro)
@@ -57,8 +73,9 @@ Você pode acessar a aplicação em produção pelo link abaixo:
 
 - [x] Autenticação com JWT (Login, Cadastro, Validação)
 - [x] Perfil do usuário com edição
-- [x] Cadastro de mídias com dados preenchidos automaticamente via TMDB
-- [ ] Cadastro de mídias com dados preenchidos automaticamente MusicBrainz API  (em breve)
+- [x] Cadastro de mídias com dados preenchidos automaticamente via TMDB para Filmes e Series
+- [ ] Cadastro de mídias com dados preenchidos automaticamente MusicBrainz API para Musicas (em breve)
+- [ ] Cadastro de mídias com dados preenchidos automaticamente RAWG Video Games Database para Games (em breve)
 - [x] Upload de imagem de capa
 - [x] Validação de campos obrigatórios
 - [x] Dashboard com exibição das mídias cadastradas
@@ -145,13 +162,6 @@ spring.jpa.hibernate.ddl-auto=validate
 
 ---
 
-## 📝 Licença
-
-Este projeto está sob a licença MIT.  
-Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
-
 ## 🤝 Contribuição
 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir uma _issue_, enviar _pull requests_ ou sugerir melhorias.
@@ -171,4 +181,4 @@ Este sistema foi idealizado para organizar coleções pessoais de mídia física
 
 ---
 
-> Criado com 💙 por WagnerDf
+> Criado com 💙 por WagnerDF
