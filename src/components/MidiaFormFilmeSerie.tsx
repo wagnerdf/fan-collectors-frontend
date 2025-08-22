@@ -1,5 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { atualizarCamposLivres } from "../services/midiaService";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "../components/ui/dialog";
+import { Button } from "../components/ui/button";
 
 export function MidiaFormFilmeSerie({
   dados,
@@ -23,6 +32,10 @@ export function MidiaFormFilmeSerie({
   const [temporada, setTemporada] = useState(dados?.temporada || "");
   const [modoEdicao, setModoEdicao] = useState(true);
   const [salvando, setSalvando] = useState(false);
+
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalError, setModalError] = useState(false);
 
   useEffect(() => {
     setDadosMidia(initial);
@@ -71,12 +84,17 @@ export function MidiaFormFilmeSerie({
 
       await atualizarCamposLivres(dadosMidia.id, dto);
 
-      alert("Mídia atualizada com sucesso!");
-      setModoEdicao(false); // Alterna botão para "Nova Busca"
+      setModalMessage("Mídia atualizada com sucesso!");
+      setModalError(false);
+      setShowModal(true);
+
+      setModoEdicao(false);
       setSalvando(false);
     } catch (erro) {
       console.error("Erro ao atualizar mídia:", erro);
-      alert("Ocorreu um erro ao atualizar a mídia. Tente novamente.");
+      setModalMessage("Ocorreu um erro ao atualizar a mídia. Tente novamente.");
+      setModalError(true);
+      setShowModal(true);
       setSalvando(false);
     }
   };
@@ -116,7 +134,22 @@ export function MidiaFormFilmeSerie({
                   placeholder="Ex: 1ª Temporada"
                 />
               </div>
-            )}
+            )}<Dialog open={showModal} onOpenChange={setShowModal}>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>{modalError ? "Erro" : "Sucesso"}</DialogTitle>
+      <DialogDescription>
+        {modalMessage}
+      </DialogDescription>
+    </DialogHeader>
+    <DialogFooter>
+      <Button onClick={() => setShowModal(false)}>
+        OK
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+
 
             {/* Campos vindos da TMDB */}
             {camposTMDB.map((campo) => {
@@ -162,6 +195,23 @@ export function MidiaFormFilmeSerie({
       >
         {modoEdicao ? (salvando ? "Salvando..." : "Salvar Alterações") : "Nova Busca"}
       </button>
+
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{modalError ? "Erro" : "Sucesso"}</DialogTitle>
+          <DialogDescription>
+            {modalMessage}
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button onClick={() => setShowModal(false)}>
+            OK
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
     </form>
   );
 }
