@@ -10,13 +10,13 @@ import {
 } from "../components/ui/dialog";
 import { Button } from "../components/ui/button";
 
-export function MidiaFormFilmeSerie({
-  dados,
-  onNovaBusca
-}: {
+interface MidiaFormFilmeSerieProps {
   dados: any;
   onNovaBusca?: () => void;
-}) {
+  focusPesquisa?: () => void; // nova prop para foco e limpeza
+}
+
+export function MidiaFormFilmeSerie({ dados, onNovaBusca, focusPesquisa }: MidiaFormFilmeSerieProps) {
   const initial = useMemo(() => {
     const coverFromTMDB = dados?.poster_path
       ? `https://image.tmdb.org/t/p/w500${dados.poster_path}`
@@ -33,6 +33,7 @@ export function MidiaFormFilmeSerie({
   const [modoEdicao, setModoEdicao] = useState(true);
   const [salvando, setSalvando] = useState(false);
 
+  // estados do modal
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalError, setModalError] = useState(false);
@@ -68,7 +69,6 @@ export function MidiaFormFilmeSerie({
     e.preventDefault();
 
     if (!modoEdicao) {
-      // Apenas chama o componente pai para iniciar nova busca
       if (onNovaBusca) onNovaBusca();
       return;
     }
@@ -120,7 +120,6 @@ export function MidiaFormFilmeSerie({
 
           {/* Campos lado a lado */}
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Temporada (apenas para série) */}
             {dadosMidia.formatoMidia === "tv" && (
               <div>
                 <label className="block text-sm font-medium mb-1 text-white">
@@ -134,24 +133,8 @@ export function MidiaFormFilmeSerie({
                   placeholder="Ex: 1ª Temporada"
                 />
               </div>
-            )}<Dialog open={showModal} onOpenChange={setShowModal}>
-  <DialogContent>
-    <DialogHeader>
-      <DialogTitle>{modalError ? "Erro" : "Sucesso"}</DialogTitle>
-      <DialogDescription>
-        {modalMessage}
-      </DialogDescription>
-    </DialogHeader>
-    <DialogFooter>
-      <Button onClick={() => setShowModal(false)}>
-        OK
-      </Button>
-    </DialogFooter>
-  </DialogContent>
-</Dialog>
+            )}
 
-
-            {/* Campos vindos da TMDB */}
             {camposTMDB.map((campo) => {
               const isEditable = campo === "observacoes" || campo === "temporada";
               if (campo === "temporada" && dadosMidia.formatoMidia !== "tv") return null;
@@ -171,11 +154,7 @@ export function MidiaFormFilmeSerie({
                     readOnly={!isEditable}
                     onChange={(e) => {
                       if (campo === "temporada") setTemporada(e.target.value);
-                      else
-                        setDadosMidia({
-                          ...dadosMidia,
-                          [campo]: e.target.value
-                        });
+                      else setDadosMidia({ ...dadosMidia, [campo]: e.target.value });
                     }}
                   />
                 </div>
@@ -185,7 +164,6 @@ export function MidiaFormFilmeSerie({
         </div>
       )}
 
-      {/* Botão Salvar / Nova Busca */}
       <button
         type="submit"
         className={`px-4 py-2 rounded transition text-white ${
@@ -196,22 +174,29 @@ export function MidiaFormFilmeSerie({
         {modoEdicao ? (salvando ? "Salvando..." : "Salvar Alterações") : "Nova Busca"}
       </button>
 
+      {/* Modal */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{modalError ? "Erro" : "Sucesso"}</DialogTitle>
-          <DialogDescription>
-            {modalMessage}
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button onClick={() => setShowModal(false)}>
-            OK
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{modalError ? "Erro" : "Sucesso"}</DialogTitle>
+            <DialogDescription>
+              {modalMessage}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                setShowModal(false);
+                if (!modalError && focusPesquisa) {
+                  focusPesquisa(); // limpa e foca input de pesquisa
+                }
+              }}
+            >
+              OK
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }

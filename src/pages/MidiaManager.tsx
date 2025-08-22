@@ -102,6 +102,14 @@ export function MidiaManager() {
     }
   };
 
+  // limpa o input de pesquisa e foca
+  const limparEFocarInput = () => {
+    setBuscaMidia("");       // limpa o input
+    setResultados([]);       // limpa resultados
+    setMidiaSelecionada(null); // limpa seleção
+    setTimeout(() => inputRef.current?.focus(), 50); // foca input após limpar
+  };
+
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Gerenciar Mídias</h2>
@@ -167,7 +175,10 @@ export function MidiaManager() {
           {midiaSelecionada && (
             <>
               {[1, 2, 6].includes(midiaSelecionada.midiaTipoId) ? (
-                <MidiaFormFilmeSerie dados={midiaSelecionada} />
+                <MidiaFormFilmeSerie 
+                  dados={midiaSelecionada}
+                  focusPesquisa={limparEFocarInput} // ✅ função que limpa e foca input 
+                 />
               ) : [9, 10, 11].includes(midiaSelecionada.midiaTipoId) ? (
                 <p>Formulário específico para Jogos (a implementar)</p>
               ) : [3, 4, 5].includes(midiaSelecionada.midiaTipoId) ? (
