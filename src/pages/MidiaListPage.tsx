@@ -166,7 +166,7 @@ const MidiaListPage: React.FC = () => {
                     )}
                   </td>
                   <td className="px-4 py-2 border-b text-[#4B3621]">
-                    {midia.tipoMidia || "-"}
+                    {midia.midiaTipoNome || "-"}
                   </td>
                 </tr>
               ))}

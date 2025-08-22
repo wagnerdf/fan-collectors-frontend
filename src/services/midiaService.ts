@@ -30,6 +30,7 @@ export interface MidiaResponse {
   formatoMidia: string | null;
   temporada: string | null;
   midiaTipoId: number;
+  midiaTipoNome: string;
 }
 
 export type PaginaMidias = {
@@ -48,6 +49,7 @@ export async function buscarMidiasPaginadas(
       Authorization: `Bearer ${token}`,
     },
   });
+  console.log("Midias paginadas:", response.data); // <-- log aqui
   return response.data;
 }
 

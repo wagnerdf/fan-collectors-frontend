@@ -227,7 +227,8 @@ export function MidiaForm() {
     notaMedia: dadosSelecionados.nota_media,
     formatoMidia: dadosSelecionados.formatoMidia,
     temporada: temporada,
-    midiaTipoId: tipoSelecionadoObj.id
+    midiaTipoId: tipoSelecionadoObj.id,
+    midiaTipoNome: dadosSelecionados.midiaTipoNome
   };
 
       await api.post("/api/midias", payload);

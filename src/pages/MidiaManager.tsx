@@ -146,10 +146,10 @@ export function MidiaManager() {
                     className="px-4 py-2 hover:bg-blue-100 cursor-pointer"
                     onClick={() => handleSelecionarMidia(midia)}
                   >
-                    {midia.tituloAlternativo || midia.tituloOriginal}{" "}
-                    <span className="text-gray-600">
-                      {midia.tituloAlternativo && midia.tituloOriginal ? `(${midia.tituloOriginal})` : ""}
-                    </span>
+                  {midia.tituloAlternativo || midia.tituloOriginal}{" "}
+                  <span className="text-gray-600">
+                    {midia.midiaTipoNome ? `- ${midia.midiaTipoNome}` : ""}
+                  </span>
                   </li>
                 ))}
               </ul>

@@ -8,7 +8,6 @@ export function MidiaFormFilmeSerie({
   dados: any;
   onNovaBusca?: () => void;
 }) {
-  // Normaliza o campo de capa (aceita capa_url, capaUrl ou poster_path)
   const initial = useMemo(() => {
     const coverFromTMDB = dados?.poster_path
       ? `https://image.tmdb.org/t/p/w500${dados.poster_path}`
@@ -27,12 +26,14 @@ export function MidiaFormFilmeSerie({
 
   useEffect(() => {
     setDadosMidia(initial);
-  }, [initial]);
+    setTemporada(dados?.temporada || "");
+    setModoEdicao(true);
+  }, [initial, dados?.temporada]);
 
   const camposTMDB = [
     "observacoes",
-    "tipoMidia",
     "formatoMidia",
+    "midiaTipoNome",
     "tituloAlternativo",
     "tituloOriginal",
     "temporada",
@@ -54,103 +55,104 @@ export function MidiaFormFilmeSerie({
     e.preventDefault();
 
     if (!modoEdicao) {
-      // Nova busca (limpa os campos)
-      setDadosMidia({});
-      setTemporada("");
-      setModoEdicao(true);
+      // Apenas chama o componente pai para iniciar nova busca
       if (onNovaBusca) onNovaBusca();
       return;
     }
 
     try {
-      // Monta o objeto com os campos que podem ser alterados
+      setSalvando(true);
+
       const dto = {
         observacao: dadosMidia.observacoes,
-        temporada: temporada || undefined, // envia undefined se estiver vazio
+        temporada: temporada || undefined,
         formatoMidia: dadosMidia.formatoMidia
       };
 
-      // Chama a função do service
       await atualizarCamposLivres(dadosMidia.id, dto);
 
       alert("Mídia atualizada com sucesso!");
-      setModoEdicao(false);
+      setModoEdicao(false); // Alterna botão para "Nova Busca"
+      setSalvando(false);
     } catch (erro) {
       console.error("Erro ao atualizar mídia:", erro);
       alert("Ocorreu um erro ao atualizar a mídia. Tente novamente.");
+      setSalvando(false);
     }
   };
 
   return (
     <form className="space-y-4 text-black" onSubmit={handleSubmit}>
-      <div className="flex flex-col sm:flex-row gap-6 items-start">
-        {/* Imagem da capa */}
-        {dadosMidia?.capa_url ? (
-          <div className="w-48 flex-shrink-0">
-            <img
-              src={dadosMidia.capa_url}
-              alt="Capa da mídia"
-              className="rounded shadow object-cover w-full h-auto"
-            />
-          </div>
-        ) : (
-          <div className="w-48 flex-shrink-0 flex items-center justify-center bg-gray-100 rounded p-2 text-sm text-gray-500">
-            Sem capa
-          </div>
-        )}
-
-        {/* Campos lado a lado */}
-        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Temporada (apenas para série) */}
-          {dadosMidia.formatoMidia === "tv" && (
-            <div>
-              <label className="block text-sm font-medium mb-1 text-white">
-                Temporada da Série
-              </label>
-              <input
-                type="text"
-                value={temporada}
-                onChange={(e) => setTemporada(e.target.value)}
-                className="w-full border px-3 py-2 rounded bg-white"
-                placeholder="Ex: 1ª Temporada"
+      {modoEdicao && (
+        <div className="flex flex-col sm:flex-row gap-6 items-start">
+          {/* Imagem da capa */}
+          {dadosMidia?.capa_url ? (
+            <div className="w-48 flex-shrink-0">
+              <img
+                src={dadosMidia.capa_url}
+                alt="Capa da mídia"
+                className="rounded shadow object-cover w-full h-auto"
               />
+            </div>
+          ) : (
+            <div className="w-48 flex-shrink-0 flex items-center justify-center bg-gray-100 rounded p-2 text-sm text-gray-500">
+              Sem capa
             </div>
           )}
 
-          {/* Campos vindos da TMDB */}
-          {camposTMDB.map((campo) => {
-            const isEditable = campo === "observacoes" || campo === "temporada";
-            if (campo === "temporada" && dadosMidia.formatoMidia !== "tv") return null;
-
-            return (
-              <div key={campo}>
-                <label className="block text-sm font-medium capitalize mb-1 text-white">
-                  {campo.replace(/_/g, " ")}
+          {/* Campos lado a lado */}
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Temporada (apenas para série) */}
+            {dadosMidia.formatoMidia === "tv" && (
+              <div>
+                <label className="block text-sm font-medium mb-1 text-white">
+                  Temporada da Série
                 </label>
                 <input
                   type="text"
-                  name={campo}
-                  className={`w-full border px-3 py-2 rounded ${
-                    isEditable ? "bg-white" : "bg-gray-300 cursor-not-allowed"
-                  }`}
-                  value={campo === "temporada" ? temporada : dadosMidia[campo] || ""}
-                  readOnly={!isEditable}
-                  onChange={(e) => {
-                    if (campo === "temporada") setTemporada(e.target.value);
-                    else
-                      setDadosMidia({
-                        ...dadosMidia,
-                        [campo]: e.target.value
-                      });
-                  }}
+                  value={temporada}
+                  onChange={(e) => setTemporada(e.target.value)}
+                  className="w-full border px-3 py-2 rounded bg-white"
+                  placeholder="Ex: 1ª Temporada"
                 />
               </div>
-            );
-          })}
+            )}
 
+            {/* Campos vindos da TMDB */}
+            {camposTMDB.map((campo) => {
+              const isEditable = campo === "observacoes" || campo === "temporada";
+              if (campo === "temporada" && dadosMidia.formatoMidia !== "tv") return null;
+
+              return (
+                <div key={campo}>
+                  <label className="block text-sm font-medium capitalize mb-1 text-white">
+                    {campo.replace(/_/g, " ")}
+                  </label>
+                  <input
+                    type="text"
+                    name={campo}
+                    className={`w-full border px-3 py-2 rounded ${
+                      isEditable ? "bg-white" : "bg-gray-300 cursor-not-allowed"
+                    }`}
+                    value={campo === "temporada" ? temporada : dadosMidia[campo] || ""}
+                    readOnly={!isEditable}
+                    onChange={(e) => {
+                      if (campo === "temporada") setTemporada(e.target.value);
+                      else
+                        setDadosMidia({
+                          ...dadosMidia,
+                          [campo]: e.target.value
+                        });
+                    }}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
+      {/* Botão Salvar / Nova Busca */}
       <button
         type="submit"
         className={`px-4 py-2 rounded transition text-white ${
