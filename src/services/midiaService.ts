@@ -49,7 +49,6 @@ export async function buscarMidiasPaginadas(
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log("Midias paginadas:", response.data); // <-- log aqui
   return response.data;
 }
 
@@ -75,7 +74,6 @@ export const buscarMidiasPorTermo = async (termo: string): Promise<MidiaResponse
   return response.data;
 };
 
-
 // ✏️ Atualizar campos livres (observacoes e temporada)
 export interface MidiaCamposLivresDto {
   observacoes?: string;
@@ -94,7 +92,3 @@ export const atualizarCamposLivres = async (
     },
   });
 };
-
-
-
-

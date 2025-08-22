@@ -64,7 +64,7 @@ export function MidiaFormFilmeSerie({
       setSalvando(true);
 
       const dto = {
-        observacao: dadosMidia.observacoes,
+        observacoes: dadosMidia.observacoes,
         temporada: temporada || undefined,
         formatoMidia: dadosMidia.formatoMidia
       };
