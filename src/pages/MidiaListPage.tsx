@@ -1,74 +1,83 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
+import Select, { components, MultiValue } from "react-select";
 import {
-  buscarMidiasDoUsuario,      // Usado para buscar todas sem paginação
+  buscarMidiasDoUsuario,
   buscarMidiasPaginadas,
   MidiaResponse,
-  PaginaMidias,
 } from "../services/midiaService";
 
 const REGISTROS_POR_PAGINA = 25;
 
+// Tipo para opções do select
+type TipoMidiaOption = {
+  label: string;
+  value: string;
+};
+
+// Componente customizado para checkbox nas opções
+const OptionCheckbox = (props: any) => (
+  <components.Option {...props}>
+    <input
+      type="checkbox"
+      checked={props.isSelected}  
+      readOnly
+      style={{ marginRight: 8 }}
+    />
+    <label style={{ color: "#000" }}>{props.label}</label>
+  </components.Option>
+);
+
 const MidiaListPage: React.FC = () => {
   const [midias, setMidias] = useState<MidiaResponse[]>([]);
   const [carregando, setCarregando] = useState(true);
-  const [modoVisualizacao, setModoVisualizacao] =
-    useState<"tabela" | "capa">("tabela");
-  const [tipoSelecionado, setTipoSelecionado] = useState<string>("Todos");
+  const [modoVisualizacao, setModoVisualizacao] = useState<"tabela" | "capa">("tabela");
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
-
-  // NOVO: Estado para armazenar TODAS as mídias para imprimir
   const [midiasParaImprimir, setMidiasParaImprimir] = useState<MidiaResponse[] | null>(null);
 
-  useEffect(() => {
-    const fetchMidias = async () => {
-      setCarregando(true);
-      try {
-        const data = await buscarMidiasPaginadas(paginaAtual - 1, REGISTROS_POR_PAGINA);
-        setMidias(data.content);
-        setTotalPaginas(data.totalPages);
-      } catch (error) {
-        console.error("Erro ao buscar mídias:", error);
-      } finally {
-        setCarregando(false);
-      }
-    };
+  const [selectedTipos, setSelectedTipos] = useState<MultiValue<TipoMidiaOption>>([]);
+  const [tiposMidiaOptions, setTiposMidiaOptions] = useState<TipoMidiaOption[]>([]);
 
-    fetchMidias();
-  }, [paginaAtual]);
-
-  const tiposMidiaDoUsuario = useMemo(() => {
-    const tiposUnicos = new Set<string>();
-    midias.forEach((midia) => {
-      if (midia.tipoMidia) {
-        tiposUnicos.add(midia.tipoMidia);
-      }
-    });
-    return Array.from(tiposUnicos).sort();
-  }, [midias]);
-
-  const midiasFiltradas =
-    tipoSelecionado === "Todos"
-      ? midias
-      : midias.filter((midia) => midia.tipoMidia === tipoSelecionado);
-
-  const mudarPagina = (novaPagina: number) => {
-    if (novaPagina >= 1 && novaPagina <= totalPaginas) {
-      setPaginaAtual(novaPagina);
+  // Buscar mídias paginadas
+  const fetchMidias = async () => {
+    setCarregando(true);
+    try {
+      const data = await buscarMidiasPaginadas(paginaAtual - 1, REGISTROS_POR_PAGINA);
+      setMidias(data.content);
+      setTotalPaginas(data.totalPages);
+    } catch (error) {
+      console.error("Erro ao buscar mídias:", error);
+    } finally {
+      setCarregando(false);
     }
   };
 
-  // NOVO: Função para buscar todas as mídias e imprimir
+  useEffect(() => {
+    fetchMidias();
+  }, [paginaAtual]);
+
+  // Atualiza opções e selecionados a partir das mídias
+  useEffect(() => {
+    const tiposUnicos = Array.from(new Set(midias.map((m) => m.midiaTipoNome)))
+      .filter((tipo): tipo is string => !!tipo)
+      .map((tipo) => ({ label: tipo, value: tipo.toLowerCase() }));
+
+    setTiposMidiaOptions(tiposUnicos);
+    setSelectedTipos(tiposUnicos); // já marca todos os tipos presentes
+  }, [midias]);
+
+  const mudarPagina = (novaPagina: number) => {
+    if (novaPagina >= 1 && novaPagina <= totalPaginas) setPaginaAtual(novaPagina);
+  };
+
   const handlePrintAll = async () => {
     try {
       setCarregando(true);
-      const todasMidias = await buscarMidiasDoUsuario(); // Busca todas sem paginação
+      const todasMidias = await buscarMidiasDoUsuario();
       setMidiasParaImprimir(todasMidias);
-
-      // Pequeno delay para renderizar antes do print
       setTimeout(() => {
         window.print();
-        setMidiasParaImprimir(null); // Limpa após impressão
+        setMidiasParaImprimir(null);
         setCarregando(false);
       }, 600);
     } catch (error) {
@@ -77,8 +86,28 @@ const MidiaListPage: React.FC = () => {
     }
   };
 
-  if (carregando)
-    return <p className="p-6 text-white">🔄 Carregando mídias...</p>;
+  if (carregando) return <p className="p-6 text-white">🔄 Carregando mídias...</p>;
+
+  const customStyles = {
+    control: (provided: any) => ({
+      ...provided,
+      backgroundColor: "#e5e7eb",
+      color: "#000000",
+    }),
+    singleValue: (provided: any) => ({
+      ...provided,
+      color: "#000000",
+    }),
+    menu: (provided: any) => ({
+      ...provided,
+      backgroundColor: "#e5e7eb",
+    }),
+    option: (provided: any, state: any) => ({
+      ...provided,
+      backgroundColor: state.isFocused ? "#d1d5db" : "#e5e7eb",
+      color: "#000000",
+    }),
+  };
 
   return (
     <div id="print-area" className="p-4">
@@ -88,9 +117,7 @@ const MidiaListPage: React.FC = () => {
         <button
           onClick={() => setModoVisualizacao("tabela")}
           className={`px-3 py-1 rounded text-sm ${
-            modoVisualizacao === "tabela"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            modoVisualizacao === "tabela" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
         >
           📝 Ver como lista
@@ -99,28 +126,27 @@ const MidiaListPage: React.FC = () => {
         <button
           onClick={() => setModoVisualizacao("capa")}
           className={`px-3 py-1 rounded text-sm ${
-            modoVisualizacao === "capa"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            modoVisualizacao === "capa" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
         >
           🖼️ Ver como capas
         </button>
 
-        <select
-          className="px-3 py-1 rounded border text-sm bg-white text-black"
-          value={tipoSelecionado}
-          onChange={(e) => setTipoSelecionado(e.target.value)}
-        >
-          <option value="Todos">🎯 Todos</option>
-          {tiposMidiaDoUsuario.map((tipo) => (
-            <option key={tipo} value={tipo}>
-              {tipo}
-            </option>
-          ))}
-        </select>
+        {/* Select preenchido dinamicamente */}
+        <div style={{ minWidth: 200 }}>
+          <Select<TipoMidiaOption, true>
+            options={tiposMidiaOptions}
+            value={selectedTipos}
+            onChange={(val: MultiValue<TipoMidiaOption>) => setSelectedTipos(val)}
+            isMulti
+            closeMenuOnSelect={false}
+            placeholder="Selecione tipo(s)"
+            components={{ Option: OptionCheckbox, MultiValue: () => null }}
+            hideSelectedOptions={false}
+            styles={customStyles}
+          />
+        </div>
 
-        {/* ALTERADO: Botão para imprimir TODAS as mídias */}
         <button
           onClick={handlePrintAll}
           className="px-3 py-1 rounded text-sm bg-yellow-600 text-white hover:bg-yellow-700 transition"
@@ -129,6 +155,7 @@ const MidiaListPage: React.FC = () => {
         </button>
       </div>
 
+      {/* Renderizar mídias */}
       {midias.length === 0 ? (
         <p className="text-white">Nenhuma mídia cadastrada ainda.</p>
       ) : modoVisualizacao === "tabela" ? (
@@ -136,49 +163,32 @@ const MidiaListPage: React.FC = () => {
           <table className="min-w-full bg-white shadow rounded">
             <thead className="bg-gray-100">
               <tr>
-                <th className="text-left px-4 py-2 border-b font-semibold text-[#4B3621]">
-                  Título
-                </th>
-                <th className="text-left px-4 py-2 border-b font-semibold text-[#4B3621]">
-                  Gênero
-                </th>
-                <th className="text-left px-4 py-2 border-b font-semibold text-[#4B3621]">
-                  Tipo
-                </th>
+                <th className="text-left px-4 py-2 border-b font-semibold text-[#4B3621]">Título</th>
+                <th className="text-left px-4 py-2 border-b font-semibold text-[#4B3621]">Gênero</th>
+                <th className="text-left px-4 py-2 border-b font-semibold text-[#4B3621]">Tipo</th>
               </tr>
             </thead>
             <tbody>
-              {midiasFiltradas.map((midia, index) => (
+              {midias.map((midia, index) => (
                 <tr
                   key={midia.id}
-                  className={`cursor-pointer transition ${
-                    index % 2 === 0 ? "bg-white" : "bg-gray-200"
-                  } hover:bg-blue-50`}
+                  className={`cursor-pointer transition ${index % 2 === 0 ? "bg-white" : "bg-gray-200"} hover:bg-blue-50`}
                 >
                   <td className="px-4 py-2 border-b text-[#4B3621]">
-                    {midia.tituloAlternativo || (
-                      <span className="italic text-gray-400">Sem título</span>
-                    )}
+                    {midia.tituloAlternativo || <span className="italic text-gray-400">Sem título</span>}
                   </td>
                   <td className="px-4 py-2 border-b text-[#4B3621]">
-                    {midia.generos || (
-                      <span className="italic text-gray-400">Sem gênero</span>
-                    )}
+                    {midia.generos || <span className="italic text-gray-400">Sem gênero</span>}
                   </td>
-                  <td className="px-4 py-2 border-b text-[#4B3621]">
-                    {midia.midiaTipoNome || "-"}
-                  </td>
+                  <td className="px-4 py-2 border-b text-[#4B3621]">{midia.midiaTipoNome || "-"}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       ) : (
-        <div
-          className="flex flex-wrap justify-start gap-4"
-          style={{ rowGap: "1rem", columnGap: "1rem" }}
-        >
-          {midiasFiltradas.map((midia) => (
+        <div className="flex flex-wrap justify-start gap-4" style={{ rowGap: "1rem", columnGap: "1rem" }}>
+          {midias.map((midia) => (
             <div
               key={midia.id}
               className="bg-white shadow rounded p-2 flex flex-col items-center hover:shadow-lg transition cursor-pointer"
@@ -186,11 +196,7 @@ const MidiaListPage: React.FC = () => {
             >
               <div className="w-full h-[350px] overflow-hidden rounded bg-gray-200 flex justify-center items-center mb-2">
                 <img
-                  src={
-                    midia.capaUrl?.startsWith("http")
-                      ? midia.capaUrl
-                      : `https://${midia.capaUrl}`
-                  }
+                  src={midia.capaUrl?.startsWith("http") ? midia.capaUrl : `https://${midia.capaUrl}`}
                   alt={midia.tituloAlternativo || "Sem título"}
                   className="w-full h-full object-cover"
                 />
@@ -219,9 +225,7 @@ const MidiaListPage: React.FC = () => {
               key={pagina}
               onClick={() => mudarPagina(pagina)}
               className={`px-3 py-1 rounded ${
-                pagina === paginaAtual
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
+                pagina === paginaAtual ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"
               }`}
             >
               {pagina}
@@ -238,7 +242,7 @@ const MidiaListPage: React.FC = () => {
         </div>
       )}
 
-      {/* NOVO: Área oculta para imprimir todas as mídias */}
+      {/* Área oculta para imprimir todas as mídias */}
       {midiasParaImprimir && (
         <div className="print-area">
           {midiasParaImprimir.map((midia) => (
@@ -254,23 +258,12 @@ const MidiaListPage: React.FC = () => {
         </div>
       )}
 
-
-      {/* CSS para impressão: só mostra print-area no print */}
+      {/* CSS para impressão */}
       <style>{`
         @media print {
-          body * {
-            visibility: hidden;
-          }
-          .print-area, .print-area * {
-            visibility: visible;
-          }
-          .print-area {
-            display: block !important;
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-          }
+          body * { visibility: hidden; }
+          .print-area, .print-area * { visibility: visible; }
+          .print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
         }
       `}</style>
     </div>
