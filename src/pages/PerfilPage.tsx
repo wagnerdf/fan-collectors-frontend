@@ -72,6 +72,15 @@ function PerfilPage() {
     navigate("/");
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get("tab") as Pagina | null;
+    if (tab) {
+      setPaginaAtiva(tab);
+    }
+    carregarUsuario();
+  }, [location, carregarUsuario]);
+
   const handleSelectPage = (pagina: Pagina) => {
     if (pagina === "home") {
       navigate("/");

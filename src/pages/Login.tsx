@@ -35,9 +35,10 @@ function Login() {
     }
   }, []);
 
+  // Redireciona automaticamente caso já haja token
   useEffect(() => {
     if (token) {
-      navigate("/perfil");
+      navigate("/perfil?tab=visualizarMidias");
     }
   }, [token, navigate]);
 
@@ -67,7 +68,9 @@ function Login() {
       login(token);
       sessionStorage.removeItem('loginEmail');
       setMensagem('Login realizado com sucesso!');
-      navigate('/perfil');
+
+      // Redireciona para PerfilPage com a aba de listagem de mídias
+      navigate('/perfil?tab=visualizarMidias');
     } catch (err: any) {
       const msg =
         err.response?.data?.message ||
@@ -182,4 +185,5 @@ function Login() {
     </div>
   );
 }
+
 export default Login;
