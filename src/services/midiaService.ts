@@ -1,4 +1,5 @@
 import api from "../services/api";
+import axios from "axios";
 
 // Pega token do localStorage
 const token = localStorage.getItem("fanCollectorsMediaToken");
@@ -74,16 +75,17 @@ export const buscarMidiasPorTermo = async (termo: string): Promise<MidiaResponse
   return response.data;
 };
 
-// ✏️ Atualizar campos livres (observacoes e temporada)
+// ✏️ Atualizar campos livres (observacoes, temporada e midiaTipoNome)
 export interface MidiaCamposLivresDto {
   observacoes?: string;
   temporada?: string;
+  midiaTipoNome?: string;
 }
 
-// Atualiza apenas os campos livres: observacao e temporada
+// Atualiza os campos livres da mídia: observacao, temporada, formatoMidia e midiaTipoNome
 export const atualizarCamposLivres = async (
   id: number,
-  dados: { observacao?: string; temporada?: string; formatoMidia?: string }
+  dados: { observacao?: string; temporada?: string; midiaTipoNome?: string; formatoMidia?: string }
 ): Promise<void> => {
   const token = localStorage.getItem("fanCollectorsMediaToken");
   await api.patch(`/api/midias/${id}/editar-campos-livres`, dados, {
@@ -91,4 +93,11 @@ export const atualizarCamposLivres = async (
       Authorization: `Bearer ${token}`,
     },
   });
+  console.log("Enviando para o backend:", dados);
+};
+
+export const buscarMidiaTipos = async (ids: number[]) => {
+  const params = ids.join(",");
+  const res = await api.get(`/api/midias/selecao?ids=${params}`);
+  return res.data;
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { atualizarCamposLivres } from "../services/midiaService";
+import { atualizarCamposLivres, buscarMidiaTipos } from "../services/midiaService";
 import {
   Dialog,
   DialogContent,
@@ -13,10 +13,24 @@ import { Button } from "../components/ui/button";
 interface MidiaFormFilmeSerieProps {
   dados: any;
   onNovaBusca?: () => void;
-  focusPesquisa?: () => void; // nova prop para foco e limpeza
+  focusPesquisa?: () => void;
+  tiposMidia?: number[];
 }
 
-export function MidiaFormFilmeSerie({ dados, onNovaBusca, focusPesquisa }: MidiaFormFilmeSerieProps) {
+// Função utilitária para formatar labels
+const formatarLabel = (nome: string) => {
+  return nome
+    .replace(/([A-Z])/g, " $1")       // adiciona espaço antes de letras maiúsculas
+    .replace(/^./, (letra) => letra.toUpperCase())  // primeira letra maiúscula
+    .trim();                           // remove espaços extras
+};
+
+export function MidiaFormFilmeSerie({
+  dados,
+  onNovaBusca,
+  focusPesquisa,
+  tiposMidia,
+}: MidiaFormFilmeSerieProps) {
   const initial = useMemo(() => {
     const coverFromTMDB = dados?.poster_path
       ? `https://image.tmdb.org/t/p/w500${dados.poster_path}`
@@ -24,7 +38,7 @@ export function MidiaFormFilmeSerie({ dados, onNovaBusca, focusPesquisa }: Midia
 
     return {
       ...dados,
-      capa_url: dados?.capa_url || dados?.capaUrl || coverFromTMDB || ""
+      capa_url: dados?.capa_url || dados?.capaUrl || coverFromTMDB || "",
     };
   }, [dados]);
 
@@ -33,21 +47,57 @@ export function MidiaFormFilmeSerie({ dados, onNovaBusca, focusPesquisa }: Midia
   const [modoEdicao, setModoEdicao] = useState(true);
   const [salvando, setSalvando] = useState(false);
 
-  // estados do modal
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalError, setModalError] = useState(false);
 
+  // Tipos de mídia e seleção
+  const [opcoesMidia, setOpcoesMidia] = useState<{ id: number; nome: string }[]>([]);
+  const [midiaTipoId, setMidiaTipoId] = useState<number | undefined>(dados?.midiaTipoId);
+  const [carregandoTipos, setCarregandoTipos] = useState(true);
+
+  // Atualiza dados e temporada ao receber novos props
   useEffect(() => {
     setDadosMidia(initial);
     setTemporada(dados?.temporada || "");
     setModoEdicao(true);
-  }, [initial, dados?.temporada]);
+    setMidiaTipoId(dados?.midiaTipoId || undefined);
+  }, [initial, dados?.temporada, dados?.midiaTipoId]);
+
+  // Buscar tipos de mídia permitidos
+  useEffect(() => {
+    if (!tiposMidia || tiposMidia.length === 0) {
+      setCarregandoTipos(false);
+      return;
+    }
+
+    const fetchTipos = async () => {
+      try {
+        setCarregandoTipos(true);
+        const res = await buscarMidiaTipos(tiposMidia);
+        console.log("Tipos de mídia recebidos do backend:", res);
+
+        setOpcoesMidia(res);
+
+        // Seta o valor padrão do select com base no que vem da pesquisa
+        if (dados?.midiaTipoId) {
+          setMidiaTipoId(dados.midiaTipoId);
+        } else if (res.length > 0) {
+          setMidiaTipoId(res[0].id);
+        }
+
+        setCarregandoTipos(false);
+      } catch (err) {
+        console.error("Erro ao buscar tipos de mídia:", err);
+        setCarregandoTipos(false);
+      }
+    };
+
+    fetchTipos();
+  }, [tiposMidia, dados?.midiaTipoId]);
 
   const camposTMDB = [
-    "observacoes",
     "formatoMidia",
-    "midiaTipoNome",
     "tituloAlternativo",
     "tituloOriginal",
     "temporada",
@@ -62,7 +112,7 @@ export function MidiaFormFilmeSerie({ dados, onNovaBusca, focusPesquisa }: Midia
     "linguagem",
     "notaMedia",
     "artistas",
-    "diretores"
+    "diretores",
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,10 +126,15 @@ export function MidiaFormFilmeSerie({ dados, onNovaBusca, focusPesquisa }: Midia
     try {
       setSalvando(true);
 
+      // Pega o nome do tipo de mídia selecionado
+      const tipoSelecionado = opcoesMidia.find((op) => op.id === midiaTipoId);
+
       const dto = {
         observacoes: dadosMidia.observacoes,
         temporada: temporada || undefined,
-        formatoMidia: dadosMidia.formatoMidia
+        formatoMidia: dadosMidia.formatoMidia,
+        midiaTipoId: midiaTipoId,
+        midiaTipoNome: tipoSelecionado?.nome || "",  // adiciona o nome do tipo de mídia
       };
 
       await atualizarCamposLivres(dadosMidia.id, dto);
@@ -120,42 +175,66 @@ export function MidiaFormFilmeSerie({ dados, onNovaBusca, focusPesquisa }: Midia
 
           {/* Campos lado a lado */}
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Observações e Tipo de Mídia lado a lado */}
+            <div className="col-span-1">
+              <label className="block text-sm font-medium mb-1 text-white">Observações</label>
+              <input
+                type="text"
+                name="observacoes"
+                placeholder="Digite observações da mídia"
+                className="w-full border px-3 py-2 rounded bg-white"
+                value={dadosMidia.observacoes || ""}
+                onChange={(e) => setDadosMidia({ ...dadosMidia, observacoes: e.target.value })}
+              />
+            </div>
+
+            <div className="col-span-1">
+              <label className="block text-sm font-medium mb-1 text-white">Tipo de Mídia</label>
+              <select
+                className="w-full border px-3 py-2 rounded bg-white"
+                value={midiaTipoId}
+                onChange={(e) => setMidiaTipoId(Number(e.target.value))}
+              >
+                {carregandoTipos ? (
+                  <option value={0}>Carregando tipos...</option>
+                ) : (
+                  opcoesMidia.map((opcao) => (
+                    <option key={opcao.id} value={opcao.id}>
+                      {opcao.nome}
+                    </option>
+                  ))
+                )}
+              </select>
+            </div>
+
+            {/* Temporada para TV */}
             {dadosMidia.formatoMidia === "tv" && (
-              <div>
-                <label className="block text-sm font-medium mb-1 text-white">
-                  Temporada da Série
-                </label>
+              <div className="col-span-1 sm:col-span-2">
+                <label className="block text-sm font-medium mb-1 text-white">Temporada da Série</label>
                 <input
                   type="text"
                   value={temporada}
                   onChange={(e) => setTemporada(e.target.value)}
-                  className="w-full border px-3 py-2 rounded bg-white"
                   placeholder="Ex: 1ª Temporada"
+                  className="w-full border px-3 py-2 rounded bg-white"
                 />
               </div>
             )}
 
+            {/* Outros campos TMDB */}
             {camposTMDB.map((campo) => {
-              const isEditable = campo === "observacoes" || campo === "temporada";
-              if (campo === "temporada" && dadosMidia.formatoMidia !== "tv") return null;
-
+              if (campo === "temporada") return null; // já tratado
               return (
                 <div key={campo}>
-                  <label className="block text-sm font-medium capitalize mb-1 text-white">
-                    {campo.replace(/_/g, " ")}
+                  <label className="block text-sm font-medium mb-1 text-white">
+                    {formatarLabel(campo)}
                   </label>
                   <input
                     type="text"
                     name={campo}
-                    className={`w-full border px-3 py-2 rounded ${
-                      isEditable ? "bg-white" : "bg-gray-300 cursor-not-allowed"
-                    }`}
-                    value={campo === "temporada" ? temporada : dadosMidia[campo] || ""}
-                    readOnly={!isEditable}
-                    onChange={(e) => {
-                      if (campo === "temporada") setTemporada(e.target.value);
-                      else setDadosMidia({ ...dadosMidia, [campo]: e.target.value });
-                    }}
+                    className="w-full border px-3 py-2 rounded bg-gray-200 cursor-not-allowed"
+                    value={dadosMidia[campo] || ""}
+                    readOnly
                   />
                 </div>
               );
@@ -174,22 +253,17 @@ export function MidiaFormFilmeSerie({ dados, onNovaBusca, focusPesquisa }: Midia
         {modoEdicao ? (salvando ? "Salvando..." : "Salvar Alterações") : "Nova Busca"}
       </button>
 
-      {/* Modal */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{modalError ? "Erro" : "Sucesso"}</DialogTitle>
-            <DialogDescription>
-              {modalMessage}
-            </DialogDescription>
+            <DialogDescription>{modalMessage}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
               onClick={() => {
                 setShowModal(false);
-                if (!modalError && focusPesquisa) {
-                  focusPesquisa(); // limpa e foca input de pesquisa
-                }
+                if (!modalError && focusPesquisa) focusPesquisa();
               }}
             >
               OK

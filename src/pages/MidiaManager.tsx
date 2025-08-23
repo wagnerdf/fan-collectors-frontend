@@ -5,30 +5,37 @@ import { buscarMidiasPorTermo, MidiaResponse } from "../services/midiaService";
 
 export function MidiaManager() {
   const [abaAtiva, setAbaAtiva] = useState<"cadastrar" | "editar" | "excluir">("cadastrar");
-
   const [buscaMidia, setBuscaMidia] = useState("");
   const [resultados, setResultados] = useState<MidiaResponse[]>([]);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-
   const [midiaSelecionada, setMidiaSelecionada] = useState<MidiaResponse | null>(null);
 
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   const buscaPorClique = useRef(false); // flag para saber se veio de clique
   const inputRef = useRef<HTMLInputElement | null>(null); // ref para focar input ao abrir editar
 
+  // Função para mapear midiaTipoId para array de tipos
+  const getTiposMidia = (midiaTipoId: number): number[] => {
+    if ([1, 2, 6].includes(midiaTipoId)) return [1, 2, 6];
+    if ([9, 10, 11].includes(midiaTipoId)) return [9, 10, 11];
+    if ([3, 4, 5].includes(midiaTipoId)) return [3, 4, 5];
+    return [midiaTipoId]; // fallback
+  };
+
+  // Array de tipos de mídia baseado na seleção
+  const tiposMidia = midiaSelecionada ? getTiposMidia(midiaSelecionada.midiaTipoId) : [];
+
+
   useEffect(() => {
     if (buscaMidia.trim().length === 0) {
       setResultados([]);
       setErro(null);
-      if (!buscaPorClique.current) {
-        setMidiaSelecionada(null);
-      }
+      if (!buscaPorClique.current) setMidiaSelecionada(null);
       return;
     }
 
     if (buscaPorClique.current) {
-      // reset da flag e não faz busca ao clicar (comportamento de seleção por clique)
       buscaPorClique.current = false;
       return;
     }
@@ -57,15 +64,12 @@ export function MidiaManager() {
   }, [buscaMidia]);
 
   const handleSelecionarMidia = (midia: MidiaResponse) => {
-    // Se já está selecionada e clicou de novo -> limpa seleção e volta para busca em branco
     if (midiaSelecionada?.id === midia.id) {
       buscaPorClique.current = false;
       setMidiaSelecionada(null);
       setBuscaMidia("");
       setResultados([]);
       setErro(null);
-
-      // sinaliza carregando rapidinho e foca input
       setCarregando(true);
       setTimeout(() => {
         setCarregando(false);
@@ -74,40 +78,31 @@ export function MidiaManager() {
       return;
     }
 
-    // seleção normal (1º clique)
     buscaPorClique.current = true;
     setMidiaSelecionada(midia);
     setBuscaMidia(midia.tituloOriginal || midia.tituloAlternativo || "");
-    setResultados([]); // fecha lista
+    setResultados([]);
     setErro(null);
   };
 
   const handleAbaClick = (novaAba: "cadastrar" | "editar" | "excluir") => {
     setAbaAtiva(novaAba);
-
-    // sempre resetar flag para evitar efeitos colaterais do buscaPorClique
     buscaPorClique.current = false;
-
-    // limpar estados para garantir tela em branco ao abrir "editar"
     setBuscaMidia("");
     setResultados([]);
     setMidiaSelecionada(null);
     setErro(null);
     setCarregando(false);
-
-    // se abriu a aba editar, foca o input
     if (novaAba === "editar") {
-      // foco com setTimeout para garantir que o input esteja montado
       setTimeout(() => inputRef.current?.focus(), 50);
     }
   };
 
-  // limpa o input de pesquisa e foca
   const limparEFocarInput = () => {
-    setBuscaMidia("");       // limpa o input
-    setResultados([]);       // limpa resultados
-    setMidiaSelecionada(null); // limpa seleção
-    setTimeout(() => inputRef.current?.focus(), 50); // foca input após limpar
+    setBuscaMidia("");
+    setResultados([]);
+    setMidiaSelecionada(null);
+    setTimeout(() => inputRef.current?.focus(), 50);
   };
 
   return (
@@ -154,10 +149,10 @@ export function MidiaManager() {
                     className="px-4 py-2 hover:bg-blue-100 cursor-pointer"
                     onClick={() => handleSelecionarMidia(midia)}
                   >
-                  {midia.tituloAlternativo || midia.tituloOriginal}{" "}
-                  <span className="text-gray-600">
-                    {midia.midiaTipoNome ? `- ${midia.midiaTipoNome}` : ""}
-                  </span>
+                    {midia.tituloAlternativo || midia.tituloOriginal}{" "}
+                    <span className="text-gray-600">
+                      {midia.midiaTipoNome ? `- ${midia.midiaTipoNome}` : ""}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -175,10 +170,11 @@ export function MidiaManager() {
           {midiaSelecionada && (
             <>
               {[1, 2, 6].includes(midiaSelecionada.midiaTipoId) ? (
-                <MidiaFormFilmeSerie 
+                <MidiaFormFilmeSerie
                   dados={midiaSelecionada}
-                  focusPesquisa={limparEFocarInput} // ✅ função que limpa e foca input 
-                 />
+                  focusPesquisa={limparEFocarInput}
+                  tiposMidia={tiposMidia} // ✅ variável dinâmica populada
+                />
               ) : [9, 10, 11].includes(midiaSelecionada.midiaTipoId) ? (
                 <p>Formulário específico para Jogos (a implementar)</p>
               ) : [3, 4, 5].includes(midiaSelecionada.midiaTipoId) ? (
