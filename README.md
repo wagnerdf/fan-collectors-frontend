@@ -79,9 +79,9 @@ Em breve
 - [x] Upload de imagem de capa
 - [x] Validação de campos obrigatórios
 - [x] Dashboard com exibição das mídias cadastradas
-- [ ] Filtro e busca por título (em breve)
-- [ ] Edição de titulo (em breve)
-- [ ] Exlusão de título (em breve)
+- [x] Filtro e busca de midia por título
+- [X] Edição de midias
+- [X] Exlusão de midias
 - [ ] Postagens e publicação de midias dos usuários compartilhados (em breve)
 - [ ] Responsividade para mobile (em andamento)
 
