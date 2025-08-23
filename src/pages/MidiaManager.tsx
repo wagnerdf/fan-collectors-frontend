@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { MidiaForm } from "../components/MidiaForm";
 import { MidiaFormFilmeSerie } from "../components/MidiaFormFilmeSerie";
 import { buscarMidiasPorTermo, MidiaResponse } from "../services/midiaService";
+import { MidiaFormFilmeSerieDelete } from "../components/MidiaFormDelete";
 
 export function MidiaManager() {
   const [abaAtiva, setAbaAtiva] = useState<"cadastrar" | "editar" | "excluir">("cadastrar");
@@ -187,7 +188,12 @@ export function MidiaManager() {
         </div>
       )}
 
-      {abaAtiva === "excluir" && <p>Funcionalidade de exclusão de mídia será aqui.</p>}
+      {abaAtiva === "excluir" && (
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Buscar e Excluir Mídia</h3>
+          <MidiaFormFilmeSerieDelete />
+        </div>
+      )}
     </div>
   );
 }

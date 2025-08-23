@@ -75,8 +75,6 @@ export function MidiaFormFilmeSerie({
       try {
         setCarregandoTipos(true);
         const res = await buscarMidiaTipos(tiposMidia);
-        console.log("Tipos de mídia recebidos do backend:", res);
-
         setOpcoesMidia(res);
 
         // Seta o valor padrão do select com base no que vem da pesquisa

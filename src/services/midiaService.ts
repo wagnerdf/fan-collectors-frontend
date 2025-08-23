@@ -93,11 +93,15 @@ export const atualizarCamposLivres = async (
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log("Enviando para o backend:", dados);
 };
 
 export const buscarMidiaTipos = async (ids: number[]) => {
   const params = ids.join(",");
   const res = await api.get(`/api/midias/selecao?ids=${params}`);
   return res.data;
+};
+
+export const excluirMidia = async (id: number) => {
+  const res = await api.delete(`/api/midias/${id}`);
+  return res.data; // caso o backend retorne alguma confirmação, senão pode omitir
 };
