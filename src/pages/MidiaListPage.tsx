@@ -284,28 +284,39 @@ const MidiaListPage: React.FC = () => {
           className="flex flex-wrap justify-start gap-4"
           style={{ rowGap: "1rem", columnGap: "1rem" }}
         >
-          {midias.map((midia) => (
-            <div
-              key={midia.id}
-              className="bg-white shadow rounded p-2 flex flex-col items-center hover:shadow-lg transition cursor-pointer"
-              style={{ flex: "0 0 auto", width: "200px" }} // só controla a largura
-            >
-              <div className="w-full aspect-[2/3] overflow-hidden rounded bg-gray-200 flex justify-center items-center mb-2">
-                <img
-                  src={
-                    midia.capaUrl?.startsWith("http")
-                      ? midia.capaUrl
-                      : `https://${midia.capaUrl}`
-                  }
-                  alt={midia.tituloAlternativo || "Sem título"}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <h3 className="text-md font-semibold text-center text-[#4B3621] max-w-full line-clamp-2 min-h-[3rem]">
-                {midia.tituloAlternativo || "Sem título"}
-              </h3>
-            </div>
-          ))}
+{midias.map((midia) => (
+  <div
+    key={midia.id}
+    className="bg-white shadow rounded p-2 flex flex-col items-center hover:shadow-lg transition cursor-pointer"
+    style={{ flex: "0 0 auto", width: "200px" }}
+  >
+    <div className="w-full h-[350px] overflow-hidden rounded bg-gray-200 flex justify-center items-center mb-2 relative">
+      
+      {/* TAG DO TIPO COM GRADIENTE */}
+      <span className="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs font-semibold px-2 py-1 rounded shadow-md z-10">
+        {midia.midiaTipoNome}
+      </span>
+
+      {/* IMAGEM */}
+      <img
+        src={
+          midia.capaUrl?.startsWith("http")
+            ? midia.capaUrl
+            : `https://${midia.capaUrl}`
+        }
+        alt={midia.tituloAlternativo || "Sem título"}
+        className="w-full h-full object-cover"
+      />
+    </div>
+
+    {/* TÍTULO */}
+    <h3 className="text-md font-semibold text-center text-[#4B3621] max-w-full line-clamp-2">
+      {midia.tituloAlternativo || "Sem título"}
+    </h3>
+  </div>
+))}
+
+
 
         </div>
       )}
