@@ -39,6 +39,11 @@ const MidiaListPage: React.FC = () => {
   const [tiposMidiaOptions, setTiposMidiaOptions] = useState<TipoMidiaOption[]>([]);
   const [selectedTipos, setSelectedTipos] = useState<MultiValue<TipoMidiaOption>>([]);
 
+  const [midiaModal, setMidiaModal] = useState<MidiaResponse | null>(null);
+
+  const abrirModal = (midia: MidiaResponse) => setMidiaModal(midia);
+  const fecharModal = () => setMidiaModal(null);
+
   const ValueContainer = ({ children, ...props }: any) => {
     return (
       <components.ValueContainer {...props}>
@@ -87,19 +92,15 @@ const MidiaListPage: React.FC = () => {
       setCarregando(true);
       try {
         if (selectedTipos.length > 0) {
-          // Junta os tipos selecionados em uma string separada por vírgula
           const tiposSelecionadosStr = selectedTipos.map(t => t.label).join(",");
-
           const data = await buscarMidiasPorTipos(
             tiposSelecionadosStr,
             paginaAtual - 1,
             REGISTROS_POR_PAGINA
           );
-
           setMidias(data.content);
           setTotalPaginas(data.totalPages);
         } else {
-          // Nenhum tipo selecionado → mostra todas
           const data = await buscarMidiasPaginadas(paginaAtual - 1, REGISTROS_POR_PAGINA);
           setMidias(data.content);
           setTotalPaginas(data.totalPages);
@@ -141,13 +142,13 @@ const MidiaListPage: React.FC = () => {
       ...provided,
       backgroundColor: "#e5e7eb",
       color: "#000000",
-      minHeight: "30px",   // 🔽 altura mínima
-      height: "30px",      // 🔽 altura fixa
-      fontSize: "14px",    // 🔽 fonte menor
+      minHeight: "30px",
+      height: "30px",
+      fontSize: "14px",
     }),
     valueContainer: (provided: any) => ({
       ...provided,
-      padding: "0 6px",    // 🔽 reduz espaço interno
+      padding: "0 6px",
     }),
     singleValue: (provided: any) => ({
       ...provided,
@@ -156,7 +157,7 @@ const MidiaListPage: React.FC = () => {
     }),
     input: (provided: any) => ({
       ...provided,
-      margin: 0,          // 🔽 remove margens extras
+      margin: 0,
       padding: 0,
     }),
     menu: (provided: any) => ({
@@ -167,17 +168,16 @@ const MidiaListPage: React.FC = () => {
       ...provided,
       backgroundColor: state.isFocused ? "#d1d5db" : "#e5e7eb",
       color: "#000000",
-      padding: "4px 8px",  // 🔽 deixa cada opção mais compacta
+      padding: "4px 8px",
       fontSize: "14px",
       lineHeight: "18px",
     }),
     indicatorsContainer: (provided: any) => ({
       ...provided,
-      height: "30px",     // 🔽 ajusta altura dos ícones (setinha, clear, etc.)
+      height: "30px",
     }),
   };
 
-  // 🔹 Novo Control fixo com label "Selecionar tipo"
   const CustomControl = (props: any) => (
     <components.Control {...props}>
       <span style={{ marginLeft: "8px", color: "#444", fontWeight: "bold" }}>
@@ -228,7 +228,7 @@ const MidiaListPage: React.FC = () => {
             components={{
               Option: OptionCheckbox,
               MultiValue: () => null,
-              Control: CustomControl // 👈 aqui está fixo "Selecionar tipo"
+              Control: CustomControl
             }}
             hideSelectedOptions={false}
             styles={customStyles}
@@ -262,6 +262,7 @@ const MidiaListPage: React.FC = () => {
                   className={`cursor-pointer transition ${
                     index % 2 === 0 ? "bg-white" : "bg-gray-200"
                   } hover:bg-blue-50`}
+                  onClick={() => abrirModal(midia)} // 🔹 clique na tabela também abre modal
                 >
                   <td className="px-4 py-2 border-b text-[#4B3621]">
                     {midia.tituloAlternativo || (
@@ -284,42 +285,80 @@ const MidiaListPage: React.FC = () => {
           className="flex flex-wrap justify-start gap-4"
           style={{ rowGap: "1rem", columnGap: "1rem" }}
         >
-{midias.map((midia) => (
-  <div
-    key={midia.id}
-    className="bg-white shadow rounded p-2 flex flex-col items-center hover:shadow-lg transition cursor-pointer"
-    style={{ flex: "0 0 auto", width: "200px" }}
-  >
-    <div className="w-full h-[350px] overflow-hidden rounded bg-gray-200 flex justify-center items-center mb-2 relative">
-      
-      {/* TAG DO TIPO COM GRADIENTE */}
-      <span className="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs font-semibold px-2 py-1 rounded shadow-md z-10">
-        {midia.midiaTipoNome}
-      </span>
+          {midias.map((midia) => (
+            <div
+              key={midia.id}
+              className="bg-white shadow rounded p-1 flex flex-col items-center hover:shadow-lg transition cursor-pointer"
+              style={{ flex: "0 0 auto", width: "200px" }}
+              onClick={() => abrirModal(midia)} // 🔹 clique no card abre modal
+            >
+              <div className="w-full h-[280px] overflow-hidden rounded bg-gray-200 flex justify-center items-center mb-1 relative">
+                
+                <span className="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs font-semibold px-2 py-1 rounded shadow-md z-10">
+                  {midia.midiaTipoNome}
+                </span>
 
-      {/* IMAGEM */}
-      <img
-        src={
-          midia.capaUrl?.startsWith("http")
-            ? midia.capaUrl
-            : `https://${midia.capaUrl}`
-        }
-        alt={midia.tituloAlternativo || "Sem título"}
-        className="w-full h-full object-cover"
-      />
-    </div>
+                <img
+                  src={
+                    midia.capaUrl?.startsWith("http")
+                      ? midia.capaUrl
+                      : `https://${midia.capaUrl}`
+                  }
+                  alt={midia.tituloAlternativo || "Sem título"}
+                  className="w-full h-full object-cover"
+                />
+              </div>
 
-    {/* TÍTULO */}
-    <h3 className="text-md font-semibold text-center text-[#4B3621] max-w-full line-clamp-2">
-      {midia.tituloAlternativo || "Sem título"}
-    </h3>
-  </div>
-))}
-
-
+              <h3 className="text-sm font-semibold text-center text-[#4B3621] max-w-full line-clamp-2 break-words">
+                {midia.tituloAlternativo || "Sem título"}
+              </h3>
+            </div>
+          ))}
 
         </div>
       )}
+
+{midiaModal && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4"
+    onClick={fecharModal} // 🔹 clicar no fundo fecha o modal
+  >
+    <div
+      className="bg-gray-900 text-white rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto relative p-6"
+      onClick={(e) => e.stopPropagation()} // 🔹 impede fechar ao clicar dentro do modal
+    >
+      <button
+        className="absolute top-2 right-2 text-white hover:text-gray-300 text-2xl font-bold"
+        onClick={fecharModal}
+      >
+        &times;
+      </button>
+
+      <div className="flex flex-col items-center">
+        <img
+          src={midiaModal.capaUrl?.startsWith("http") ? midiaModal.capaUrl : `https://${midiaModal.capaUrl}`}
+          alt={midiaModal.tituloAlternativo || midiaModal.tituloOriginal}
+          className="w-48 h-64 object-cover rounded mb-4"
+        />
+
+        <h2 className="text-2xl font-bold mb-2 text-center">
+          {midiaModal.tituloAlternativo || midiaModal.tituloOriginal}
+        </h2>
+
+        <div className="text-sm space-y-1 w-full">
+          <p><strong>Gênero:</strong> {midiaModal.generos || "—"}</p>
+          <p><strong>Tipo:</strong> {midiaModal.midiaTipoNome || "—"}</p>
+          <p><strong>Duração:</strong> {midiaModal.duracao || "—"} minutos</p>
+          <p><strong>Linguagem:</strong> {midiaModal.linguagem || "—"}</p>
+          <p><strong>Nota Média:</strong> {midiaModal.notaMedia || "—"}</p>
+          <p><strong>Sinopse:</strong> {midiaModal.sinopse || "—"}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+
 
       {totalPaginas > 1 && (
         <div className="flex justify-center mt-6 gap-2 flex-wrap">
