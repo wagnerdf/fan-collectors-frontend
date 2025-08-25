@@ -20,9 +20,9 @@ interface MidiaFormFilmeSerieProps {
 // Função utilitária para formatar labels
 const formatarLabel = (nome: string) => {
   return nome
-    .replace(/([A-Z])/g, " $1")       // adiciona espaço antes de letras maiúsculas
-    .replace(/^./, (letra) => letra.toUpperCase())  // primeira letra maiúscula
-    .trim();                           // remove espaços extras
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (letra) => letra.toUpperCase())
+    .trim();
 };
 
 export function MidiaFormFilmeSerie({
@@ -51,9 +51,8 @@ export function MidiaFormFilmeSerie({
   const [modalMessage, setModalMessage] = useState("");
   const [modalError, setModalError] = useState(false);
 
-  // Tipos de mídia e seleção
   const [opcoesMidia, setOpcoesMidia] = useState<{ id: number; nome: string }[]>([]);
-  const [midiaTipoId, setMidiaTipoId] = useState<number | undefined>(dados?.midiaTipoId);
+  const [tipoSelecionado, setTipoSelecionado] = useState<{ id: number; nome: string } | null>(null);
   const [carregandoTipos, setCarregandoTipos] = useState(true);
 
   // Atualiza dados e temporada ao receber novos props
@@ -61,29 +60,28 @@ export function MidiaFormFilmeSerie({
     setDadosMidia(initial);
     setTemporada(dados?.temporada || "");
     setModoEdicao(true);
-    setMidiaTipoId(dados?.midiaTipoId || undefined);
-  }, [initial, dados?.temporada, dados?.midiaTipoId]);
+  }, [initial, dados?.temporada]);
 
   // Buscar tipos de mídia permitidos
   useEffect(() => {
-    if (!tiposMidia || tiposMidia.length === 0) {
-      setCarregandoTipos(false);
-      return;
-    }
-
     const fetchTipos = async () => {
+      if (!tiposMidia || tiposMidia.length === 0) {
+        setCarregandoTipos(false);
+        return;
+      }
+
       try {
         setCarregandoTipos(true);
         const res = await buscarMidiaTipos(tiposMidia);
         setOpcoesMidia(res);
 
-        // Seta o valor padrão do select com base no que vem da pesquisa
-        if (dados?.midiaTipoId) {
-          setMidiaTipoId(dados.midiaTipoId);
-        } else if (res.length > 0) {
-          setMidiaTipoId(res[0].id);
-        }
+        // Seta o tipo selecionado com base no que já existe
+        const selecionado =
+          dados?.midiaTipoId
+            ? res.find((op: { id: number; nome: string }) => op.id === dados.midiaTipoId) || res[0]
+            : res[0] || null;
 
+        setTipoSelecionado(selecionado);
         setCarregandoTipos(false);
       } catch (err) {
         console.error("Erro ao buscar tipos de mídia:", err);
@@ -111,6 +109,7 @@ export function MidiaFormFilmeSerie({
     "notaMedia",
     "artistas",
     "diretores",
+    "midiaTipoNome"
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -121,28 +120,39 @@ export function MidiaFormFilmeSerie({
       return;
     }
 
+    if (!tipoSelecionado) {
+      alert("Selecione um tipo de mídia antes de salvar.");
+      return;
+    }
+
     try {
       setSalvando(true);
-
-      // Pega o nome do tipo de mídia selecionado
-      const tipoSelecionado = opcoesMidia.find((op) => op.id === midiaTipoId);
 
       const dto = {
         observacoes: dadosMidia.observacoes,
         temporada: temporada || undefined,
         formatoMidia: dadosMidia.formatoMidia,
-        midiaTipoId: midiaTipoId,
-        midiaTipoNome: tipoSelecionado?.nome || "",  // adiciona o nome do tipo de mídia
+        midiaTipoId: tipoSelecionado.id,
+        midiaTipoNome: tipoSelecionado.nome,
       };
 
+      console.log("🚀 DTO enviado:", dto);
+
+      console.log("🚀 DTO enviado para atualizarCamposLivres:", dto);
       await atualizarCamposLivres(dadosMidia.id, dto);
+
+      setDadosMidia({
+        ...dadosMidia,
+        midiaTipoNome: tipoSelecionado.nome,
+      });
 
       setModalMessage("Mídia atualizada com sucesso!");
       setModalError(false);
       setShowModal(true);
-
       setModoEdicao(false);
       setSalvando(false);
+
+      if (onNovaBusca) onNovaBusca();
     } catch (erro) {
       console.error("Erro ao atualizar mídia:", erro);
       setModalMessage("Ocorreu um erro ao atualizar a mídia. Tente novamente.");
@@ -156,14 +166,9 @@ export function MidiaFormFilmeSerie({
     <form className="space-y-4 text-black" onSubmit={handleSubmit}>
       {modoEdicao && (
         <div className="flex flex-col sm:flex-row gap-6 items-start">
-          {/* Imagem da capa */}
           {dadosMidia?.capa_url ? (
             <div className="w-48 flex-shrink-0">
-              <img
-                src={dadosMidia.capa_url}
-                alt="Capa da mídia"
-                className="rounded shadow object-cover w-full h-auto"
-              />
+              <img src={dadosMidia.capa_url} alt="Capa da mídia" className="rounded shadow object-cover w-full h-auto" />
             </div>
           ) : (
             <div className="w-48 flex-shrink-0 flex items-center justify-center bg-gray-100 rounded p-2 text-sm text-gray-500">
@@ -171,9 +176,7 @@ export function MidiaFormFilmeSerie({
             </div>
           )}
 
-          {/* Campos lado a lado */}
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Observações e Tipo de Mídia lado a lado */}
             <div className="col-span-1">
               <label className="block text-sm font-medium mb-1 text-white">Observações</label>
               <input
@@ -190,8 +193,11 @@ export function MidiaFormFilmeSerie({
               <label className="block text-sm font-medium mb-1 text-white">Tipo de Mídia</label>
               <select
                 className="w-full border px-3 py-2 rounded bg-white"
-                value={midiaTipoId}
-                onChange={(e) => setMidiaTipoId(Number(e.target.value))}
+                value={tipoSelecionado?.id || 0}
+                onChange={(e) => {
+                  const selecionado = opcoesMidia.find((op) => op.id === Number(e.target.value)) || null;
+                  setTipoSelecionado(selecionado);
+                }}
               >
                 {carregandoTipos ? (
                   <option value={0}>Carregando tipos...</option>
@@ -205,7 +211,6 @@ export function MidiaFormFilmeSerie({
               </select>
             </div>
 
-            {/* Temporada para TV */}
             {dadosMidia.formatoMidia === "tv" && (
               <div className="col-span-1 sm:col-span-2">
                 <label className="block text-sm font-medium mb-1 text-white">Temporada da Série</label>
@@ -219,14 +224,11 @@ export function MidiaFormFilmeSerie({
               </div>
             )}
 
-            {/* Outros campos TMDB */}
             {camposTMDB.map((campo) => {
-              if (campo === "temporada") return null; // já tratado
+              if (campo === "temporada") return null;
               return (
                 <div key={campo}>
-                  <label className="block text-sm font-medium mb-1 text-white">
-                    {formatarLabel(campo)}
-                  </label>
+                  <label className="block text-sm font-medium mb-1 text-white">{formatarLabel(campo)}</label>
                   <input
                     type="text"
                     name={campo}

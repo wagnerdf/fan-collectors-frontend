@@ -39,6 +39,17 @@ const MidiaListPage: React.FC = () => {
   const [tiposMidiaOptions, setTiposMidiaOptions] = useState<TipoMidiaOption[]>([]);
   const [selectedTipos, setSelectedTipos] = useState<MultiValue<TipoMidiaOption>>([]);
 
+  const ValueContainer = ({ children, ...props }: any) => {
+    return (
+      <components.ValueContainer {...props}>
+        <span style={{ marginRight: "8px", color: "#666", fontWeight: "bold" }}>
+          Selecionar tipo:
+        </span>
+        {children}
+      </components.ValueContainer>
+    );
+  };
+
   // Buscar todas mídias paginadas
   const fetchMidias = async () => {
     setCarregando(true);
@@ -130,10 +141,23 @@ const MidiaListPage: React.FC = () => {
       ...provided,
       backgroundColor: "#e5e7eb",
       color: "#000000",
+      minHeight: "30px",   // 🔽 altura mínima
+      height: "30px",      // 🔽 altura fixa
+      fontSize: "14px",    // 🔽 fonte menor
+    }),
+    valueContainer: (provided: any) => ({
+      ...provided,
+      padding: "0 6px",    // 🔽 reduz espaço interno
     }),
     singleValue: (provided: any) => ({
       ...provided,
       color: "#000000",
+      fontSize: "14px",
+    }),
+    input: (provided: any) => ({
+      ...provided,
+      margin: 0,          // 🔽 remove margens extras
+      padding: 0,
     }),
     menu: (provided: any) => ({
       ...provided,
@@ -143,8 +167,25 @@ const MidiaListPage: React.FC = () => {
       ...provided,
       backgroundColor: state.isFocused ? "#d1d5db" : "#e5e7eb",
       color: "#000000",
+      padding: "4px 8px",  // 🔽 deixa cada opção mais compacta
+      fontSize: "14px",
+      lineHeight: "18px",
+    }),
+    indicatorsContainer: (provided: any) => ({
+      ...provided,
+      height: "30px",     // 🔽 ajusta altura dos ícones (setinha, clear, etc.)
     }),
   };
+
+  // 🔹 Novo Control fixo com label "Selecionar tipo"
+  const CustomControl = (props: any) => (
+    <components.Control {...props}>
+      <span style={{ marginLeft: "8px", color: "#444", fontWeight: "bold" }}>
+        Selecionar tipo
+      </span>
+      {props.children}
+    </components.Control>
+  );
 
   return (
     <div id="print-area" className="p-4">
@@ -178,14 +219,17 @@ const MidiaListPage: React.FC = () => {
             options={tiposMidiaOptions}
             value={selectedTipos}
             onChange={(val: MultiValue<TipoMidiaOption>) => {
-              if (val.length === 0) return; // impede desmarcar o último
+              if (val.length === 0) return;
               setSelectedTipos(val);
-              setPaginaAtual(1); // ⬅️ reseta a página ao mudar filtro
+              setPaginaAtual(1);
             }}
             isMulti
             closeMenuOnSelect={false}
-            placeholder="Selecione tipo(s)"
-            components={{ Option: OptionCheckbox, MultiValue: () => null }}
+            components={{
+              Option: OptionCheckbox,
+              MultiValue: () => null,
+              Control: CustomControl // 👈 aqui está fixo "Selecionar tipo"
+            }}
             hideSelectedOptions={false}
             styles={customStyles}
           />
