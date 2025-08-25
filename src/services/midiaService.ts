@@ -1,8 +1,4 @@
 import api from "../services/api";
-import axios from "axios";
-
-// Pega token do localStorage
-const token = localStorage.getItem("fanCollectorsMediaToken");
 
 export interface MidiaResponse {
   id: number;
@@ -45,85 +41,60 @@ export async function buscarMidiasPaginadas(
   page: number = 0,
   size: number = 25
 ): Promise<PaginaMidias> {
-  const response = await api.get(`/api/midias/usuario/paginado?page=${page}&size=${size}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await api.get(`/api/midias/usuario/paginado?page=${page}&size=${size}`);
   return response.data;
 }
 
 // 📄 Todas do usuário
 export const buscarMidiasDoUsuario = async (): Promise<MidiaResponse[]> => {
-  const response = await api.get("/api/midias/usuario", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await api.get("/api/midias/usuario");
   return response.data;
 };
 
 // 🔍 Buscar por termo
 export const buscarMidiasPorTermo = async (termo: string): Promise<MidiaResponse[]> => {
-  const token = localStorage.getItem("fanCollectorsMediaToken"); // pegar sempre na hora
   const response = await api.get(`/api/midias/buscar`, {
     params: { query: termo },
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
   });
   return response.data;
 };
 
-// ✏️ Atualizar campos livres (observacoes, temporada e midiaTipoNome)
+// ✏️ Atualizar campos livres
 export interface MidiaCamposLivresDto {
   observacoes?: string;
   temporada?: string;
   midiaTipoNome?: string;
+  formatoMidia?: string;
 }
 
-// Atualiza os campos livres da mídia: observacao, temporada, formatoMidia e midiaTipoNome
 export const atualizarCamposLivres = async (
   id: number,
-  dados: { observacoes?: string; temporada?: string; midiaTipoNome?: string; formatoMidia?: string }
+  dados: MidiaCamposLivresDto
 ): Promise<void> => {
-  const token = localStorage.getItem("fanCollectorsMediaToken");
-  await api.patch(`/api/midias/${id}/editar-campos-livres`, dados, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  await api.patch(`/api/midias/${id}/editar-campos-livres`, dados);
 };
 
+// 📋 Buscar tipos de mídia
 export const buscarMidiaTipos = async (ids: number[]) => {
   const params = ids.join(",");
   const res = await api.get(`/api/midias/selecao?ids=${params}`);
   return res.data;
 };
 
+// ❌ Excluir mídia
 export const excluirMidia = async (id: number) => {
   const res = await api.delete(`/api/midias/${id}`);
-  return res.data; // caso o backend retorne alguma confirmação, senão pode omitir
+  return res.data;
 };
 
 // 📄 Buscar mídias do usuário filtrando por tipoNome
 export async function buscarMidiasPorTipos(
-  tipos: string,  // já será string tipo1,tipo2,tipo3
+  tipos: string, // já será string tipo1,tipo2,tipo3
   page: number = 0,
   size: number = 25
 ): Promise<PaginaMidias> {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("Usuário não autenticado");
-
   const response = await api.get(
-    `/api/midias/tipos-nomes?tipos=${tipos}&page=${page}&size=${size}`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
+    `/api/midias/tipos-nomes?tipos=${tipos}&page=${page}&size=${size}`
   );
-
   return response.data;
 }
-
-
-
