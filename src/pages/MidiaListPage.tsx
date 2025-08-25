@@ -288,9 +288,9 @@ const MidiaListPage: React.FC = () => {
             <div
               key={midia.id}
               className="bg-white shadow rounded p-2 flex flex-col items-center hover:shadow-lg transition cursor-pointer"
-              style={{ flex: "0 0 auto", width: "250px" }}
+              style={{ flex: "0 0 auto", width: "200px" }} // só controla a largura
             >
-              <div className="w-full h-[350px] overflow-hidden rounded bg-gray-200 flex justify-center items-center mb-2">
+              <div className="w-full aspect-[2/3] overflow-hidden rounded bg-gray-200 flex justify-center items-center mb-2">
                 <img
                   src={
                     midia.capaUrl?.startsWith("http")
@@ -301,11 +301,12 @@ const MidiaListPage: React.FC = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <h3 className="text-md font-semibold text-center text-[#4B3621] max-w-full truncate">
+              <h3 className="text-md font-semibold text-center text-[#4B3621] max-w-full line-clamp-2 min-h-[3rem]">
                 {midia.tituloAlternativo || "Sem título"}
               </h3>
             </div>
           ))}
+
         </div>
       )}
 
