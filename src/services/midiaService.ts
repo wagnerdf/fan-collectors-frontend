@@ -105,3 +105,25 @@ export const excluirMidia = async (id: number) => {
   const res = await api.delete(`/api/midias/${id}`);
   return res.data; // caso o backend retorne alguma confirmação, senão pode omitir
 };
+
+// 📄 Buscar mídias do usuário filtrando por tipoNome
+export async function buscarMidiasPorTipos(
+  tipos: string,  // já será string tipo1,tipo2,tipo3
+  page: number = 0,
+  size: number = 25
+): Promise<PaginaMidias> {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Usuário não autenticado");
+
+  const response = await api.get(
+    `/api/midias/tipos-nomes?tipos=${tipos}&page=${page}&size=${size}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+
+  return response.data;
+}
+
+
+
