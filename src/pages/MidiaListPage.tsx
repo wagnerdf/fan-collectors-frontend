@@ -5,7 +5,8 @@ import {
   buscarMidiasPaginadas,
   buscarMidiasPorTipos,
   MidiaResponse,
-  PaginaMidias
+  PaginaMidias,
+  buscarMidiaPorId,
 } from "../services/midiaService";
 
 const REGISTROS_POR_PAGINA = 25;
@@ -39,21 +40,10 @@ const MidiaListPage: React.FC = () => {
   const [tiposMidiaOptions, setTiposMidiaOptions] = useState<TipoMidiaOption[]>([]);
   const [selectedTipos, setSelectedTipos] = useState<MultiValue<TipoMidiaOption>>([]);
 
-  const [midiaModal, setMidiaModal] = useState<MidiaResponse | null>(null);
+  const abrirModal = (midia: MidiaResponse) => setMidiaSelecionada(midia);
+  const fecharModal = () => setMidiaSelecionada(null);
 
-  const abrirModal = (midia: MidiaResponse) => setMidiaModal(midia);
-  const fecharModal = () => setMidiaModal(null);
-
-  const ValueContainer = ({ children, ...props }: any) => {
-    return (
-      <components.ValueContainer {...props}>
-        <span style={{ marginRight: "8px", color: "#666", fontWeight: "bold" }}>
-          Selecionar tipo:
-        </span>
-        {children}
-      </components.ValueContainer>
-    );
-  };
+  const [midiaSelecionada, setMidiaSelecionada] = useState<MidiaResponse | null>(null);
 
   // Buscar todas mídias paginadas
   const fetchMidias = async () => {
@@ -187,6 +177,15 @@ const MidiaListPage: React.FC = () => {
     </components.Control>
   );
 
+    const handleMidiaClick = async (id: number) => {
+    try {
+      const data = await buscarMidiaPorId(id);
+      setMidiaSelecionada(data);
+    } catch (error) {
+      console.error("Erro ao buscar mídia por id:", error);
+    }
+  };
+
   return (
     <div id="print-area" className="p-4">
       <h2 className="text-2xl font-bold text-white mb-4">🎞️ Minhas Mídias</h2>
@@ -262,19 +261,25 @@ const MidiaListPage: React.FC = () => {
                   className={`cursor-pointer transition ${
                     index % 2 === 0 ? "bg-white" : "bg-gray-200"
                   } hover:bg-blue-50`}
-                  onClick={() => abrirModal(midia)} // 🔹 clique na tabela também abre modal
+                  onClick={() => handleMidiaClick(midia.id)} // 🔹 Clique abre modal
                 >
                   <td className="px-4 py-2 border-b text-[#4B3621]">
-                    {midia.tituloAlternativo || (
+                    {midia.tituloAlternativo ? (
+                      midia.tituloAlternativo
+                    ) : (
                       <span className="italic text-gray-400">Sem título</span>
                     )}
                   </td>
                   <td className="px-4 py-2 border-b text-[#4B3621]">
-                    {midia.generos || (
+                    {midia.generos ? (
+                      midia.generos
+                    ) : (
                       <span className="italic text-gray-400">Sem gênero</span>
                     )}
                   </td>
-                  <td className="px-4 py-2 border-b text-[#4B3621]">{midia.midiaTipoNome || "-"}</td>
+                  <td className="px-4 py-2 border-b text-[#4B3621]">
+                    {midia.midiaTipoNome || "-"}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -290,7 +295,7 @@ const MidiaListPage: React.FC = () => {
               key={midia.id}
               className="bg-white shadow rounded p-1 flex flex-col items-center hover:shadow-lg transition cursor-pointer"
               style={{ flex: "0 0 auto", width: "200px" }}
-              onClick={() => abrirModal(midia)} // 🔹 clique no card abre modal
+               onClick={() => handleMidiaClick(midia.id)} // 🔹 chama a API para mídia completa
             >
               <div className="w-full h-[280px] overflow-hidden rounded bg-gray-200 flex justify-center items-center mb-1 relative">
                 
@@ -318,47 +323,87 @@ const MidiaListPage: React.FC = () => {
         </div>
       )}
 
-{midiaModal && (
-  <div
-    className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4"
-    onClick={fecharModal} // 🔹 clicar no fundo fecha o modal
-  >
-    <div
-      className="bg-gray-900 text-white rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto relative p-6"
-      onClick={(e) => e.stopPropagation()} // 🔹 impede fechar ao clicar dentro do modal
-    >
-      <button
-        className="absolute top-2 right-2 text-white hover:text-gray-300 text-2xl font-bold"
-        onClick={fecharModal}
-      >
-        &times;
-      </button>
+      {/* MODAL: abre quando midiaSelecionada tiver valor */}
+      {midiaSelecionada && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4"
+          onClick={fecharModal} // clicar no fundo fecha
+        >
+          <div
+            className="bg-gray-900 text-white rounded-lg shadow-lg w-full max-w-lg max-h-[85vh] overflow-y-auto relative p-6"
+            onClick={(e) => e.stopPropagation()} // impede fechar ao clicar dentro
+          >
+            {/* Botão fechar */}
+            <button
+              className="absolute top-2 right-2 text-white hover:text-gray-300 text-2xl font-bold"
+              onClick={fecharModal} // X fecha
+            >
+              &times;
+            </button>
 
-      <div className="flex flex-col items-center">
-        <img
-          src={midiaModal.capaUrl?.startsWith("http") ? midiaModal.capaUrl : `https://${midiaModal.capaUrl}`}
-          alt={midiaModal.tituloAlternativo || midiaModal.tituloOriginal}
-          className="w-48 h-64 object-cover rounded mb-4"
-        />
+            {/* Conteúdo do modal */}
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* Imagem */}
+              <div className="flex-shrink-0 w-full md:w-48">
+                <img
+                  src={midiaSelecionada.capaUrl?.startsWith("http") ? midiaSelecionada.capaUrl : `https://${midiaSelecionada.capaUrl}`}
+                  alt={midiaSelecionada.tituloAlternativo || midiaSelecionada.tituloOriginal}
+                  className="w-48 h-50 object-contain rounded mb-4 border-2 border-gray-500"
+                />
+              </div>
 
-        <h2 className="text-2xl font-bold mb-2 text-center">
-          {midiaModal.tituloAlternativo || midiaModal.tituloOriginal}
-        </h2>
+              {/* Dados */}
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold mb-2 text-center bg-clip-text text-transparent 
+                              bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500">
+                  {midiaSelecionada.tituloAlternativo || midiaSelecionada.tituloOriginal}
+                </h2>
 
-        <div className="text-sm space-y-1 w-full">
-          <p><strong>Gênero:</strong> {midiaModal.generos || "—"}</p>
-          <p><strong>Tipo:</strong> {midiaModal.midiaTipoNome || "—"}</p>
-          <p><strong>Duração:</strong> {midiaModal.duracao || "—"} minutos</p>
-          <p><strong>Linguagem:</strong> {midiaModal.linguagem || "—"}</p>
-          <p><strong>Nota Média:</strong> {midiaModal.notaMedia || "—"}</p>
-          <p><strong>Sinopse:</strong> {midiaModal.sinopse || "—"}</p>
+                <div className="text-sm w-full space-y-4">
+                  {/* 🎯 Informações Gerais */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2 text-blue-400">Informações Gerais</h3>
+                    <div className="text-sm space-y-1 w-full mb-4">
+                      <p><strong className="text-yellow-400">Gênero:</strong> {midiaSelecionada.generos || "—"}</p>
+                      <p><strong className="text-yellow-400">Tipo:</strong> {midiaSelecionada.midiaTipoNome || "—"}</p>
+                      <p><strong className="text-yellow-400">Formato:</strong> {midiaSelecionada.formatoMidia || "—"}</p>
+                      <p><strong className="text-yellow-400">Duração:</strong> {midiaSelecionada.duracao || "—"} minutos</p>
+                      <p><strong className="text-yellow-400">Linguagem:</strong> {midiaSelecionada.linguagem || "—"}</p>
+                    </div>
+                  </div>
+
+                  {/* ⚙️ Detalhes Técnicos */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2 text-blue-400">Detalhes Técnicos</h3>
+                    <div className="text-sm space-y-1 w-full mb-4">
+                      <p><strong className="text-yellow-400">Observações:</strong> {midiaSelecionada.observacoes || "—"}</p>
+                      <p><strong className="text-yellow-400">Nota Média:</strong> {midiaSelecionada.notaMedia || "—"}</p>
+                    </div>
+                  </div>
+
+                  {/* 🎬 Créditos */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2 text-blue-400">Créditos</h3>
+                      <div className="text-sm space-y-1 w-full">
+                        <p><strong className="text-yellow-400">Artistas:</strong> {midiaSelecionada.artistas || "—"}</p>
+                        <p><strong className="text-yellow-400">Diretores:</strong> {midiaSelecionada.diretores || "—"}</p>
+                        <p><strong className="text-yellow-400">Estúdio:</strong> {midiaSelecionada.estudio || "—"}</p>
+                      </div>
+                  </div>
+
+                  {/* 📖 Sinopse */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2 text-blue-400">Sinopse</h3>
+                      <div className="text-sm space-y-1 w-full mb-4">
+                        <p>{midiaSelecionada.sinopse || "—"}</p>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-)}
-
-
+      )}
 
       {totalPaginas > 1 && (
         <div className="flex justify-center mt-6 gap-2 flex-wrap">

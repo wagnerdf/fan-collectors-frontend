@@ -98,3 +98,9 @@ export async function buscarMidiasPorTipos(
   );
   return response.data;
 }
+
+// 📄 Buscar mídias do usuário por ID
+export const buscarMidiaPorId = async (id: number) => {
+  const res = await api.get(`/api/midias/${id}`);
+  return res.data;
+};
