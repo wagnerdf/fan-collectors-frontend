@@ -153,6 +153,8 @@ const MidiaListPage: React.FC = () => {
     menu: (provided: any) => ({
       ...provided,
       backgroundColor: "#e5e7eb",
+      zIndex: 9999, // garante que o dropdown fica por cima das capas
+      position: "absolute" as const, // evita conflito de layout
     }),
     option: (provided: any, state: any) => ({
       ...provided,
@@ -170,7 +172,7 @@ const MidiaListPage: React.FC = () => {
 
   const CustomControl = (props: any) => (
     <components.Control {...props}>
-      <span style={{ marginLeft: "8px", color: "#444", fontWeight: "bold" }}>
+      <span style={{ marginLeft: "8px", color: "#444", fontWeight: "bold", }}>
         Selecionar tipo
       </span>
       {props.children}
