@@ -67,7 +67,6 @@ const MidiaListPage: React.FC = () => {
 
       setTiposMidiaFixos(tiposUnicos);
       setTiposMidiaOptions(tiposUnicos);
-      setSelectedTipos(tiposUnicos); // seleciona todos inicialmente
     }
   }, [midias, tiposMidiaFixos.length]);
 
@@ -215,7 +214,7 @@ const MidiaListPage: React.FC = () => {
             options={tiposMidiaOptions}
             value={selectedTipos}
             onChange={(val: MultiValue<TipoMidiaOption>) => {
-              if (val.length === 0) return;
+             if (val.length === 0) return;
               setSelectedTipos(val);
               setPaginaAtual(1);
             }}
