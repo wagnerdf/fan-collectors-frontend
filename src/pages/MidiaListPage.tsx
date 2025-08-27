@@ -184,7 +184,7 @@ const MidiaListPage: React.FC = () => {
   };
 
   return (
-    <div id="print-area" className="p-4">
+    <div id="print-area" className="p-4 bg-gray-900 rounded-2xl shadow-md h-full" >
       <h2 className="text-2xl font-bold text-white mb-4">🎞️ Minhas Mídias</h2>
 
       <div className="flex flex-wrap gap-2 mb-4 items-center">
@@ -242,8 +242,8 @@ const MidiaListPage: React.FC = () => {
       {midias.length === 0 ? (
         <p className="text-white">Nenhuma mídia cadastrada ainda.</p>
       ) : modoVisualizacao === "tabela" ? (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white shadow rounded">
+        <div className="overflow-x-auto bg-white shadow rounded-2xl">
+          <table className="min-w-full bg-white shadow ">
             <thead className="bg-gray-100">
               <tr>
                 <th className="text-left px-4 py-2 border-b font-semibold text-[#4B3621]">Título</th>

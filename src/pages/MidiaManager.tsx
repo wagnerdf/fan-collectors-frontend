@@ -107,7 +107,7 @@ export function MidiaManager() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-gray-900 rounded-2xl shadow-md h-full">
       <h2 className="text-2xl font-bold mb-4">Gerenciar Mídias</h2>
 
       {/* Abas */}
