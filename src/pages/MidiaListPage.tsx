@@ -5,7 +5,6 @@ import {
   buscarMidiasPaginadas,
   buscarMidiasPorTipos,
   MidiaResponse,
-  PaginaMidias,
   buscarMidiaPorId,
 } from "../services/midiaService";
 
@@ -35,14 +34,10 @@ const MidiaListPage: React.FC = () => {
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
   const [midiasParaImprimir, setMidiasParaImprimir] = useState<MidiaResponse[] | null>(null);
-
   const [tiposMidiaFixos, setTiposMidiaFixos] = useState<TipoMidiaOption[]>([]);
   const [tiposMidiaOptions, setTiposMidiaOptions] = useState<TipoMidiaOption[]>([]);
   const [selectedTipos, setSelectedTipos] = useState<MultiValue<TipoMidiaOption>>([]);
-
-  const abrirModal = (midia: MidiaResponse) => setMidiaSelecionada(midia);
   const fecharModal = () => setMidiaSelecionada(null);
-
   const [midiaSelecionada, setMidiaSelecionada] = useState<MidiaResponse | null>(null);
 
   // Buscar todas mídias paginadas
@@ -412,7 +407,7 @@ const MidiaListPage: React.FC = () => {
           <button
             onClick={() => mudarPagina(paginaAtual - 1)}
             disabled={paginaAtual === 1}
-            className="px-3 py-1 rounded bg-gray-300 hover:bg-gray-400 disabled:opacity-50"
+            className="px-3 py-1 rounded bg-gray-400 hover:bg-gray-400 disabled:opacity-50"
           >
             ◀️ Anterior
           </button>
@@ -424,7 +419,7 @@ const MidiaListPage: React.FC = () => {
               className={`px-3 py-1 rounded ${
                 pagina === paginaAtual
                   ? "bg-blue-600 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
+                  : "bg-gray-400 hover:bg-gray-500"
               }`}
             >
               {pagina}
@@ -434,7 +429,7 @@ const MidiaListPage: React.FC = () => {
           <button
             onClick={() => mudarPagina(paginaAtual + 1)}
             disabled={paginaAtual === totalPaginas}
-            className="px-3 py-1 rounded bg-gray-300 hover:bg-gray-400 disabled:opacity-50"
+            className="px-3 py-1 rounded bg-gray-400 hover:bg-gray-400 disabled:opacity-50"
           >
             Próxima ▶️
           </button>
