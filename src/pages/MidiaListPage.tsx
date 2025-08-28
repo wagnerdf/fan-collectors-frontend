@@ -6,6 +6,8 @@ import {
   buscarMidiasPorTipos,
   MidiaResponse,
   buscarMidiaPorId,
+  buscarTodasMidiasPorTipos,
+  MidiaListagemDto,
 } from "../services/midiaService";
 
 const REGISTROS_POR_PAGINA = 25;
@@ -33,12 +35,15 @@ const MidiaListPage: React.FC = () => {
   const [modoVisualizacao, setModoVisualizacao] = useState<"tabela" | "capa">("tabela");
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
-  const [midiasParaImprimir, setMidiasParaImprimir] = useState<MidiaResponse[] | null>(null);
   const [tiposMidiaFixos, setTiposMidiaFixos] = useState<TipoMidiaOption[]>([]);
   const [tiposMidiaOptions, setTiposMidiaOptions] = useState<TipoMidiaOption[]>([]);
   const [selectedTipos, setSelectedTipos] = useState<MultiValue<TipoMidiaOption>>([]);
   const fecharModal = () => setMidiaSelecionada(null);
   const [midiaSelecionada, setMidiaSelecionada] = useState<MidiaResponse | null>(null);
+  const [tiposSelecionados, setTiposSelecionados] = useState<string[]>([]);
+  const [midiasParaImprimir, setMidiasParaImprimir] = useState<MidiaListagemDto[]>([]);
+
+
 
   // Buscar todas mídias paginadas
   const fetchMidias = async () => {
@@ -101,22 +106,6 @@ const MidiaListPage: React.FC = () => {
 
   const mudarPagina = (novaPagina: number) => {
     if (novaPagina >= 1 && novaPagina <= totalPaginas) setPaginaAtual(novaPagina);
-  };
-
-  const handlePrintAll = async () => {
-    try {
-      setCarregando(true);
-      const todasMidias = await buscarMidiasDoUsuario();
-      setMidiasParaImprimir(todasMidias);
-      setTimeout(() => {
-        window.print();
-        setMidiasParaImprimir(null);
-        setCarregando(false);
-      }, 600);
-    } catch (error) {
-      console.error("Erro ao carregar mídias para imprimir:", error);
-      setCarregando(false);
-    }
   };
 
   if (carregando) return <p className="p-6 text-white">🔄 Carregando mídias...</p>;
@@ -182,6 +171,20 @@ const MidiaListPage: React.FC = () => {
     }
   };
 
+  const handlePrint = async () => {
+      try {
+        const tipos = tiposSelecionados.join(",");
+        const todasMidias = await buscarTodasMidiasPorTipos(tipos);
+        setMidiasParaImprimir(todasMidias);
+
+        setTimeout(() => {
+          window.print();
+        }, 100);
+      } catch (err) {
+        console.error("Erro ao buscar mídias para impressão:", err);
+      }
+    };
+
   return (
     <div id="print-area" className="p-4 bg-gray-900 rounded-2xl shadow-md h-full" >
       <h2 className="text-2xl font-bold text-white mb-4">🎞️ Minhas Mídias</h2>
@@ -214,9 +217,9 @@ const MidiaListPage: React.FC = () => {
             options={tiposMidiaOptions}
             value={selectedTipos}
             onChange={(val: MultiValue<TipoMidiaOption>) => {
-             if (val.length === 0) return;
-              setSelectedTipos(val);
-              setPaginaAtual(1);
+              setSelectedTipos(val);  // atualiza SelectBox visualmente
+              setTiposSelecionados(val.map(v => v.label)); // envia apenas os nomes para backend
+              setPaginaAtual(1); // reset da paginação
             }}
             isMulti
             closeMenuOnSelect={false}
@@ -231,10 +234,10 @@ const MidiaListPage: React.FC = () => {
         </div>
 
         <button
-          onClick={handlePrintAll}
+          onClick={handlePrint}
           className="px-3 py-1 rounded text-sm bg-yellow-600 text-white hover:bg-yellow-700 transition"
         >
-          🖨️ Imprimir Todas as Mídias
+          🖨️ Imprimir Todas as Mídias 
         </button>
       </div>
 
@@ -435,38 +438,78 @@ const MidiaListPage: React.FC = () => {
         </div>
       )}
 
-      {midiasParaImprimir && (
-        <div className="print-area">
-          {midiasParaImprimir.map((midia) => (
-            <div key={midia.id} style={{ marginBottom: 20 }}>
-              <h2>{midia.tituloOriginal}</h2>
-              <p>
-                <strong>Sinopse:</strong> {midia.sinopse}
-              </p>
-              <p>
-                <strong>Gêneros:</strong> {midia.generos}
-              </p>
-              <p>
-                <strong>Duração:</strong> {midia.duracao} minutos
-              </p>
-              <p>
-                <strong>Linguagem:</strong> {midia.linguagem}
-              </p>
-              <p>
-                <strong>Nota Média:</strong> {midia.notaMedia}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+    {midiasParaImprimir && midiasParaImprimir.length > 0 && (
+      <div className="print-area">
+        <h1 className="text-2xl font-bold mb-2">Relatório de Mídias</h1>
+        <p className="mb-1">
+          <strong>Data:</strong> {new Date().toLocaleDateString()}
+        </p>
+        <p className="mb-4">
+          <strong>Total de Registros:</strong> {midiasParaImprimir.length}
+        </p>
 
-      <style>{`
-        @media print {
-          body * { visibility: hidden; }
-          .print-area, .print-area * { visibility: visible; }
-          .print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; }
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-gray-300">
+              <th className="border px-4 py-2 text-left w-12">#</th>
+              <th className="border px-4 py-2 text-left">Título</th>
+              <th className="border px-4 py-2 text-left">Gêneros</th>
+              <th className="border px-4 py-2 text-left">Tipo</th>
+            </tr>
+          </thead>
+          <tbody>
+            {midiasParaImprimir.map((midia, index) => (
+              <tr
+                key={midia.id}
+                className={index % 2 === 0 ? "bg-gray-100" : "bg-gray-200"}
+              >
+                <td className="border px-4 py-2 text-center">{index + 1}</td>
+                <td className="border px-4 py-2">{midia.tituloAlternativo}</td>
+                <td className="border px-4 py-2">{midia.generos}</td>
+                <td className="border px-4 py-2">{midia.midiaTipoNome}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+
+    <style>{`
+      @media print {
+        body * {
+          visibility: hidden !important;
         }
-      `}</style>
+        .print-area, .print-area * {
+          visibility: visible !important;
+        }
+        .print-area {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          padding: 20px;
+          background: #fff;
+          font-size: 10pt;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        th, td {
+          border: 1px solid #000;
+        }
+        thead {
+          background: #ddd !important;
+        }
+        tbody tr:nth-child(even) {
+          background: #f9f9f9 !important;
+        }
+        tbody tr:nth-child(odd) {
+          background: #ffffff !important;
+        }
+      }
+    `}</style>
+    
     </div>
   );
 };

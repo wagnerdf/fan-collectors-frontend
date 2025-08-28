@@ -1,5 +1,8 @@
 import api from "../services/api";
 
+// -------------------- Tipos --------------------
+
+// Tipo para listagem detalhada de mídias
 export interface MidiaResponse {
   id: number;
   tituloOriginal: string;
@@ -30,11 +33,23 @@ export interface MidiaResponse {
   midiaTipoNome: string;
 }
 
+// Tipo para listagem resumida usada em impressão
+export interface MidiaListagemDto {
+  id: number;
+  capaUrl: string | null;
+  midiaTipoNome: string;
+  generos: string;
+  tituloAlternativo: string;
+}
+
+// Tipo para paginação
 export type PaginaMidias = {
   content: MidiaResponse[];
   totalPages: number;
   totalElements: number;
 };
+
+// -------------------- Serviços --------------------
 
 // 📄 Paginada
 export async function buscarMidiasPaginadas(
@@ -87,7 +102,7 @@ export const excluirMidia = async (id: number) => {
   return res.data;
 };
 
-// 📄 Buscar mídias do usuário filtrando por tipoNome
+// 📄 Buscar mídias do usuário filtrando por tipoNome (paginado)
 export async function buscarMidiasPorTipos(
   tipos: string, // já será string tipo1,tipo2,tipo3
   page: number = 0,
@@ -104,3 +119,13 @@ export const buscarMidiaPorId = async (id: number) => {
   const res = await api.get(`/api/midias/${id}`);
   return res.data;
 };
+
+// 📄 Buscar todas as mídias do usuário filtrando por tipo (para impressão)
+export async function buscarTodasMidiasPorTipos(
+  tipos: string
+): Promise<MidiaListagemDto[]> {
+  const response = await api.get(
+    `/api/midias/tipos-nomes-lista${tipos ? `?tipos=${tipos}` : ""}`
+  );
+  return response.data;
+}
