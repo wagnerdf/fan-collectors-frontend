@@ -296,18 +296,12 @@ const MidiaListPage: React.FC = () => {
               style={{ flex: "0 0 auto", width: "200px" }}
                onClick={() => handleMidiaClick(midia.id)} // 🔹 chama a API para mídia completa
             >
-              <div className="w-full h-[280px] overflow-hidden rounded bg-gray-200 flex justify-center items-center mb-1 relative">
-                
+              <div className="w-full h-[280px] rounded bg-gray-200 flex justify-center items-center mb-1 relative">
                 <span className="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs font-semibold px-2 py-1 rounded shadow-md z-10">
                   {midia.midiaTipoNome}
                 </span>
-
                 <img
-                  src={
-                    midia.capaUrl?.startsWith("http")
-                      ? midia.capaUrl
-                      : `https://${midia.capaUrl}`
-                  }
+                  src={midia.capaUrl?.startsWith("http") ? midia.capaUrl : `https://${midia.capaUrl}`}
                   alt={midia.tituloAlternativo || "Sem título"}
                   className="w-full h-full object-cover"
                 />

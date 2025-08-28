@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import TooltipPortal from "../components/TooltipPortal";
 
 interface HobbyDoUsuario {
   id: number;
@@ -123,26 +123,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
         </ul>
       </div>
 
-      <AnimatePresence>
-        {tooltipVisible && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            style={{
-              position: "fixed",
-              left: tooltipPosition.x,
-              top: tooltipPosition.y,
-              zIndex: 9999,
-              pointerEvents: "none",
-            }}
-            className="bg-gray-800 text-white text-sm px-3 py-2 rounded-lg shadow-lg max-w-xs"
-          >
-            {tooltipText}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <TooltipPortal
+        visible={tooltipVisible}
+        x={tooltipPosition.x}
+        y={tooltipPosition.y}
+        text={tooltipText}
+      />
+
     </div>
   );
 };
