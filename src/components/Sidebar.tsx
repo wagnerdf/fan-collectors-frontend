@@ -60,8 +60,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
     setTooltipText("");
   };
 
-  const chaveKey = process.env.REACT_APP_API_ND;
-
   const getEmojiByNivel = (nivel: string) => {
     const map: { [key: string]: string } = {
       "1": "😴",
@@ -100,7 +98,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
   useEffect(() => {
     const fetchNoticias = async () => {
       try {
-        const chaveKey = process.env.REACT_APP_API_NOTICIAS_KEY;
+        const chaveKey = process.env.REACT_APP_API_ND;
         const response = await axios.get(
           `https://newsdata.io/api/1/news?apikey=${chaveKey}&q=cinema OR music OR games&language=pt`
         );
