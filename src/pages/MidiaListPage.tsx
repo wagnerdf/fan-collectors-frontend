@@ -483,7 +483,7 @@ const MidiaListPage: React.FC = () => {
           width: 100%;
           padding: 20px;
           background: #fff;
-          font-size: 10pt;
+          font-size: 8pt;
         }
         table {
           width: 100%;

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion"; // 👈 import animações
 import TooltipPortal from "../components/TooltipPortal";
 
 interface HobbyDoUsuario {
@@ -26,8 +27,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
   const [tooltipTimeout, setTooltipTimeout] = useState<NodeJS.Timeout | null>(null);
   const [tooltipText, setTooltipText] = useState<string>("");
 
+  const [currentHobbyIndex, setCurrentHobbyIndex] = useState(0);
+
   useEffect(() => {
-    console.log("Hobbies atualizados na Sidebar:", usuario.hobbies);
+    if (usuario.hobbies && usuario.hobbies.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentHobbyIndex((prev) =>
+          prev + 1 >= usuario.hobbies!.length ? 0 : prev + 1
+        );
+      }, 60000);
+
+      return () => clearInterval(interval);
+    }
   }, [usuario.hobbies]);
 
   const handleMouseEnter = (hobby: HobbyDoUsuario, mensagemPersonalizada?: string) => (e: React.MouseEvent) => {
@@ -94,29 +105,36 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
         <h3 className="text-lg font-semibold mb-2">Hobbies</h3>
         <ul className="space-y-2">
           {usuario.hobbies && usuario.hobbies.length > 0 ? (
-            usuario.hobbies.map((hobby) => {
-              const emoticon = getEmojiByNivel(hobby.nivelInteresse);
+            <AnimatePresence mode="wait">
+              {(() => {
+                const hobby = usuario.hobbies![currentHobbyIndex];
+                const emoticon = getEmojiByNivel(hobby.nivelInteresse);
 
-              return (
-                <li
-                  key={hobby.id}
-                  onMouseEnter={handleMouseEnter(hobby)}
-                  onMouseMove={handleMouseMove}
-                  onMouseLeave={handleMouseLeave}
-                  className="bg-gray-800 rounded-lg p-2 flex justify-between items-center hover:bg-gray-700 transition relative"
-                >
-                  <span>{hobby.nomeHobby}</span>
-                  <span
-                    onMouseEnter={handleMouseEnter(hobby, getDescricaoNivel(hobby.nivelInteresse))}
+                return (
+                  <motion.li
+                    key={hobby.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.6 }}
+                    onMouseEnter={handleMouseEnter(hobby)}
                     onMouseMove={handleMouseMove}
                     onMouseLeave={handleMouseLeave}
-                    className="text-sm text-gray-400 italic flex items-center gap-1"
+                    className="bg-gray-800 rounded-lg p-2 flex justify-between items-center hover:bg-gray-700 transition relative"
                   >
-                    {hobby.nivelInteresse} <span>{emoticon}</span>
-                  </span>
-                </li>
-              );
-            })
+                    <span>{hobby.nomeHobby}</span>
+                    <span
+                      onMouseEnter={handleMouseEnter(hobby, getDescricaoNivel(hobby.nivelInteresse))}
+                      onMouseMove={handleMouseMove}
+                      onMouseLeave={handleMouseLeave}
+                      className="text-sm text-gray-400 italic flex items-center gap-1"
+                    >
+                      {hobby.nivelInteresse} <span>{emoticon}</span>
+                    </span>
+                  </motion.li>
+                );
+              })()}
+            </AnimatePresence>
           ) : (
             <p className="text-gray-500 italic">Nenhum hobby cadastrado.</p>
           )}
@@ -129,7 +147,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
         y={tooltipPosition.y}
         text={tooltipText}
       />
-
     </div>
   );
 };
