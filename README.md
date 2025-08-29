@@ -76,6 +76,7 @@ Em breve
 - [x] Cadastro de mídias com dados preenchidos automaticamente via TMDB para Filmes e Series
 - [ ] Cadastro de mídias com dados preenchidos automaticamente MusicBrainz API para Musicas (em breve)
 - [ ] Cadastro de mídias com dados preenchidos automaticamente RAWG Video Games Database para Games (em breve)
+- [x] Notícias de entretenimento** (cinema, música e jogos) no sidebar, rotativas a cada 10 minutos.
 - [x] Upload de imagem de capa
 - [x] Validação de campos obrigatórios
 - [x] Dashboard com exibição das mídias cadastradas
@@ -127,6 +128,7 @@ npm start
 ```env
 REACT_APP_API_URL=http://localhost:8080/fanCollectorsMedia/api
 REACT_APP_API_TMDB=SUA_CHAVE_TMDB
+REACT_APP_API_ND=SUA_CHAVE_NEWSDATA
 ```
 
 **Backend (application.properties)**
@@ -168,10 +170,10 @@ Contribuições são bem-vindas! Sinta-se à vontade para abrir uma _issue_, env
 
 ---
 
-## 🌐 API TMDB
+## 🌐 API: TMDB - NEWSDATA
 
-Este projeto usa a API pública do [TMDB](https://www.themoviedb.org/).  
-Você precisa gerar uma **chave de API** gratuita para usar os recursos de busca automática de filmes e séries.
+Este projeto usa a API pública do [TMDB](https://www.themoviedb.org/), [NEWSDATA](https://newsdata.io/).  
+Você precisa gerar uma **chave de API** gratuita para usar os recursos de busca automática de filmes e séries e a da NewsData para receber noticias.
 
 ---
 
