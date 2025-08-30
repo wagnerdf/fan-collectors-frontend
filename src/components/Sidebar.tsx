@@ -227,22 +227,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
                 </a>
               )}
 
-              {/* Navegação manual */}
+              {/* Navegação manual com tooltip */}
               <div className="flex justify-between mt-3">
                 <button
                   onClick={noticiaAnterior}
                   disabled={indiceNoticia === 0}
-                  className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs disabled:opacity-50"
+                  className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs relative"
+                  title={`Notícia ${indiceNoticia} de ${noticias.length}`}
                 >
                   ⬅ Anterior
                 </button>
                 <button
                   onClick={proximaNoticia}
-                  className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs"
+                  className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs relative"
+                  title={`Notícia ${indiceNoticia + 2 > noticias.length ? noticias.length : indiceNoticia + 2} de ${noticias.length}`}
                 >
                   Próxima ➡
                 </button>
               </div>
+
             </motion.div>
           ) : (
             <motion.p
