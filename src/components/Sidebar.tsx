@@ -22,21 +22,21 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
-  // Estados de Tooltip
+  // Tooltip
   const [hoveredHobby, setHoveredHobby] = useState<HobbyDoUsuario | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [tooltipTimeout, setTooltipTimeout] = useState<NodeJS.Timeout | null>(null);
   const [tooltipText, setTooltipText] = useState("");
 
-  // Estado para rotacionar hobbies
+  // Rotação hobbies
   const [currentHobbyIndex, setCurrentHobbyIndex] = useState(0);
 
-  // Estados para as notícias
+  // Notícias
   const [noticias, setNoticias] = useState<any[]>([]);
   const [indiceNoticia, setIndiceNoticia] = useState(0);
 
-  // Funções de tooltip
+  // Tooltip functions
   const handleMouseEnter = (hobby: HobbyDoUsuario, mensagemPersonalizada?: string) => (e: React.MouseEvent) => {
     const timeout = setTimeout(() => {
       setHoveredHobby(hobby);
@@ -48,9 +48,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (hoveredHobby) {
-      setTooltipPosition({ x: e.clientX + 16, y: e.clientY - 10 });
-    }
+    if (hoveredHobby) setTooltipPosition({ x: e.clientX + 16, y: e.clientY - 10 });
   };
 
   const handleMouseLeave = () => {
@@ -86,7 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
   useEffect(() => {
     if (usuario.hobbies && usuario.hobbies.length > 0) {
       const interval = setInterval(() => {
-        setCurrentHobbyIndex((prev) =>
+        setCurrentHobbyIndex(prev =>
           prev + 1 >= usuario.hobbies!.length ? 0 : prev + 1
         );
       }, 60000);
@@ -94,35 +92,60 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
     }
   }, [usuario.hobbies]);
 
-  // Buscar e rotacionar notícias a cada 2 minutos
-  useEffect(() => {
-    const fetchNoticias = async () => {
-      try {
-        const chaveKey = process.env.REACT_APP_API_ND;
-        const response = await axios.get(
-          `https://newsdata.io/api/1/news?apikey=${chaveKey}&q=cinema OR music OR games&language=pt`
-        );
-        setNoticias(response.data.results || []);
-      } catch (error) {
-        console.error("Erro ao buscar notícias:", error);
+  // Buscar notícia da API e adicionar ao cache
+  const buscarNoticia = async () => {
+    try {
+      const chaveKey = process.env.REACT_APP_API_ND;
+      const response = await axios.get(
+        `https://newsdata.io/api/1/news?apikey=${chaveKey}&q=cinema OR music OR games&language=pt`
+      );
+      const novaNoticia = response.data.results?.[0]; // pega a primeira do resultado
+      if (novaNoticia) {
+        setNoticias(prev => [...prev, novaNoticia]);
+        setIndiceNoticia(noticias.length); // aponta para a última carregada
       }
-    };
+    } catch (error) {
+      console.error("Erro ao buscar notícia:", error);
+    }
+  };
 
-    fetchNoticias();
+  // Carregar a primeira notícia ao montar
+  useEffect(() => {
+    if (noticias.length === 0) buscarNoticia();
   }, []);
 
+  // Rotação automática de notícias a cada 10 minutos
   useEffect(() => {
     if (noticias.length > 0) {
       const interval = setInterval(() => {
-        setIndiceNoticia((prev) => (prev + 1) % noticias.length);
-      }, 600000);
+        setIndiceNoticia(prev => {
+          if (prev < noticias.length - 1) return prev + 1;
+          else {
+            buscarNoticia(); // só busca nova quando chegar no fim
+            return prev;
+          }
+        });
+      }, 600000); // 10 min
       return () => clearInterval(interval);
     }
   }, [noticias]);
 
+  // Navegação manual
+  const proximaNoticia = () => {
+    if (indiceNoticia < noticias.length - 1) {
+      setIndiceNoticia(prev => prev + 1);
+    } else {
+      buscarNoticia();
+    }
+  };
+
+  const noticiaAnterior = () => {
+    if (indiceNoticia > 0) setIndiceNoticia(prev => prev - 1);
+  };
+
   return (
     <div className="fixed left-3 top-[5.2rem] w-64 h-[calc(100vh-5.2rem)] bg-gray-900 p-4 rounded-t-2xl rounded-br-2xl shadow-lg overflow-y-auto">
-      {/* Avatar do usuário */}
+      {/* Avatar */}
       <div className="flex flex-col items-center mb-4">
         <img
           src={usuario.avatarUrl || "/default-user.png"}
@@ -134,7 +157,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
         <p className="text-sm text-gray-400">{usuario.email}</p>
       </div>
 
-      {/* Seção de Hobby */}
+      {/* Hobbies */}
       <div>
         <h3 className="text-lg font-semibold mb-2">Hobbies</h3>
         <ul className="space-y-2">
@@ -143,7 +166,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
               {(() => {
                 const hobby = usuario.hobbies![currentHobbyIndex];
                 const emote = getEmojiByNivel(hobby.nivelInteresse);
-
                 return (
                   <motion.li
                     key={hobby.id}
@@ -175,7 +197,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
         </ul>
       </div>
 
-      {/* Seção de Notícias Animada */}
+      {/* Notícias */}
       <div className="noticia mt-4 p-4 bg-gray-800 rounded-lg">
         <AnimatePresence mode="wait">
           {noticias.length > 0 ? (
@@ -186,12 +208,41 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.6 }}
             >
-              <h4 className="text-xl font-semibold text-white">
+              <h4 className="text-lg font-semibold text-white mb-2">
                 {noticias[indiceNoticia].title}
               </h4>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-gray-400 mb-2">
                 {noticias[indiceNoticia].description}
               </p>
+
+              {/* Link para site original */}
+              {noticias[indiceNoticia].link && (
+                <a
+                  href={noticias[indiceNoticia].link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 underline text-sm"
+                >
+                  Ler notícia completa
+                </a>
+              )}
+
+              {/* Navegação manual */}
+              <div className="flex justify-between mt-3">
+                <button
+                  onClick={noticiaAnterior}
+                  disabled={indiceNoticia === 0}
+                  className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs disabled:opacity-50"
+                >
+                  ⬅ Anterior
+                </button>
+                <button
+                  onClick={proximaNoticia}
+                  className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs"
+                >
+                  Próxima ➡
+                </button>
+              </div>
             </motion.div>
           ) : (
             <motion.p
