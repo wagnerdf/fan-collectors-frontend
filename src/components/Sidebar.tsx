@@ -34,7 +34,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
 
   // Notícias
   const [noticias, setNoticias] = useState<any[]>([]);
-  const [indiceNoticia, setIndiceNoticia] = useState(0);
+  const [indiceNoticia, setIndiceNoticia] = useState(-1);
+
+  // Temas para as noticias
+  const temas = ["cinema", "music", "games", "literatura", "cultura"];
+  const indexAleatorio = Math.floor(Math.random() * temas.length);
+  const temaEscolhido = temas[indexAleatorio];
+
+  // Contador regressivo para cache
+  const [contador, setContador] = useState(600); // 600s = 10min
 
   // Tooltip functions
   const handleMouseEnter = (hobby: HobbyDoUsuario, mensagemPersonalizada?: string) => (e: React.MouseEvent) => {
@@ -92,55 +100,66 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
     }
   }, [usuario.hobbies]);
 
-  // Buscar notícia da API e adicionar ao cache
-  const buscarNoticia = async () => {
+  // Buscar notícias da API e atualizar cache (limitando a 20)
+  const buscarNoticias = async () => {
     try {
       const chaveKey = process.env.REACT_APP_API_ND;
       const response = await axios.get(
-        `https://newsdata.io/api/1/news?apikey=${chaveKey}&q=cinema OR music OR games&language=pt`
+        `https://newsdata.io/api/1/news?apikey=${chaveKey}&q=${temaEscolhido}&language=pt`
       );
-      const novaNoticia = response.data.results?.[0]; // pega a primeira do resultado
-      if (novaNoticia) {
-        setNoticias(prev => [...prev, novaNoticia]);
-        setIndiceNoticia(noticias.length); // aponta para a última carregada
+
+      if (response.data.results && response.data.results.length > 0) {
+        setNoticias(prev => {
+          const novas = [...prev, ...response.data.results];
+          const limitadas = novas.slice(-20); // mantém só as últimas 20
+          // Aponta para a última notícia do cache
+          setIndiceNoticia(limitadas.length - 1);
+          return limitadas;
+        });
       }
     } catch (error) {
       console.error("Erro ao buscar notícia:", error);
     }
   };
 
-  // Carregar a primeira notícia ao montar
+  // Carregar a primeira leva ao montar
   useEffect(() => {
-    if (noticias.length === 0) buscarNoticia();
+    if (noticias.length === 0) buscarNoticias();
   }, []);
 
-  // Rotação automática de notícias a cada 10 minutos
+  // Atualizar cache a cada 5 minutos
   useEffect(() => {
-    if (noticias.length > 0) {
-      const interval = setInterval(() => {
-        setIndiceNoticia(prev => {
-          if (prev < noticias.length - 1) return prev + 1;
-          else {
-            buscarNoticia(); // só busca nova quando chegar no fim
-            return prev;
-          }
-        });
-      }, 600000); // 10 min
-      return () => clearInterval(interval);
-    }
-  }, [noticias]);
+    const interval = setInterval(() => {
+      buscarNoticias();
+      setContador(600); // reinicia contador
+    }, 10 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-  // Navegação manual
+  // Contador regressivo (10:00 → 0:00)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setContador(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Navegação manual apenas nas notícias do cache
   const proximaNoticia = () => {
     if (indiceNoticia < noticias.length - 1) {
       setIndiceNoticia(prev => prev + 1);
-    } else {
-      buscarNoticia();
     }
   };
 
   const noticiaAnterior = () => {
     if (indiceNoticia > 0) setIndiceNoticia(prev => prev - 1);
+  };
+
+  // Formatar contador (mm:ss)
+  const formatarTempo = (segundos: number) => {
+    const m = Math.floor(segundos / 60);
+    const s = segundos % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
   };
 
   return (
@@ -200,7 +219,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
       {/* Notícias */}
       <div className="noticia mt-4 p-4 bg-gray-800 rounded-lg">
         <AnimatePresence mode="wait">
-          {noticias.length > 0 ? (
+          {indiceNoticia >= 0 && noticias[indiceNoticia] ? (
             <motion.div
               key={indiceNoticia}
               initial={{ opacity: 0, y: 10 }}
@@ -215,7 +234,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
                 {noticias[indiceNoticia].description}
               </p>
 
-              {/* Link para site original */}
               {noticias[indiceNoticia].link && (
                 <a
                   href={noticias[indiceNoticia].link}
@@ -227,25 +245,34 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
                 </a>
               )}
 
-              {/* Navegação manual com tooltip */}
+              {/* Navegação manual */}
               <div className="flex justify-between mt-3">
                 <button
                   onClick={noticiaAnterior}
-                  disabled={indiceNoticia === 0}
-                  className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs relative"
-                  title={`Notícia ${indiceNoticia} de ${noticias.length}`}
+                  disabled={indiceNoticia <= 0}
+                  className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs disabled:opacity-40"
+                  title={`Notícia ${indiceNoticia + 1} de ${noticias.length}`}
                 >
                   ⬅ Anterior
                 </button>
                 <button
                   onClick={proximaNoticia}
-                  className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs relative"
-                  title={`Notícia ${indiceNoticia + 2 > noticias.length ? noticias.length : indiceNoticia + 2} de ${noticias.length}`}
+                  disabled={indiceNoticia >= noticias.length - 1}
+                  className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs disabled:opacity-40"
+                  title={
+                    indiceNoticia >= noticias.length - 1
+                      ? "Aguarde, novas notícias serão carregadas em até 5 minutos"
+                      : `Notícia ${indiceNoticia + 1} de ${noticias.length}`
+                  }
                 >
                   Próxima ➡
                 </button>
               </div>
 
+              {/* Contador */}
+              <p className="text-xs text-gray-400 mt-2 text-center">
+                Atualização em: {formatarTempo(contador)}
+              </p>
             </motion.div>
           ) : (
             <motion.p
