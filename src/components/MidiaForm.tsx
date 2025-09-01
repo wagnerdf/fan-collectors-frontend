@@ -3,6 +3,7 @@ import api from "../services/api";
 //import { apiKey } from "../env-config";
 import SuccessModal from "./SuccessModal";
 import ErrorModal from "./ErrorModal";
+import { MidiaFormJG } from "../components/MidiaFormJG";
 
 const tiposApiTMDB = ["Blu-ray", "DVD", "VHS"];
 
@@ -265,7 +266,13 @@ export function MidiaForm() {
           </select>
         </div>
 
-        {tiposApiTMDB.includes(tipoSelecionado) && (
+        {/* Só mostra o input de busca TMDB se NÃO for Jogos Games */}
+        {tipoSelecionado === "Jogos Games" ? (
+          <MidiaFormJG 
+            pesquisa={tituloBusca} 
+            onPesquisaChange={setTituloBusca} 
+          />
+        ) : tiposApiTMDB.includes(tipoSelecionado) ? (
           <div className="flex-1">
             <label className="block mb-1 font-medium text-gray-200">Buscar título</label>
             <input
@@ -276,8 +283,9 @@ export function MidiaForm() {
               placeholder="Digite para buscar na TMDB..."
             />
           </div>
-        )}
+        ) : null}
       </div>
+
 
       {/* Resultados da busca */}
       {isBuscando && (

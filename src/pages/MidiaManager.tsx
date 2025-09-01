@@ -3,6 +3,7 @@ import { MidiaForm } from "../components/MidiaForm";
 import { MidiaFormFilmeSerie } from "../components/MidiaFormFilmeSerie";
 import { buscarMidiasPorTermo, MidiaResponse } from "../services/midiaService";
 import { MidiaFormFilmeSerieDelete } from "../components/MidiaFormDelete";
+import { MidiaFormJG } from "../components/MidiaFormJG";
 
 export function MidiaManager() {
   const [abaAtiva, setAbaAtiva] = useState<"cadastrar" | "editar" | "excluir">("cadastrar");
@@ -11,22 +12,20 @@ export function MidiaManager() {
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [midiaSelecionada, setMidiaSelecionada] = useState<MidiaResponse | null>(null);
+  const [tipoSelecionado, setTipoSelecionado] = useState<number | null>(null); // usado apenas se quiser filtrar cadastrar
 
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
-  const buscaPorClique = useRef(false); // flag para saber se veio de clique
-  const inputRef = useRef<HTMLInputElement | null>(null); // ref para focar input ao abrir editar
+  const buscaPorClique = useRef(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
-  // Função para mapear midiaTipoId para array de tipos
   const getTiposMidia = (midiaTipoId: number): number[] => {
     if ([1, 2, 6].includes(midiaTipoId)) return [1, 2, 6];
-    if ([9, 10, 11].includes(midiaTipoId)) return [9, 10, 11];
+    if ([9].includes(midiaTipoId)) return [9];
     if ([3, 4, 5].includes(midiaTipoId)) return [3, 4, 5];
-    return [midiaTipoId]; // fallback
+    return [midiaTipoId];
   };
 
-  // Array de tipos de mídia baseado na seleção
   const tiposMidia = midiaSelecionada ? getTiposMidia(midiaSelecionada.midiaTipoId) : [];
-
 
   useEffect(() => {
     if (buscaMidia.trim().length === 0) {
@@ -92,6 +91,7 @@ export function MidiaManager() {
     setBuscaMidia("");
     setResultados([]);
     setMidiaSelecionada(null);
+    setTipoSelecionado(null);
     setErro(null);
     setCarregando(false);
     if (novaAba === "editar") {
@@ -125,8 +125,21 @@ export function MidiaManager() {
         ))}
       </div>
 
-      {abaAtiva === "cadastrar" && <MidiaForm />}
+      {/* Cadastrar */}
+      {abaAtiva === "cadastrar" && (
+        <>
+          {midiaSelecionada?.midiaTipoId === 9 ? (
+            <MidiaFormJG
+              pesquisa={buscaMidia}
+              onPesquisaChange={setBuscaMidia}
+            />
+          ) : (
+            <MidiaForm />
+          )}
+        </>
+      )}
 
+      {/* Editar */}
       {abaAtiva === "editar" && (
         <div>
           <h3 className="text-lg font-semibold mb-4">Buscar Mídia para Edição</h3>
@@ -174,10 +187,13 @@ export function MidiaManager() {
                 <MidiaFormFilmeSerie
                   dados={midiaSelecionada}
                   focusPesquisa={limparEFocarInput}
-                  tiposMidia={tiposMidia} // ✅ variável dinâmica populada
+                  tiposMidia={tiposMidia}
                 />
-              ) : [9, 10, 11].includes(midiaSelecionada.midiaTipoId) ? (
-                <p>Formulário específico para Jogos (a implementar)</p>
+              ) : [9].includes(midiaSelecionada.midiaTipoId) ? (
+                <MidiaFormJG
+                  pesquisa={buscaMidia}
+                  onPesquisaChange={setBuscaMidia}
+                />
               ) : [3, 4, 5].includes(midiaSelecionada.midiaTipoId) ? (
                 <p>Formulário específico para Música (a implementar)</p>
               ) : (
@@ -188,6 +204,7 @@ export function MidiaManager() {
         </div>
       )}
 
+      {/* Excluir */}
       {abaAtiva === "excluir" && (
         <div>
           <h3 className="text-lg font-semibold mb-4">Buscar e Excluir Mídia</h3>
