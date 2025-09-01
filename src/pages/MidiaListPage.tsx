@@ -32,7 +32,7 @@ const OptionCheckbox = (props: any) => (
 const MidiaListPage: React.FC = () => {
   const [midias, setMidias] = useState<MidiaResponse[]>([]);
   const [carregando, setCarregando] = useState(true);
-  const [modoVisualizacao, setModoVisualizacao] = useState<"tabela" | "capa">("tabela");
+  const [modoVisualizacao, setModoVisualizacao] = useState<"tabela" | "capa">("capa");
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
   const [tiposMidiaFixos, setTiposMidiaFixos] = useState<TipoMidiaOption[]>([]);
@@ -190,17 +190,7 @@ const MidiaListPage: React.FC = () => {
       <h2 className="text-2xl font-bold text-white mb-4">🎞️ Minhas Mídias</h2>
 
       <div className="flex flex-wrap gap-2 mb-4 items-center">
-        <button
-          onClick={() => setModoVisualizacao("tabela")}
-          className={`px-3 py-1 rounded text-sm ${
-            modoVisualizacao === "tabela"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
-        >
-          📝 Ver como lista
-        </button>
-
+        
         <button
           onClick={() => setModoVisualizacao("capa")}
           className={`px-3 py-1 rounded text-sm ${
@@ -210,6 +200,17 @@ const MidiaListPage: React.FC = () => {
           }`}
         >
           🖼️ Ver como capas
+        </button>
+
+        <button
+          onClick={() => setModoVisualizacao("tabela")}
+          className={`px-3 py-1 rounded text-sm ${
+            modoVisualizacao === "tabela"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          📝 Ver como lista
         </button>
 
         <div style={{ minWidth: 200 }}>
@@ -237,7 +238,7 @@ const MidiaListPage: React.FC = () => {
           onClick={handlePrint}
           className="px-3 py-1 rounded text-sm bg-yellow-600 text-white hover:bg-yellow-700 transition"
         >
-          🖨️ Imprimir Todas as Mídias 
+          🖨️ Imprimir Mídias 
         </button>
       </div>
 
