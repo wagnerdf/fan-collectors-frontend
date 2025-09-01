@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import TooltipPortal from "../components/TooltipPortal";
@@ -34,15 +34,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
 
   // Notícias
   const [noticias, setNoticias] = useState<any[]>([]);
-  const [indiceNoticia, setIndiceNoticia] = useState(-1);
+  const [indiceNoticia, setIndiceNoticia] = useState(0);
 
-  // Temas para as noticias
-  const temas = ["cinema", "music", "games", "literatura", "cultura"];
-  const indexAleatorio = Math.floor(Math.random() * temas.length);
-  const temaEscolhido = temas[indexAleatorio];
-
-  // Contador regressivo para cache
-  const [contador, setContador] = useState(600); // 600s = 10min
+  // Contadores
+  const [contadorCache, setContadorCache] = useState(600); // 10 minutos
+  const noticiaTimerRef = useRef<number>(0); // tempo decorrido da notícia
+  const animationFrameRef = useRef<number>();
 
   // Tooltip functions
   const handleMouseEnter = (hobby: HobbyDoUsuario, mensagemPersonalizada?: string) => (e: React.MouseEvent) => {
@@ -88,77 +85,82 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
     return desc[nivel] ?? "Interesse desconhecido";
   };
 
-  // Rotate hobbies a cada 1 minuto
+  // Rotação hobbies a cada 1 minuto
   useEffect(() => {
     if (usuario.hobbies && usuario.hobbies.length > 0) {
       const interval = setInterval(() => {
-        setCurrentHobbyIndex(prev =>
-          prev + 1 >= usuario.hobbies!.length ? 0 : prev + 1
-        );
+        setCurrentHobbyIndex(prev => (prev + 1) % usuario.hobbies!.length);
       }, 60000);
       return () => clearInterval(interval);
     }
   }, [usuario.hobbies]);
 
-  // Buscar notícias da API e atualizar cache (limitando a 20)
+  // Buscar notícias da API
   const buscarNoticias = async () => {
     try {
       const chaveKey = process.env.REACT_APP_API_ND;
       const response = await axios.get(
-        `https://newsdata.io/api/1/news?apikey=${chaveKey}&q=${temaEscolhido}&language=pt`
+        `https://newsdata.io/api/1/news?apikey=${chaveKey}&q=cinema OR music OR games OR literatura OR cultura&language=pt`
       );
 
       if (response.data.results && response.data.results.length > 0) {
-        setNoticias(prev => {
-          const novas = [...prev, ...response.data.results];
-          const limitadas = novas.slice(-20); // mantém só as últimas 20
-          // Aponta para a última notícia do cache
-          setIndiceNoticia(limitadas.length - 1);
-          return limitadas;
-        });
+        const limitadas = response.data.results.slice(0, 10);
+        setNoticias(limitadas);
+        setIndiceNoticia(0);
+        setContadorCache(600);
+        noticiaTimerRef.current = 0;
       }
     } catch (error) {
       console.error("Erro ao buscar notícia:", error);
     }
   };
 
-  // Carregar a primeira leva ao montar
   useEffect(() => {
-    if (noticias.length === 0) buscarNoticias();
+    buscarNoticias();
   }, []);
 
-  // Atualizar cache a cada 5 minutos
+  // Atualizar cache a cada 10 minutos
   useEffect(() => {
     const interval = setInterval(() => {
       buscarNoticias();
-      setContador(600); // reinicia contador
     }, 10 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // Contador regressivo (10:00 → 0:00)
+  // Contador de cache regressivo
   useEffect(() => {
     const timer = setInterval(() => {
-      setContador(prev => (prev > 0 ? prev - 1 : 0));
+      setContadorCache(prev => (prev > 0 ? prev - 1 : 0));
     }, 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // Navegação manual apenas nas notícias do cache
+  // Animação fluida da barra de próxima notícia
+  useEffect(() => {
+    const animate = (timestamp: number) => {
+      noticiaTimerRef.current += 1 / 60; // incrementa 1/60s por frame
+      if (noticiaTimerRef.current >= 60) {
+        setIndiceNoticia(prev => (prev + 1) % noticias.length);
+        noticiaTimerRef.current = 0;
+      }
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+    animationFrameRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrameRef.current!);
+  }, [noticias]);
+
   const proximaNoticia = () => {
-    if (indiceNoticia < noticias.length - 1) {
-      setIndiceNoticia(prev => prev + 1);
-    }
+    setIndiceNoticia(prev => (prev + 1) % noticias.length);
+    noticiaTimerRef.current = 0;
   };
-
   const noticiaAnterior = () => {
-    if (indiceNoticia > 0) setIndiceNoticia(prev => prev - 1);
+    setIndiceNoticia(prev => (prev - 1 + noticias.length) % noticias.length);
+    noticiaTimerRef.current = 0;
   };
 
-  // Formatar contador (mm:ss)
   const formatarTempo = (segundos: number) => {
     const m = Math.floor(segundos / 60);
-    const s = segundos % 60;
+    const s = Math.floor(segundos % 60);
     return `${m}:${s.toString().padStart(2, "0")}`;
   };
 
@@ -219,7 +221,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
       {/* Notícias */}
       <div className="noticia mt-4 p-4 bg-gray-800 rounded-lg">
         <AnimatePresence mode="wait">
-          {indiceNoticia >= 0 && noticias[indiceNoticia] ? (
+          {noticias[indiceNoticia] ? (
             <motion.div
               key={indiceNoticia}
               initial={{ opacity: 0, y: 10 }}
@@ -249,30 +251,40 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
               <div className="flex justify-between mt-3">
                 <button
                   onClick={noticiaAnterior}
-                  disabled={indiceNoticia <= 0}
-                  className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs disabled:opacity-40"
-                  title={`Notícia ${indiceNoticia + 1} de ${noticias.length}`}
+                  className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs"
                 >
                   ⬅ Anterior
                 </button>
                 <button
                   onClick={proximaNoticia}
-                  disabled={indiceNoticia >= noticias.length - 1}
-                  className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs disabled:opacity-40"
-                  title={
-                    indiceNoticia >= noticias.length - 1
-                      ? "Aguarde, novas notícias serão carregadas em até 5 minutos"
-                      : `Notícia ${indiceNoticia + 1} de ${noticias.length}`
-                  }
+                  className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs"
                 >
                   Próxima ➡
                 </button>
               </div>
 
-              {/* Contador */}
-              <p className="text-xs text-gray-400 mt-2 text-center">
-                Atualização em: {formatarTempo(contador)}
-              </p>
+              {/* Barras de progresso animadas */}
+              <div className="mt-3 space-y-1">
+                <div className="relative h-2 w-full bg-gray-600 rounded">
+                  <div
+                    className="absolute h-2 bg-green-400 rounded transition-all duration-100"
+                    style={{ width: `${(noticiaTimerRef.current / 60) * 100}%` }}
+                  />
+                </div>
+                <p className="text-xs text-gray-400 text-center">
+                  Próxima notícia em: {formatarTempo(60 - noticiaTimerRef.current)}
+                </p>
+
+                <div className="relative h-2 w-full bg-gray-600 rounded">
+                  <div
+                    className="absolute h-2 bg-blue-400 rounded transition-all duration-1000"
+                    style={{ width: `${((600 - contadorCache) / 600) * 100}%` }}
+                  />
+                </div>
+                <p className="text-xs text-gray-400 text-center">
+                  Atualização de cache em: {formatarTempo(contadorCache)}
+                </p>
+              </div>
             </motion.div>
           ) : (
             <motion.p
