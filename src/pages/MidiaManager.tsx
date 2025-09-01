@@ -3,7 +3,7 @@ import { MidiaForm } from "../components/MidiaForm";
 import { MidiaFormFilmeSerie } from "../components/MidiaFormFilmeSerie";
 import { buscarMidiasPorTermo, MidiaResponse } from "../services/midiaService";
 import { MidiaFormFilmeSerieDelete } from "../components/MidiaFormDelete";
-import { MidiaFormJG } from "../components/MidiaFormJG";
+import MidiaFormJG from "../components/MidiaFormJG";
 
 export function MidiaManager() {
   const [abaAtiva, setAbaAtiva] = useState<"cadastrar" | "editar" | "excluir">("cadastrar");
@@ -12,7 +12,6 @@ export function MidiaManager() {
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [midiaSelecionada, setMidiaSelecionada] = useState<MidiaResponse | null>(null);
-  const [tipoSelecionado, setTipoSelecionado] = useState<number | null>(null); // usado apenas se quiser filtrar cadastrar
 
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   const buscaPorClique = useRef(false);
@@ -91,7 +90,6 @@ export function MidiaManager() {
     setBuscaMidia("");
     setResultados([]);
     setMidiaSelecionada(null);
-    setTipoSelecionado(null);
     setErro(null);
     setCarregando(false);
     if (novaAba === "editar") {
