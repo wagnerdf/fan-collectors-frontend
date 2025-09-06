@@ -136,9 +136,6 @@ export function MidiaFormFilmeSerie({
         midiaTipoNome: tipoSelecionado.nome,
       };
 
-      console.log("🚀 DTO enviado:", dto);
-
-      console.log("🚀 DTO enviado para atualizarCamposLivres:", dto);
       await atualizarCamposLivres(dadosMidia.id, dto);
 
       setDadosMidia({

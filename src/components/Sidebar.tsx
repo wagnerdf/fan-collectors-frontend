@@ -40,6 +40,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
   const [contadorCache, setContadorCache] = useState(600); // 10 minutos
   const noticiaTimerRef = useRef<number>(0); // tempo decorrido da notícia
   const animationFrameRef = useRef<number>();
+  const noticiaBoxRef = useRef<HTMLDivElement>(null);
 
   // Tooltip functions
   const handleMouseEnter = (hobby: HobbyDoUsuario, mensagemPersonalizada?: string) => (e: React.MouseEvent) => {
@@ -138,10 +139,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
   // Animação fluida da barra de próxima notícia
   useEffect(() => {
     const animate = (timestamp: number) => {
-      noticiaTimerRef.current += 1 / 60; // incrementa 1/60s por frame
+      noticiaTimerRef.current += 1 / 60;
       if (noticiaTimerRef.current >= 60) {
         setIndiceNoticia(prev => (prev + 1) % noticias.length);
         noticiaTimerRef.current = 0;
+
+        // voltar scroll para topo ao mudar notícia
+        if (noticiaBoxRef.current) noticiaBoxRef.current.scrollTop = 0;
       }
       animationFrameRef.current = requestAnimationFrame(animate);
     };
@@ -152,10 +156,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
   const proximaNoticia = () => {
     setIndiceNoticia(prev => (prev + 1) % noticias.length);
     noticiaTimerRef.current = 0;
+    if (noticiaBoxRef.current) noticiaBoxRef.current.scrollTop = 0;
   };
   const noticiaAnterior = () => {
     setIndiceNoticia(prev => (prev - 1 + noticias.length) % noticias.length);
     noticiaTimerRef.current = 0;
+    if (noticiaBoxRef.current) noticiaBoxRef.current.scrollTop = 0;
   };
 
   const formatarTempo = (segundos: number) => {
@@ -219,85 +225,91 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
       </div>
 
       {/* Notícias */}
-      <div className="noticia mt-4 p-4 bg-gray-800 rounded-lg">
-        <AnimatePresence mode="wait">
-          {noticias[indiceNoticia] ? (
-            <motion.div
-              key={indiceNoticia}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.6 }}
-            >
-              <h4 className="text-lg font-semibold text-white mb-2">
-                {noticias[indiceNoticia].title}
-              </h4>
-              <p className="text-sm text-gray-400 mb-2">
-                {noticias[indiceNoticia].description}
-              </p>
-
-              {noticias[indiceNoticia].link && (
-                <a
-                  href={noticias[indiceNoticia].link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-400 underline text-sm"
-                >
-                  Ler notícia completa
-                </a>
-              )}
-
-              {/* Navegação manual */}
-              <div className="flex justify-between mt-3">
-                <button
-                  onClick={noticiaAnterior}
-                  className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs"
-                >
-                  ⬅ Anterior
-                </button>
-                <button
-                  onClick={proximaNoticia}
-                  className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs"
-                >
-                  Próxima ➡
-                </button>
-              </div>
-
-              {/* Barras de progresso animadas */}
-              <div className="mt-3 space-y-1">
-                <div className="relative h-2 w-full bg-gray-600 rounded">
-                  <div
-                    className="absolute h-2 bg-green-400 rounded transition-all duration-100"
-                    style={{ width: `${(noticiaTimerRef.current / 60) * 100}%` }}
-                  />
-                </div>
-                <p className="text-xs text-gray-400 text-center">
-                  Próxima notícia em: {formatarTempo(60 - noticiaTimerRef.current)}
+      <div className="noticia mt-4 p-2 bg-gray-800 rounded-lg flex flex-col h-[30vh] sm:h-[35vh] md:h-[40vh] lg:h-[45vh]">
+        {/* Conteúdo rolável */}
+        <div
+          ref={noticiaBoxRef}
+          className="overflow-y-auto overflow-x-hidden flex-1 pr-2 custom-scroll"
+        >
+          <AnimatePresence mode="wait">
+            {noticias[indiceNoticia] ? (
+              <motion.div
+                key={indiceNoticia}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.6 }}
+              >
+                <h4 className="text-lg font-semibold text-white mb-2">
+                  {noticias[indiceNoticia].title}
+                </h4>
+                <p className="text-sm text-gray-400 mb-2">
+                  {noticias[indiceNoticia].description}
                 </p>
+                {noticias[indiceNoticia].link && (
+                  <a
+                    href={noticias[indiceNoticia].link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 underline text-sm"
+                  >
+                    Ler notícia completa
+                  </a>
+                )}
+              </motion.div>
+            ) : (
+              <motion.p
+                key="loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-gray-500"
+              >
+                Carregando notícias...
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </div>
 
-                <div className="relative h-2 w-full bg-gray-600 rounded">
-                  <div
-                    className="absolute h-2 bg-blue-400 rounded transition-all duration-1000"
-                    style={{ width: `${((600 - contadorCache) / 600) * 100}%` }}
-                  />
-                </div>
-                <p className="text-xs text-gray-400 text-center">
-                  Atualização de cache em: {formatarTempo(contadorCache)}
-                </p>
-              </div>
-            </motion.div>
-          ) : (
-            <motion.p
-              key="loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-gray-500"
+        {/* Botões e barras fixas */}
+        <div className="mt-2">
+          <div className="flex justify-between mb-1">
+            <button
+              onClick={noticiaAnterior}
+              className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs"
             >
-              Carregando notícias...
-            </motion.p>
-          )}
-        </AnimatePresence>
+              ⬅ Anterior
+            </button>
+            <button
+              onClick={proximaNoticia}
+              className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600 text-xs"
+            >
+              Próxima ➡
+            </button>
+          </div>
+
+          <div className="space-y-1">
+            <div className="relative h-2 w-full bg-gray-600 rounded">
+              <div
+                className="absolute h-2 bg-green-400 rounded transition-all duration-100"
+                style={{ width: `${(noticiaTimerRef.current / 60) * 100}%` }}
+              />
+            </div>
+            <p className="text-xs text-gray-400 text-center">
+              Próxima notícia em: {formatarTempo(60 - noticiaTimerRef.current)}
+            </p>
+
+            <div className="relative h-2 w-full bg-gray-600 rounded">
+              <div
+                className="absolute h-2 bg-blue-400 rounded transition-all duration-1000"
+                style={{ width: `${((600 - contadorCache) / 600) * 100}%` }}
+              />
+            </div>
+            <p className="text-xs text-gray-400 text-center">
+              Atualização de cache em: {formatarTempo(contadorCache)}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Tooltip */}
@@ -307,6 +319,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
         y={tooltipPosition.y}
         text={tooltipText}
       />
+
+      {/* Scroll custom */}
+      <style>{`
+        .custom-scroll::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+          background: rgba(0,0,0,0.2);
+          border-radius: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+          background: rgba(0,0,0,0.6);
+          border-radius: 6px;
+        }
+      `}</style>
     </div>
   );
 };
