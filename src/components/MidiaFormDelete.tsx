@@ -113,34 +113,58 @@ export function MidiaFormFilmeSerieDelete({ focusPesquisa }: MidiaFormFilmeSerie
       )}
 
       {/* Dialog de confirmação */}
-        <Dialog open={modalAberto} onOpenChange={setModalAberto}>
+      <Dialog open={modalAberto} onOpenChange={setModalAberto}>
         <DialogContent>
-            <DialogHeader>
+          <DialogHeader>
             <DialogTitle>Confirmação de exclusão</DialogTitle>
             <DialogDescription>
-                Esta ação irá excluir permanentemente a mídia selecionada.
+              Esta ação irá excluir permanentemente a mídia selecionada.
             </DialogDescription>
-            </DialogHeader>
+          </DialogHeader>
 
-            <p className="mb-4">
-            Tem certeza que deseja excluir a mídia:<br />
-            <strong>
+          {/* Cartão horizontal com imagem e detalhes */}
+          <div className="flex flex-col md:flex-row items-center md:items-start mb-4">
+            {/* Imagem da mídia com efeito hover/zoom */}
+            {midiaSelecionada?.capaUrl && (
+              <img
+                src={midiaSelecionada.capaUrl}
+                alt={midiaSelecionada.tituloAlternativo || midiaSelecionada.tituloOriginal}
+                className="w-full md:w-40 h-auto object-contain rounded shadow mb-4 md:mb-0 md:mr-4 transform transition-transform duration-300 hover:scale-105 cursor-pointer"
+              />
+            )}
+
+            {/* Detalhes da mídia */}
+            <div className="text-center md:text-left">
+              <p className="mb-2">
+                Tem certeza que deseja excluir a mídia:
+              </p>
+              <strong className="block text-lg">
                 {midiaSelecionada?.tituloAlternativo || midiaSelecionada?.tituloOriginal}{" "}
                 {midiaSelecionada?.midiaTipoNome ? `- ${midiaSelecionada.midiaTipoNome}` : ""}
-            </strong>
-            ?
-            </p>
+              </strong>
+            </div>
+          </div>
 
-            <DialogFooter className="flex justify-end space-x-2">
-            <Button onClick={() => setModalAberto(false)} className="bg-gray-400 hover:bg-gray-500">
-                Cancelar
+          {/* Botões */}
+          <DialogFooter className="flex justify-end space-x-2">
+            <Button
+              onClick={() => setModalAberto(false)}
+              className="bg-gray-400 hover:bg-gray-500"
+            >
+              Cancelar
             </Button>
-            <Button onClick={confirmarExclusao} className="bg-red-600 hover:bg-red-700 text-white">
-                Excluir
+            <Button
+              onClick={confirmarExclusao}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Excluir
             </Button>
-            </DialogFooter>
+          </DialogFooter>
         </DialogContent>
-        </Dialog>
+      </Dialog>
+
+
+
     </div>
   );
 }
