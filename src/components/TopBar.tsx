@@ -126,7 +126,7 @@ export function TopBar({ onLogout, usuario, onSelectPage }: TopBarProps) {
         <img
           src="/logo-pix.png"
           alt="Doar via Pix"
-          className="h-10 w-24 cursor-pointer"
+          className="h-9 w-31 cursor-pointer"
           onClick={() => setShowPixModal(true)}
           title="Clique para doar via Pix"
         />
