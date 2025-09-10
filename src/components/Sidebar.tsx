@@ -171,7 +171,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
   };
 
   return (
-    <div className="fixed left-3 top-[5.2rem] w-64 h-[calc(100vh-5.2rem)] bg-gray-900 p-4 rounded-t-2xl rounded-br-2xl shadow-lg overflow-y-auto">
+    <div className="fixed left-3 top-[5.2rem] w-64 h-[calc(100vh-5.2rem)] bg-gray-900 p-4 rounded-t-2xl rounded-br-2xl shadow-lg overflow-y-auto custom-scroll">
       {/* Avatar */}
       <div className="flex flex-col items-center mb-4">
         <img
@@ -225,7 +225,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
       </div>
 
       {/* Notícias */}
-      <div className="noticia mt-4 p-2 bg-gray-800 rounded-lg flex flex-col h-[30vh] sm:h-[35vh] md:h-[40vh] lg:h-[45vh]">
+      <div className="noticia mt-4 p-2 bg-gray-800 rounded-lg flex flex-col max-h-[60vh] overflow-hidden">
         {/* Conteúdo rolável */}
         <div
           ref={noticiaBoxRef}
