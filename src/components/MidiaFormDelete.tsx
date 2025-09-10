@@ -3,10 +3,6 @@ import { buscarMidiasPorTermo, excluirMidia, MidiaResponse } from "../services/m
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "./ui/dialog";
 
-import { motion } from "framer-motion";
-import { DialogContent as RadixDialogContent } from "./ui/dialog";
-
-
 interface MidiaFormFilmeSerieDeleteProps {
   focusPesquisa?: () => void;
 }

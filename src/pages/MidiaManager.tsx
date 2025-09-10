@@ -140,65 +140,68 @@ export function MidiaManager() {
       {/* Editar */}
       {abaAtiva === "editar" && (
         <div>
-          <h3 className="text-lg font-semibold mb-4">Buscar Mídia para Edição</h3>
+          <h2 className="text-lg font-semibold mb-4">Buscar Mídia para Edição</h2>
+          <div className="p-4">
+            
+            <h2 className="text-2xl font-bold text-white mb-4">📝 Editar Mídia</h2>
+            <div className="relative mb-4">
+              <input
+                ref={inputRef}
+                type="text"
+                value={buscaMidia}
+                onChange={(e) => setBuscaMidia(e.target.value)}
+                placeholder="Digite o nome da mídia..."
+                className="border border-gray-400 rounded px-4 py-2 w-full focus:outline-none focus:border-blue-500 text-black"
+                autoComplete="off"
+              />
 
-          <div className="relative mb-4">
-            <input
-              ref={inputRef}
-              type="text"
-              value={buscaMidia}
-              onChange={(e) => setBuscaMidia(e.target.value)}
-              placeholder="Digite o nome da mídia..."
-              className="border border-gray-400 rounded px-4 py-2 w-full focus:outline-none focus:border-blue-500 text-black"
-              autoComplete="off"
-            />
-
-            {resultados.length > 0 && (
-              <ul className="absolute bg-white border border-gray-300 w-full mt-1 max-h-60 overflow-y-auto z-10 rounded shadow-md text-black">
-                {resultados.map((midia) => (
-                  <li
-                    key={midia.id}
-                    className="px-4 py-2 hover:bg-blue-100 cursor-pointer"
-                    onClick={() => handleSelecionarMidia(midia)}
-                  >
-                    {midia.tituloAlternativo || midia.tituloOriginal}{" "}
-                    <span className="text-gray-600">
-                      {midia.midiaTipoNome ? `- ${midia.midiaTipoNome}` : ""}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {carregando && (
-              <div className="absolute bg-white border border-gray-300 w-full mt-1 p-2 text-gray-600">
-                Carregando...
-              </div>
-            )}
-
-            {erro && !carregando && <p className="text-red-600 mt-2">{erro}</p>}
-          </div>
-
-          {midiaSelecionada && (
-            <>
-              {[1, 2, 6].includes(midiaSelecionada.midiaTipoId) ? (
-                <MidiaFormFilmeSerie
-                  dados={midiaSelecionada}
-                  focusPesquisa={limparEFocarInput}
-                  tiposMidia={tiposMidia}
-                />
-              ) : [9].includes(midiaSelecionada.midiaTipoId) ? (
-                <MidiaFormJG
-                  pesquisa={buscaMidia}
-                  onPesquisaChange={setBuscaMidia}
-                />
-              ) : [3, 4, 5].includes(midiaSelecionada.midiaTipoId) ? (
-                <p>Formulário específico para Música (a implementar)</p>
-              ) : (
-                <p>Tipo de mídia ainda não implementado</p>
+              {resultados.length > 0 && (
+                <ul className="absolute bg-white border border-gray-300 w-full mt-1 max-h-60 overflow-y-auto z-10 rounded shadow-md text-black">
+                  {resultados.map((midia) => (
+                    <li
+                      key={midia.id}
+                      className="px-4 py-2 hover:bg-blue-100 cursor-pointer"
+                      onClick={() => handleSelecionarMidia(midia)}
+                    >
+                      {midia.tituloAlternativo || midia.tituloOriginal}{" "}
+                      <span className="text-gray-600">
+                        {midia.midiaTipoNome ? `- ${midia.midiaTipoNome}` : ""}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               )}
-            </>
-          )}
+
+              {carregando && (
+                <div className="absolute bg-white border border-gray-300 w-full mt-1 p-2 text-gray-600">
+                  Carregando...
+                </div>
+              )}
+
+              {erro && !carregando && <p className="text-red-600 mt-2">{erro}</p>}
+            </div>
+
+            {midiaSelecionada && (
+              <>
+                {[1, 2, 6].includes(midiaSelecionada.midiaTipoId) ? (
+                  <MidiaFormFilmeSerie
+                    dados={midiaSelecionada}
+                    focusPesquisa={limparEFocarInput}
+                    tiposMidia={tiposMidia}
+                  />
+                ) : [9].includes(midiaSelecionada.midiaTipoId) ? (
+                  <MidiaFormJG
+                    pesquisa={buscaMidia}
+                    onPesquisaChange={setBuscaMidia}
+                  />
+                ) : [3, 4, 5].includes(midiaSelecionada.midiaTipoId) ? (
+                  <p>Formulário específico para Música (a implementar)</p>
+                ) : (
+                  <p>Tipo de mídia ainda não implementado</p>
+                )}
+              </>
+            )}
+          </div>
         </div>
       )}
 

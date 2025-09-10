@@ -250,40 +250,45 @@ export function MidiaForm() {
     <div className="space-y-6 text-black">
       {/* Linha tipo + busca */}
       <div className="flex flex-col sm:flex-row sm:items-end gap-4">
-        <div className="flex-1">
-          <label className="block mb-1 font-medium text-gray-200">Tipo de Mídia</label>
-          <select
-            className="w-full border px-3 py-2 rounded bg-white text-black"
-            value={tipoSelecionado}
-            onChange={(e) => setTipoSelecionado(e.target.value)}
-          >
-            <option value="">Selecione um tipo...</option>
-            {tiposMidia.map((tipo) => (
-              <option key={tipo} value={tipo}>
-                {tipo}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Só mostra o input de busca TMDB se NÃO for Jogos Games */}
-          {tipoSelecionado === "Jogos Games" ? (
-            <MidiaFormJG
-              pesquisa={tituloBusca}
-              onPesquisaChange={setTituloBusca}
-            />
-          ) : tiposApiTMDB.includes(tipoSelecionado) ? (
           <div className="flex-1">
-            <label className="block mb-1 font-medium text-gray-200">Buscar título</label>
-            <input
-              type="text"
-              value={tituloBusca}
-              onChange={(e) => setTituloBusca(e.target.value)}
-              className="w-full border px-3 py-2 rounded"
-              placeholder="Digite para buscar na TMDB..."
-            />
-          </div>
-        ) : null}
+              <label className="text-white font-semibold mb-4">Buscar tipo de Mídia</label>
+              <div className="p-4">
+              <h2 className="text-2xl font-bold text-white mb-4">➕ Cadastrar Mídia</h2>
+              </div>
+
+              <select
+                className="w-full border px-3 py-2 rounded bg-white text-black"
+                value={tipoSelecionado}
+                onChange={(e) => setTipoSelecionado(e.target.value)}
+              >
+                <option value="">Selecione um tipo...</option>
+                {tiposMidia.map((tipo) => (
+                  <option key={tipo} value={tipo}>
+                    {tipo}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Só mostra o input de busca TMDB se NÃO for Jogos Games */}
+              {tipoSelecionado === "Jogos Games" ? (
+                <MidiaFormJG
+                  pesquisa={tituloBusca}
+                  onPesquisaChange={setTituloBusca}
+                />
+              ) : tiposApiTMDB.includes(tipoSelecionado) ? (
+              <div className="flex-1">
+                <label className="block mb-1 font-medium text-gray-200">Buscar título</label>
+                <input
+                  type="text"
+                  value={tituloBusca}
+                  onChange={(e) => setTituloBusca(e.target.value)}
+                  className="w-full border px-3 py-2 rounded"
+                  placeholder="Digite para buscar na TMDB..."
+                />
+              </div>
+            ) : null}
+          
       </div>
 
 
