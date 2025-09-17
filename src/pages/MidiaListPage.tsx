@@ -301,11 +301,11 @@ const MidiaListPage: React.FC = () => {
                 <span className="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs font-semibold px-2 py-1 rounded shadow-md z-10">
                   {midia.midiaTipoNome}
                 </span>
-                <img
-                  src={midia.capaUrl?.startsWith("http") ? midia.capaUrl : `https://${midia.capaUrl}`}
-                  alt={midia.tituloAlternativo || "Sem título"}
-                  className="w-full h-full object-cover"
-                />
+<img
+  src={midia.capaUrl?.startsWith("http") ? midia.capaUrl : `https://${midia.capaUrl}`}
+  alt={midia.tituloAlternativo || "Sem título"}
+  className="w-full h-full object-cover border-2 border-gray-300 rounded"
+/>
               </div>
 
               <h3 className="text-sm font-semibold text-center text-[#4B3621] max-w-full line-clamp-2 break-words">
