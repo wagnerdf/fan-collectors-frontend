@@ -15,7 +15,7 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "axios": "^1.11.0",
-    "framer-motion": "^12.18.1",
+    "framer-motion": "^12.23.13",
     "lucide-react": "^0.515.0",
     "qrcode": "^1.5.4",
     "qrcode.react": "^4.2.0",

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Select, { components, MultiValue } from "react-select";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   buscarMidiasDoUsuario,
   buscarMidiasPaginadas,
@@ -301,11 +302,11 @@ const MidiaListPage: React.FC = () => {
                 <span className="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs font-semibold px-2 py-1 rounded shadow-md z-10">
                   {midia.midiaTipoNome}
                 </span>
-<img
-  src={midia.capaUrl?.startsWith("http") ? midia.capaUrl : `https://${midia.capaUrl}`}
-  alt={midia.tituloAlternativo || "Sem título"}
-  className="w-full h-full object-cover border-2 border-gray-300 rounded"
-/>
+                <img
+                  src={midia.capaUrl?.startsWith("http") ? midia.capaUrl : `https://${midia.capaUrl}`}
+                  alt={midia.tituloAlternativo || "Sem título"}
+                  className="w-full h-full object-cover border-2 border-gray-300 rounded"
+                />
               </div>
 
               <h3 className="text-sm font-semibold text-center text-[#4B3621] max-w-full line-clamp-2 break-words">
@@ -318,86 +319,93 @@ const MidiaListPage: React.FC = () => {
       )}
 
       {/* MODAL: abre quando midiaSelecionada tiver valor */}
-      {midiaSelecionada && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4"
-          onClick={fecharModal} // clicar no fundo fecha
-        >
+      <AnimatePresence>
+        {midiaSelecionada && (
           <div
-            className="bg-gray-900 text-white rounded-lg shadow-lg w-full max-w-lg max-h-[85vh] overflow-y-auto relative p-6"
-            onClick={(e) => e.stopPropagation()} // impede fechar ao clicar dentro
+            className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4"
+            onClick={fecharModal} // clicar no fundo fecha
           >
-            {/* Botão fechar */}
-            <button
-              className="absolute top-2 right-2 text-white hover:text-gray-300 text-2xl font-bold"
-              onClick={fecharModal} // X fecha
+            {/* Modal animado */}
+            <motion.div
+              initial={{ opacity: 0, y: 100 }}   // começa invisível e deslocado para baixo
+              animate={{ opacity: 1, y: 0 }}     // desliza para o centro
+              exit={{ opacity: 0, y: 100 }}      // desliza para baixo ao fechar
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="bg-gray-900 text-white rounded-lg shadow-lg w-full max-w-lg max-h-[85vh] overflow-y-auto relative p-6"
+              onClick={(e) => e.stopPropagation()} // impede fechar ao clicar dentro
             >
-              &times;
-            </button>
+              {/* Botão fechar */}
+              <button
+                className="absolute top-2 right-2 text-white hover:text-gray-300 text-2xl font-bold"
+                onClick={fecharModal} // X fecha
+              >
+                &times;
+              </button>
 
-            {/* Conteúdo do modal */}
-            <div className="flex flex-col md:flex-row gap-6">
-              {/* Imagem */}
-              <div className="flex-shrink-0 w-full md:w-48">
-                <img
-                  src={midiaSelecionada.capaUrl?.startsWith("http") ? midiaSelecionada.capaUrl : `https://${midiaSelecionada.capaUrl}`}
-                  alt={midiaSelecionada.tituloAlternativo || midiaSelecionada.tituloOriginal}
-                  className="w-48 h-50 object-contain rounded mb-4 border-2 border-gray-500"
-                />
-              </div>
+              {/* Conteúdo do modal */}
+              <div className="flex flex-col md:flex-row gap-6">
+                {/* Imagem */}
+                <div className="flex-shrink-0 w-full md:w-48">
+                  <img
+                    src={midiaSelecionada.capaUrl?.startsWith("http") ? midiaSelecionada.capaUrl : `https://${midiaSelecionada.capaUrl}`}
+                    alt={midiaSelecionada.tituloAlternativo || midiaSelecionada.tituloOriginal}
+                    className="w-48 h-50 object-contain rounded mb-4 border-2 border-gray-500"
+                  />
+                </div>
 
-              {/* Dados */}
-              <div className="flex-1">
-                <h2 className="text-2xl font-bold mb-2 text-center bg-clip-text text-transparent 
-                              bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500">
-                  {midiaSelecionada.tituloAlternativo || midiaSelecionada.tituloOriginal}
-                </h2>
+                {/* Dados */}
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold mb-2 text-center bg-clip-text text-transparent 
+                                bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500">
+                    {midiaSelecionada.tituloAlternativo || midiaSelecionada.tituloOriginal}
+                  </h2>
 
-                <div className="text-sm w-full space-y-4">
-                  {/* 🎯 Informações Gerais */}
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2 text-blue-400">Informações Gerais</h3>
-                    <div className="text-sm space-y-1 w-full mb-4">
-                      <p><strong className="text-yellow-400">Gênero:</strong> {midiaSelecionada.generos || "—"}</p>
-                      <p><strong className="text-yellow-400">Tipo:</strong> {midiaSelecionada.midiaTipoNome || "—"}</p>
-                      <p><strong className="text-yellow-400">Formato:</strong> {midiaSelecionada.formatoMidia || "—"}</p>
-                      <p><strong className="text-yellow-400">Duração:</strong> {midiaSelecionada.duracao || "—"} minutos</p>
-                      <p><strong className="text-yellow-400">Linguagem:</strong> {midiaSelecionada.linguagem || "—"}</p>
+                  <div className="text-sm w-full space-y-4">
+                    {/* 🎯 Informações Gerais */}
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2 text-blue-400">Informações Gerais</h3>
+                      <div className="text-sm space-y-1 w-full mb-4">
+                        <p><strong className="text-yellow-400">Gênero:</strong> {midiaSelecionada.generos || "—"}</p>
+                        <p><strong className="text-yellow-400">Tipo:</strong> {midiaSelecionada.midiaTipoNome || "—"}</p>
+                        <p><strong className="text-yellow-400">Formato:</strong> {midiaSelecionada.formatoMidia || "—"}</p>
+                        <p><strong className="text-yellow-400">Duração:</strong> {midiaSelecionada.duracao || "—"} minutos</p>
+                        <p><strong className="text-yellow-400">Linguagem:</strong> {midiaSelecionada.linguagem || "—"}</p>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* ⚙️ Detalhes Técnicos */}
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2 text-blue-400">Detalhes Técnicos</h3>
-                    <div className="text-sm space-y-1 w-full mb-4">
-                      <p><strong className="text-yellow-400">Observações:</strong> {midiaSelecionada.observacoes || "—"}</p>
-                      <p><strong className="text-yellow-400">Nota Média:</strong> {midiaSelecionada.notaMedia || "—"}</p>
+                    {/* ⚙️ Detalhes Técnicos */}
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2 text-blue-400">Detalhes Técnicos</h3>
+                      <div className="text-sm space-y-1 w-full mb-4">
+                        <p><strong className="text-yellow-400">Observações:</strong> {midiaSelecionada.observacoes || "—"}</p>
+                        <p><strong className="text-yellow-400">Nota Média:</strong> {midiaSelecionada.notaMedia || "—"}</p>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* 🎬 Créditos */}
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2 text-blue-400">Créditos</h3>
+                    {/* 🎬 Créditos */}
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2 text-blue-400">Créditos</h3>
                       <div className="text-sm space-y-1 w-full">
                         <p><strong className="text-yellow-400">Artistas:</strong> {midiaSelecionada.artistas || "—"}</p>
                         <p><strong className="text-yellow-400">Diretores:</strong> {midiaSelecionada.diretores || "—"}</p>
                         <p><strong className="text-yellow-400">Estúdio:</strong> {midiaSelecionada.estudio || "—"}</p>
                       </div>
-                  </div>
+                    </div>
 
-                  {/* 📖 Sinopse */}
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2 text-blue-400">Sinopse</h3>
+                    {/* 📖 Sinopse */}
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2 text-blue-400">Sinopse</h3>
                       <div className="text-sm space-y-1 w-full mb-4">
                         <p>{midiaSelecionada.sinopse || "—"}</p>
                       </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
       {totalPaginas > 1 && (
         <div className="flex justify-center mt-6 gap-2 flex-wrap">
