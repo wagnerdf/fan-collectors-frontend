@@ -225,6 +225,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ usuario }) => {
       </div>
 
       {/* Notícias */}
+      <br />
+      <h3 className="text-lg font-semibold mb-2">Notícias</h3>
       <div className="noticia mt-4 p-2 bg-gray-800 rounded-lg flex flex-col max-h-[60vh] overflow-hidden">
         {/* Conteúdo rolável */}
         <div
