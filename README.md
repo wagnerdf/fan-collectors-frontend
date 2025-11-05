@@ -5,32 +5,86 @@ Sistema para colecionadores de mídias físicas (Blu-ray, DVD, VHS, LP, CD, Cart
 
 ---
 
-## 🚀 Demonstração
+## 📱 Download do APK
+
+Baixe a versão mais recente do aplicativo **FanCollectionMidia** para Android:
+
+👉 [⬇️ FanCollectionMidia v1.0.0 (Preview)](https://drive.google.com/file/d/1GQ_9pI_UQdOjtb-5Nbh3dpR5V3_4LBhh/view?usp=sharing)
+
+👤 Usuário de Teste
+
+Para testar o aplicativo, utilize o seguinte usuário temporário:
+
+**Login:** `admin@admin`  
+**Senha:** `admin`
+
+> ⚠️ Este é um usuário de demonstração apenas para testes públicos.  
+> Algumas funções (como cadastro ou edição de usuário) ainda estão em desenvolvimento.
+
+
+**Informações da build:**
+- Versão: `1.0.0`
+- Tipo: `Preview (Release APK)`
+- Data de build: **05/11/2025**
+- Tamanho: ~91 MB
+- Compatibilidade: Android 7.0 (Nougat) ou superior
+- Status: ✅ Testado e funcional via EAS Build
+
+---
+
+## 🚀 Demonstração Web
 
 Você pode acessar a aplicação em produção pelo link abaixo:
 
 👉 [https://fan-collectors-frontend-app.vercel.app/](https://fan-collectors-frontend-app.vercel.app/)
 
+**Login:** `admin@admin`  
+**Senha:** `admin`
+
 [![Deploy](https://img.shields.io/badge/🔗%20Deploy-Vercel-blue?style=flat&logo=vercel)](https://fan-collectors-frontend-app.vercel.app/)
 
+---
+
+## 📱 Layout mobile
+
+<p align="center">
+  <img src="https://i.imgur.com/uZTG6rh.jpeg" width="220" style="margin:10px;" />
+  <img src="https://i.imgur.com/Y9vGG3V.jpeg" width="220" style="margin:10px;" />
+</p>
+<p align="center">
+  <span style="color:#ff6b6b; font-size:18px;">🟢 Tela Inicial Usuário</span> 
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <span style="color:#4dabf7; font-size:18px;">🟣 Tela de Login</span>
+</p>
+
+<p align="center">
+  <img src="https://i.imgur.com/4H88Umu.jpeg" width="220" style="margin:10px;" />
+  <img src="https://i.imgur.com/FAFZoCk.jpeg" width="220" style="margin:10px;" />
+</p>
+<p align="center">
+  <span style="color:#51cf66; font-size:18px;">🔵 Tela de Biblioteca</span> 
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <span style="color:#ffd43b; font-size:18px;">🟠 Detalhes da Mídia</span>
+</p>
+
+<p align="center">
+  <img src="https://i.imgur.com/qEQceER.jpeg" width="220" style="margin:10px;" />
+</p>
+<p align="center">
+  <span style="color:#845ef7; font-size:18px;">🟡 Tela de Edição de Usuário</span>
+</p>
 
 ---
 
 ## 🖥️ Layout web
 
 <div align="center">
-  <img src="https://i.imgur.com/aZ7RXPZ.png" width="600" alt="Tela apresentação" />
+  <img src="https://i.imgur.com/aZ7RXPZ.png" width="400" alt="Tela apresentação" />
   <br/>
-  <img src="https://i.imgur.com/mJbJwTE.png" width="600" alt="Tela de Login" />
+  <img src="https://i.imgur.com/mJbJwTE.png" width="400" alt="Tela de Login" />
   <br/>
-  <img src="https://i.imgur.com/F621Hxb.png" width="600" alt="Cadastro de Mídia" />
+  <img src="https://i.imgur.com/F621Hxb.png" width="700" alt="Cadastro de Mídia" />
 </div>
-
----
-
-## 📱 Layout mobile
-
-Em breve
 
 ---
 
@@ -51,18 +105,20 @@ Em breve
 - Spring Data JPA
 - Flyway (migrações de banco)
 - PostgreSQL
+- Railway
 - Maven
 - Lombok
 - Bean Validation
 - ModelMapper (ou MapStruct - futuro)
-- Integração com [TMDB API](https://www.themoviedb.org/documentation/api)
+- Integração com [TMDB API](https://www.themoviedb.org/documentation/api) e [NEWSDATA](https://newsdata.io/)
 
 ### 💻 Frontend (React + TypeScript)
 
-- React 18+
+- React 18+ / React Native
 - TypeScript
 - TailwindCSS
 - Axios
+- Expo
 - React Router DOM
 - Formulários com validação
 - Context API + Token JWT
@@ -77,14 +133,14 @@ Em breve
 - [ ] Cadastro de mídias com dados preenchidos automaticamente MusicBrainz API para Musicas (em breve)
 - [ ] Cadastro de mídias com dados preenchidos automaticamente RAWG Video Games Database para Games (em breve)
 - [x] Notícias de entretenimento** (cinema, música e jogos) no sidebar, rotativas a cada 10 minutos.
-- [x] Upload de imagem de capa
+- [ ] Upload de imagem de capa
 - [x] Validação de campos obrigatórios
 - [x] Dashboard com exibição das mídias cadastradas
-- [x] Filtro e busca de midia por título
-- [X] Edição de midias
-- [X] Exlusão de midias
+- [x] Filtro e busca por título 
+- [x] Edição de titulo 
+- [x] Exlusão de título
 - [ ] Postagens e publicação de midias dos usuários compartilhados (em breve)
-- [ ] Responsividade para mobile (em andamento)
+- [x] Responsividade para mobile
 
 ---
 
@@ -128,7 +184,6 @@ npm start
 ```env
 REACT_APP_API_URL=http://localhost:8080/fanCollectorsMedia/api
 REACT_APP_API_TMDB=SUA_CHAVE_TMDB
-REACT_APP_API_ND=SUA_CHAVE_NEWSDATA
 ```
 
 **Backend (application.properties)**
@@ -156,7 +211,7 @@ spring.jpa.hibernate.ddl-auto=validate
 
 | **Wagner Andrade (WagnerDf)** |
 </br>
-| Desenvolvedor Fullstack Java & React |
+| Desenvolvedor Fullstack Java/React/PHP.... |
 </br>
 | [LinkedIn](https://www.linkedin.com/in/wagner-andrade-876b6460) |
 </br> 
@@ -170,16 +225,16 @@ Contribuições são bem-vindas! Sinta-se à vontade para abrir uma _issue_, env
 
 ---
 
-## 🌐 API: TMDB - NEWSDATA
+## 🌐 API: TMDB e NEWSDATA
 
-Este projeto usa a API pública do [TMDB](https://www.themoviedb.org/), [NEWSDATA](https://newsdata.io/).  
+Este projeto usa a API pública do [TMDB](https://www.themoviedb.org/) e [NEWSDATA](https://newsdata.io/).  
 Você precisa gerar uma **chave de API** gratuita para usar os recursos de busca automática de filmes e séries e a da NewsData para receber noticias.
 
 ---
 
 ## 💡 Inspiração
 
-Este sistema foi idealizado para organizar coleções pessoais de mídia física com praticidade, visual moderno e dados completos.
+Criado especialmente para apaixonados por colecionar mídias físicas, este sistema oferece uma forma prática e moderna de catalogar, visualizar e gerenciar suas coleções com riqueza de detalhes.
 
 ---
 
