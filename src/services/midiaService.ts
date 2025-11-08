@@ -31,6 +31,7 @@ export interface MidiaResponse {
   temporada: string | null;
   midiaTipoId: number;
   midiaTipoNome: string;
+  assistido: boolean;
 }
 
 // Tipo para listagem resumida usada em impressão
@@ -80,6 +81,7 @@ export interface MidiaCamposLivresDto {
   temporada?: string;
   midiaTipoNome?: string;
   formatoMidia?: string;
+  assistido?: boolean;
 }
 
 export const atualizarCamposLivres = async (

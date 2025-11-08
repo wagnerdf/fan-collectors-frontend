@@ -39,7 +39,8 @@ export function MidiaForm() {
     "nota_media",
     "artistas",
     "diretores",
-    "formatoMidia"
+    "formatoMidia",
+    "assistido"
   ];
 
   const apiKey = process.env.REACT_APP_API_TMDB;
@@ -229,7 +230,8 @@ export function MidiaForm() {
     formatoMidia: dadosSelecionados.formatoMidia,
     temporada: temporada,
     midiaTipoId: tipoSelecionadoObj.id,   // ✅ id do tipo
-    midiaTipoNome: tipoSelecionado        // ✅ nome vindo do select
+    midiaTipoNome: tipoSelecionado,        // ✅ nome vindo do select
+    assistido: dadosSelecionados.assistido,
   };
 
       await api.post("/api/midias", payload);

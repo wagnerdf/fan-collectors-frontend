@@ -109,7 +109,8 @@ export function MidiaFormFilmeSerie({
     "notaMedia",
     "artistas",
     "diretores",
-    "midiaTipoNome"
+    "midiaTipoNome",
+    "assistido"
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -134,6 +135,7 @@ export function MidiaFormFilmeSerie({
         formatoMidia: dadosMidia.formatoMidia,
         midiaTipoId: tipoSelecionado.id,
         midiaTipoNome: tipoSelecionado.nome,
+        assistido: dadosMidia.assistido,
       };
 
       await atualizarCamposLivres(dadosMidia.id, dto);
@@ -174,16 +176,46 @@ export function MidiaFormFilmeSerie({
           )}
 
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+
             <div className="col-span-1">
-              <label className="block text-sm font-medium mb-1 text-white">Observações</label>
-              <input
-                type="text"
-                name="observacoes"
-                placeholder="Digite observações da mídia"
-                className="w-full border px-3 py-2 rounded bg-white"
-                value={dadosMidia.observacoes || ""}
-                onChange={(e) => setDadosMidia({ ...dadosMidia, observacoes: e.target.value })}
-              />
+              <div className="flex items-start space-x-4">
+                {/* Checkbox e sua label */}
+                <div className="flex flex-col items-start">
+                  <label
+                    htmlFor="assistido"
+                    className="block text-sm font-medium mb-1 text-white"
+                  >
+                    Assistido
+                  </label>
+                  <input
+                    type="checkbox"
+                    name="assistido"
+                    id="assistido"
+                    checked={dadosMidia.assistido || false}
+                    onChange={(e) =>
+                      setDadosMidia({ ...dadosMidia, assistido: e.target.checked })
+                    }
+                    className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                </div>
+
+                {/* Input de observações */}
+                <div className="flex-1">
+                  <label className="block text-sm font-medium mb-1 text-white">
+                    Observações
+                  </label>
+                  <input
+                    type="text"
+                    name="observacoes"
+                    placeholder="Digite observações da mídia"
+                    className="w-full border px-3 py-2 rounded bg-white"
+                    value={dadosMidia.observacoes || ""}
+                    onChange={(e) =>
+                      setDadosMidia({ ...dadosMidia, observacoes: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="col-span-1">
