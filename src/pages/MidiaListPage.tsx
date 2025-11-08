@@ -377,6 +377,10 @@ const MidiaListPage: React.FC = () => {
                     <div>
                       <h3 className="text-lg font-semibold mb-2 text-blue-400">Detalhes Técnicos</h3>
                       <div className="text-sm space-y-1 w-full mb-4">
+                         <p>
+                          <strong className="text-yellow-400">Assistido:</strong>{" "}
+                          {midiaSelecionada.assistido ? "✅" : "❌"}
+                        </p>
                         <p><strong className="text-yellow-400">Observações:</strong> {midiaSelecionada.observacoes || "—"}</p>
                         <p><strong className="text-yellow-400">Nota Média:</strong> {midiaSelecionada.notaMedia || "—"}</p>
                       </div>
