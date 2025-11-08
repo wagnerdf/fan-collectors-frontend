@@ -109,8 +109,7 @@ export function MidiaFormFilmeSerie({
     "notaMedia",
     "artistas",
     "diretores",
-    "midiaTipoNome",
-    "assistido"
+    "midiaTipoNome"
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {

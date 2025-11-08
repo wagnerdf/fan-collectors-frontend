@@ -20,6 +20,7 @@ export function PixModal({ open, onClose }: PixModalProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  /* 
   const handleCopyImage = async () => {
     if (!imgRef.current) return;
 
@@ -45,6 +46,7 @@ export function PixModal({ open, onClose }: PixModalProps) {
       }
     });
   };
+  */
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50">

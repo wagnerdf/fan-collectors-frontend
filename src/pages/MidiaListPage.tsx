@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Select, { components, MultiValue } from "react-select";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  buscarMidiasDoUsuario,
   buscarMidiasPaginadas,
   buscarMidiasPorTipos,
   MidiaResponse,
@@ -47,7 +46,7 @@ const MidiaListPage: React.FC = () => {
 
 
   // Buscar todas mídias paginadas
-  const fetchMidias = async () => {
+  const fetchMidias = useCallback(async () => {
     setCarregando(true);
     try {
       const data = await buscarMidiasPaginadas(paginaAtual - 1, REGISTROS_POR_PAGINA);
@@ -58,11 +57,11 @@ const MidiaListPage: React.FC = () => {
     } finally {
       setCarregando(false);
     }
-  };
+  }, [paginaAtual]); // dependências internas
 
   useEffect(() => {
     fetchMidias();
-  }, [paginaAtual]);
+  }, [fetchMidias]);
 
   // Fixar tipos na primeira vez que midias forem carregadas
   useEffect(() => {
