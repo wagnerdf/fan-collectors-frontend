@@ -332,56 +332,48 @@ export function MidiaForm() {
             </div>
           )}
 
-          {/* Campos preenchidos */}
-          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="mb-4 grid grid-cols-1 gap-3">
-  {/* Campo Assistido */}
-  
-<div className="mb-4 flex gap-4 items-start">
-  {/* Campo Assistido */}
-  <div className="flex flex-col">
-    <label className="block text-sm font-medium mb-1 text-gray-200">
-      Assistido
-    </label>
-    <input
-      type="checkbox"
-      checked={dadosSelecionados.assistido || false}
-      onChange={(e) =>
-        setDadosSelecionados({
-          ...dadosSelecionados,
-          assistido: e.target.checked,
-        })
-      }
-      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-    />
-  </div>
+            {/* Campos preenchidos */}
+            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="mb-4 grid grid-cols-1 gap-3">
+              {/* Campo Assistido */}
+              <div className="mb-4 flex gap-4 items-start">
+                {/* Campo Assistido */}
+                <div className="flex flex-col">
+                  <label className="block text-sm font-medium mb-1 text-gray-200">
+                    Assistido
+                  </label>
+                  <input
+                    type="checkbox"
+                    checked={dadosSelecionados.assistido || false}
+                    onChange={(e) =>
+                      setDadosSelecionados({
+                        ...dadosSelecionados,
+                        assistido: e.target.checked,
+                      })
+                    }
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                </div>
 
-  {/* Campo Observações */}
-  <div className="flex-1 flex flex-col">
-    <label className="block text-sm font-medium mb-1 text-gray-200">
-      Observações
-    </label>
-    <input
-      type="text"
-      value={dadosSelecionados.observações || ""}
-      onChange={(e) =>
-        setDadosSelecionados({
-          ...dadosSelecionados,
-          observações: e.target.value,
-        })
-      }
-      className="w-full border px-3 py-2 rounded bg-white"
-    />
-  </div>
-</div>
-
-
-
-
-
-
-</div>
-
+                {/* Campo Observações */}
+                <div className="flex-1 flex flex-col">
+                  <label className="block text-sm font-medium mb-1 text-gray-200">
+                    Observações
+                  </label>
+                  <input
+                    type="text"
+                    value={dadosSelecionados.observações || ""}
+                    onChange={(e) =>
+                      setDadosSelecionados({
+                        ...dadosSelecionados,
+                        observações: e.target.value,
+                      })
+                    }
+                    className="w-full border px-3 py-2 rounded bg-white"
+                  />
+                </div>
+              </div>
+            </div>
 
             {/* Campo condicional: Temporada (apenas para série) */}
             {mediaType === "Série" && (

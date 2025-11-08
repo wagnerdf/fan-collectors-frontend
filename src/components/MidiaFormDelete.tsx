@@ -131,15 +131,33 @@ export function MidiaFormFilmeSerieDelete({ focusPesquisa }: MidiaFormFilmeSerie
 
             {/* Detalhes da mídia */}
             <div className="text-center md:text-left">
-              <p className="mb-2">
-                Tem certeza que deseja excluir a mídia:
+              <p className="mb-3 text-gray-300">
+                Tem certeza que deseja excluir a seguinte mídia?
               </p>
-              <strong className="block text-lg">
-                {midiaSelecionada?.tituloAlternativo || midiaSelecionada?.tituloOriginal}{" "}
-                {midiaSelecionada?.midiaTipoNome ? `- ${midiaSelecionada.midiaTipoNome}` : ""}
-              </strong>
+
+              <div className="bg-gray-800 rounded-lg p-3 space-y-2 text-sm text-gray-200">
+                <p>
+                  <strong className="text-yellow-400">Título:</strong>{" "}
+                  {midiaSelecionada?.tituloAlternativo || midiaSelecionada?.tituloOriginal || "—"}
+                </p>
+
+                <p>
+                  <strong className="text-yellow-400">Tipo de Mídia:</strong>{" "}
+                  {midiaSelecionada?.midiaTipoNome || "—"}
+                </p>
+
+                <p>
+                  <strong className="text-yellow-400">Assistido:</strong>{" "}
+                  {midiaSelecionada?.assistido ? "✅ Sim" : "❌ Não"}
+                </p>
+
+                <p>
+                  <strong className="text-yellow-400">Observações:</strong>{" "}
+                  {midiaSelecionada?.observacoes || "—"}
+                </p>
+              </div>
             </div>
-          </div>
+        </div>
 
           {/* Botões */}
           <DialogFooter className="flex justify-end space-x-2">
@@ -158,9 +176,6 @@ export function MidiaFormFilmeSerieDelete({ focusPesquisa }: MidiaFormFilmeSerie
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-
-
     </div>
   );
 }
