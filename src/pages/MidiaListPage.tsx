@@ -318,6 +318,13 @@ const MidiaListPage: React.FC = () => {
                 <span className="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs font-semibold px-2 py-1 rounded shadow-md z-10">
                   {midia.midiaTipoNome}
                 </span>
+                  {/* Indicador de assistido */}
+  <span
+    className={`absolute top-2 right-2 w-4 h-4 rounded-full shadow-md ${
+      midia.assistido ? "bg-green-500" : "bg-red-500"
+    }`}
+    title={midia.assistido ? "Assistido" : "Não assistido"}
+  ></span>
                 <img
                   src={midia.capaUrl?.startsWith("http") ? midia.capaUrl : `https://${midia.capaUrl}`}
                   alt={midia.tituloAlternativo || "Sem título"}
