@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Select, { components, MultiValue } from "react-select";
 import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle, XCircle } from "lucide-react";
 import {
   buscarMidiasPaginadas,
   buscarMidiasPorTipos,
@@ -244,46 +245,62 @@ const MidiaListPage: React.FC = () => {
 
       {midias.length === 0 ? (
         <p className="text-white">Nenhuma mídia cadastrada ainda.</p>
-      ) : modoVisualizacao === "tabela" ? (
-        <div className="overflow-x-auto bg-white shadow rounded-2xl">
-          <table className="min-w-full bg-white shadow ">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="text-left px-4 py-2 border-b font-semibold text-[#4B3621]">Título</th>
-                <th className="text-left px-4 py-2 border-b font-semibold text-[#4B3621]">Gênero</th>
-                <th className="text-left px-4 py-2 border-b font-semibold text-[#4B3621]">Tipo</th>
+     ) : modoVisualizacao === "tabela" ? (
+      <div className="overflow-x-auto bg-white shadow rounded-2xl">
+        <table className="min-w-full bg-white shadow">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="text-left px-4 py-2 border-b font-semibold text-[#4B3621]">
+                Título
+              </th>
+              <th className="text-left px-4 py-2 border-b font-semibold text-[#4B3621]">
+                Gênero
+              </th>
+              <th className="text-left px-4 py-2 border-b font-semibold text-[#4B3621]">
+                Tipo
+              </th>
+              <th className="text-center px-4 py-2 border-b font-semibold text-[#4B3621]">
+                Assistido
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {midias.map((midia, index) => (
+              <tr
+                key={midia.id}
+                className={`cursor-pointer transition ${
+                  index % 2 === 0 ? "bg-white" : "bg-gray-200"
+                } hover:bg-blue-50`}
+                onClick={() => handleMidiaClick(midia.id)} // 🔹 Clique abre modal
+              >
+                <td className="px-4 py-2 border-b text-[#4B3621]">
+                  {midia.tituloAlternativo ? (
+                    midia.tituloAlternativo
+                  ) : (
+                    <span className="italic text-gray-400">Sem título</span>
+                  )}
+                </td>
+                <td className="px-4 py-2 border-b text-[#4B3621]">
+                  {midia.generos ? (
+                    midia.generos
+                  ) : (
+                    <span className="italic text-gray-400">Sem gênero</span>
+                  )}
+                </td>
+                <td className="px-4 py-2 border-b text-[#4B3621]">
+                  {midia.midiaTipoNome || "-"}
+                </td>
+                <td className="px-4 py-2 border-b text-center">
+                  {midia.assistido ? (
+                    <CheckCircle className="text-green-500 inline w-5 h-5" />
+                  ) : (
+                    <XCircle className="text-red-500 inline w-5 h-5" />
+                  )}
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {midias.map((midia, index) => (
-                <tr
-                  key={midia.id}
-                  className={`cursor-pointer transition ${
-                    index % 2 === 0 ? "bg-white" : "bg-gray-200"
-                  } hover:bg-blue-50`}
-                  onClick={() => handleMidiaClick(midia.id)} // 🔹 Clique abre modal
-                >
-                  <td className="px-4 py-2 border-b text-[#4B3621]">
-                    {midia.tituloAlternativo ? (
-                      midia.tituloAlternativo
-                    ) : (
-                      <span className="italic text-gray-400">Sem título</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-2 border-b text-[#4B3621]">
-                    {midia.generos ? (
-                      midia.generos
-                    ) : (
-                      <span className="italic text-gray-400">Sem gênero</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-2 border-b text-[#4B3621]">
-                    {midia.midiaTipoNome || "-"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            ))}
+          </tbody>
+        </table>
         </div>
       ) : (
         <div
