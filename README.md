@@ -9,7 +9,9 @@ Sistema para colecionadores de mídias físicas (Blu-ray, DVD, VHS, LP, CD, Cart
 
 Baixe a versão mais recente do aplicativo **FanCollectionMidia** para Android:
 
-👉 [⬇️ FanCollectionMidia v1.0.0 (Preview)](https://drive.google.com/file/d/1GQ_9pI_UQdOjtb-5Nbh3dpR5V3_4LBhh/view?usp=sharing)
+👉 [⬇️ FanCollectionMidia v1.0.1 (Preview - Cadastrar Midia e user)](https://drive.google.com/file/d/1ghP6QZ54O8-Hh943GHDEigELtTtMty8Q/view?usp=sharing)
+
+👉 [⬇️ FanCollectionMidia v1.0.0 (Preview - Edit user)](https://drive.google.com/file/d/1GQ_9pI_UQdOjtb-5Nbh3dpR5V3_4LBhh/view?usp=sharing)
 
 👤 Usuário de Teste
 
@@ -19,13 +21,13 @@ Para testar o aplicativo, utilize o seguinte usuário temporário:
 **Senha:** `admin`
 
 > ⚠️ Este é um usuário de demonstração apenas para testes públicos.  
-> Algumas funções (como cadastro ou edição de usuário) ainda estão em desenvolvimento.
+> Algumas funções (Editar e Excluir midia) ainda estão em desenvolvimento.
 
 
 **Informações da build:**
-- Versão: `1.0.0`
+- Versão: `1.0.1`
 - Tipo: `Preview (Release APK)`
-- Data de build: **05/11/2025**
+- Data de build: **24/11/2025**
 - Tamanho: ~91 MB
 - Compatibilidade: Android 7.0 (Nougat) ou superior
 - Status: ✅ Testado e funcional via EAS Build
@@ -47,32 +49,40 @@ Você pode acessar a aplicação em produção pelo link abaixo:
 
 ## 📱 Layout mobile
 
-<p align="center">
-  <img src="https://i.imgur.com/uZTG6rh.jpeg" width="220" style="margin:10px;" />
-  <img src="https://i.imgur.com/Y9vGG3V.jpeg" width="220" style="margin:10px;" />
-</p>
-<p align="center">
-  <span style="color:#ff6b6b; font-size:18px;">🟢 Tela Inicial Usuário</span> 
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <span style="color:#4dabf7; font-size:18px;">🟣 Tela de Login</span>
-</p>
+<div align="center">
 
-<p align="center">
-  <img src="https://i.imgur.com/4H88Umu.jpeg" width="220" style="margin:10px;" />
-  <img src="https://i.imgur.com/FAFZoCk.jpeg" width="220" style="margin:10px;" />
-</p>
-<p align="center">
-  <span style="color:#51cf66; font-size:18px;">🔵 Tela de Biblioteca</span> 
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <span style="color:#ffd43b; font-size:18px;">🟠 Detalhes da Mídia</span>
-</p>
+<table>
+  <tr>
+    <th>🟢 Tela Inicial Usuário</th>
+    <th>🟣 Tela de Login</th>
+  </tr>
+  <tr>
+    <td><img src="https://i.imgur.com/uZTG6rh.jpeg" width="220"></td>
+    <td><img src="https://i.imgur.com/Y9vGG3V.jpeg" width="220"></td>
+  </tr>
+</table>
 
-<p align="center">
-  <img src="https://i.imgur.com/qEQceER.jpeg" width="220" style="margin:10px;" />
-</p>
-<p align="center">
-  <span style="color:#845ef7; font-size:18px;">🟡 Tela de Edição de Usuário</span>
-</p>
+<table>
+  <tr>
+    <th>🔵 Tela de Biblioteca</th>
+    <th>🟠 Detalhes da Mídia</th>
+  </tr>
+  <tr>
+    <td><img src="https://i.imgur.com/4H88Umu.jpeg" width="220"></td>
+    <td><img src="https://i.imgur.com/FAFZoCk.jpeg" width="220"></td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <th>🟡 Tela de Edição de Usuário</th>
+  </tr>
+  <tr>
+    <td><img src="https://i.imgur.com/qEQceER.jpeg" width="220"></td>
+  </tr>
+</table>
+
+</div>
 
 ---
 
@@ -127,20 +137,27 @@ Você pode acessar a aplicação em produção pelo link abaixo:
 
 ## 🧩 Funcionalidades
 
-- [x] Autenticação com JWT (Login, Cadastro, Validação)
-- [x] Perfil do usuário com edição
-- [x] Cadastro de mídias com dados preenchidos automaticamente via TMDB para Filmes e Series
-- [ ] Cadastro de mídias com dados preenchidos automaticamente MusicBrainz API para Musicas (em breve)
-- [ ] Cadastro de mídias com dados preenchidos automaticamente RAWG Video Games Database para Games (em breve)
-- [x] Notícias de entretenimento** (cinema, música e jogos) no sidebar, rotativas a cada 10 minutos.
-- [ ] Upload de imagem de capa
-- [x] Validação de campos obrigatórios
-- [x] Dashboard com exibição das mídias cadastradas
-- [x] Filtro e busca por título 
-- [x] Edição de titulo 
-- [x] Exlusão de título
-- [ ] Postagens e publicação de midias dos usuários compartilhados (em breve)
-- [x] Responsividade para mobile
+Abaixo está a tabela de funcionalidades organizadas por área do projeto.
+
+| Funcionalidade                                                                 | Backend | Web | Mobile |
+|-------------------------------------------------------------------------------|:-------:|:---:|:------:|
+| Autenticação com JWT (Login, Cadastro, Validação)                             |   ✓     |  ✓  |   ✓    |
+| Perfil do usuário com edição                                                  |   ✓     |  ✓  |   ✓    |
+| Cadastro de mídias com dados do TMDB (Filmes e Séries)                       |   ✓     |  ✓  |   ✓    |
+| Cadastro de mídias com dados do MusicBrainz API (Músicas)                    |   ⏳     |  ⏳ |   ⏳   |
+| Cadastro de mídias com dados do RAWG API (Games)                             |   ⏳     |  ⏳ |   ⏳   |
+| Notícias de entretenimento rotativas a cada 10 min                            |   ✓     |  ✓  |   -    |
+| Upload de imagem de capa                                                      |   ⏳     |  ⏳ |   ⏳   |
+| Validação de campos obrigatórios                                              |   ✓     |  ✓  |   ✓    |
+| Dashboard com exibição das mídias cadastradas                                |   ✓     |  ✓  |   ✓    |
+| Filtro e busca por título                                                     |   ✓     |  ✓  |   ⏳    |
+| Edição de título                                                              |   ✓     |  ✓ |   ⏳   |
+| Exclusão de título                                                            |   ✓     |  ✓ |   ⏳   |
+| Postagens e publicação de mídias pelos usuários                               |   ⏳     |  ⏳ |   ⏳   |
+| Responsividade para mobile                                                    |   -     |  ✓  |   ✓    |
+
+Legenda:  
+**✓ concluído** — **⏳ em andamento** — **- não se aplica**
 
 ---
 
@@ -227,14 +244,36 @@ Contribuições são bem-vindas! Sinta-se à vontade para abrir uma _issue_, env
 
 ## 🌐 API: TMDB e NEWSDATA
 
-Este projeto usa a API pública do [TMDB](https://www.themoviedb.org/) e [NEWSDATA](https://newsdata.io/).  
-Você precisa gerar uma **chave de API** gratuita para usar os recursos de busca automática de filmes e séries e a da NewsData para receber noticias.
+Este projeto usa a API pública do TMDB e NEWSDATA.  
+Você precisa gerar uma **chave de API** gratuita para usar os recursos de busca automática de filmes e séries e para receber notícias.
 
----
-
-## 💡 Inspiração
-
-Criado especialmente para apaixonados por colecionar mídias físicas, este sistema oferece uma forma prática e moderna de catalogar, visualizar e gerenciar suas coleções com riqueza de detalhes.
+<table>
+  <tr>
+    <th align="center">🎬 TMDB — The Movie Database</th>
+    <th align="center">📰 NEWSDATA.io</th>
+  </tr>
+  <tr>
+    <td>
+      <ul>
+        <li>Obtenção de filmes e séries</li>
+        <li>Imagens, gêneros, notas e metadados</li>
+        <li>Busca automática de títulos</li>
+      </ul>
+      <b>Documentação:</b><br>
+      🔗 https://developer.themoviedb.org/<br>
+      🔗 https://developer.themoviedb.org/reference/intro/getting-started
+    </td>
+    <td>
+      <ul>
+        <li>Notícias atualizadas</li>
+        <li>Conteúdos relacionados a entretenimento</li>
+      </ul>
+      <b>Documentação:</b><br>
+      🔗 https://newsdata.io/<br>
+      🔗 https://newsdata.io/documentation
+    </td>
+  </tr>
+</table>
 
 ---
 
