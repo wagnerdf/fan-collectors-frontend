@@ -9,9 +9,7 @@ Sistema para colecionadores de mídias físicas (Blu-ray, DVD, VHS, LP, CD, Cart
 
 Baixe a versão mais recente do aplicativo **FanCollectionMidia** para Android:
 
-👉 [⬇️ FanCollectionMidia v1.0.1 (Preview - Cadastrar Midia e user)](https://drive.google.com/file/d/1ghP6QZ54O8-Hh943GHDEigELtTtMty8Q/view?usp=sharing)
-
-👉 [⬇️ FanCollectionMidia v1.0.0 (Preview - Edit user)](https://drive.google.com/file/d/1GQ_9pI_UQdOjtb-5Nbh3dpR5V3_4LBhh/view?usp=sharing)
+👉 [⬇️ FanCollectionMidia v1.0.2 (Preview)](https://drive.google.com/file/d/1cSafxWdNXMFuI1oELTqQA2BC2KoWEXBJ/view?usp=sharing)
 
 👤 Usuário de Teste
 
@@ -25,9 +23,9 @@ Para testar o aplicativo, utilize o seguinte usuário temporário:
 
 
 **Informações da build:**
-- Versão: `1.0.1`
+- Versão: `1.0.2`
 - Tipo: `Preview (Release APK)`
-- Data de build: **24/11/2025**
+- Data de build: **26/11/2025**
 - Tamanho: ~91 MB
 - Compatibilidade: Android 7.0 (Nougat) ou superior
 - Status: ✅ Testado e funcional via EAS Build
@@ -146,13 +144,13 @@ Abaixo está a tabela de funcionalidades organizadas por área do projeto.
 | Cadastro de mídias com dados do TMDB (Filmes e Séries)                       |   ✓     |  ✓  |   ✓    |
 | Cadastro de mídias com dados do MusicBrainz API (Músicas)                    |   ⏳     |  ⏳ |   ⏳   |
 | Cadastro de mídias com dados do RAWG API (Games)                             |   ⏳     |  ⏳ |   ⏳   |
-| Notícias de entretenimento rotativas a cada 10 min                            |   ✓     |  ✓  |   -    |
+| Notícias de entretenimento rotativas a cada 10 min                            |   ✓     |  ✓  |   ⏳    |
 | Upload de imagem de capa                                                      |   ⏳     |  ⏳ |   ⏳   |
 | Validação de campos obrigatórios                                              |   ✓     |  ✓  |   ✓    |
 | Dashboard com exibição das mídias cadastradas                                |   ✓     |  ✓  |   ✓    |
-| Filtro e busca por título                                                     |   ✓     |  ✓  |   ⏳    |
+| Filtro e busca por título                                                     |   ✓     |  ✓  |   ✓    |
 | Edição de título                                                              |   ✓     |  ✓ |   ⏳   |
-| Exclusão de título                                                            |   ✓     |  ✓ |   ⏳   |
+| Exclusão de título                                                            |   ✓     |  ✓ |   ✓   |
 | Postagens e publicação de mídias pelos usuários                               |   ⏳     |  ⏳ |   ⏳   |
 | Responsividade para mobile                                                    |   -     |  ✓  |   ✓    |
 
