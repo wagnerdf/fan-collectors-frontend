@@ -39,7 +39,10 @@ const MidiaListPage: React.FC = () => {
   const [tiposMidiaFixos, setTiposMidiaFixos] = useState<TipoMidiaOption[]>([]);
   const [tiposMidiaOptions, setTiposMidiaOptions] = useState<TipoMidiaOption[]>([]);
   const [selectedTipos, setSelectedTipos] = useState<MultiValue<TipoMidiaOption>>([]);
-  const fecharModal = () => setMidiaSelecionada(null);
+  const fecharModal = async () => {
+    setMidiaSelecionada(null);
+    await fetchMidias(); // 🔁 Atualiza lista ao fechar modal
+  };
   const [midiaSelecionada, setMidiaSelecionada] = useState<MidiaResponse | null>(null);
   const [tiposSelecionados, setTiposSelecionados] = useState<string[]>([]);
   const [midiasParaImprimir, setMidiasParaImprimir] = useState<MidiaListagemDto[]>([]);
@@ -319,12 +322,12 @@ const MidiaListPage: React.FC = () => {
                   {midia.midiaTipoNome}
                 </span>
                   {/* Indicador de assistido */}
-  <span
-    className={`absolute top-2 right-2 w-4 h-4 rounded-full shadow-md ${
-      midia.assistido ? "bg-green-500" : "bg-red-500"
-    }`}
-    title={midia.assistido ? "Assistido" : "Não assistido"}
-  ></span>
+                  <span
+                    className={`absolute top-2 right-2 w-4 h-4 rounded-full shadow-md ${
+                      midia.assistido ? "bg-green-500" : "bg-red-500"
+                    }`}
+                    title={midia.assistido ? "Assistido" : "Não assistido"}
+                  ></span>
                 <img
                   src={midia.capaUrl?.startsWith("http") ? midia.capaUrl : `https://${midia.capaUrl}`}
                   alt={midia.tituloAlternativo || "Sem título"}
