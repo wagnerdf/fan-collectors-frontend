@@ -9,23 +9,23 @@ Sistema para colecionadores de mídias físicas (Blu-ray, DVD, VHS, LP, CD, Cart
 
 Baixe a versão mais recente do aplicativo **FanCollectionMidia** para Android:
 
-👉 [⬇️ FanCollectionMidia v1.0.3 (Preview)](https://drive.google.com/file/d/18lGVA4HTIwIyn0cbwVO6Y4Stioif-2l-/view?usp=sharing)
+👉 [⬇️ FanCollectionMidia v1.0.3 (Preview)](https://drive.google.com/file/d/1lVqr5j5UbxkNCYZPqwbskK8DQLqcBkjw/view?usp=sharing)
 
 👤 Usuário de Teste
 
-Para testar o aplicativo, utilize o seguinte usuário temporário:
+Para testar o aplicativo, utilize o seguinte usuário temporário abaixo ou crie seu usuário no app ou web
 
 **Login:** `admin@admin`  
 **Senha:** `admin`
 
 > ⚠️ Este é um usuário de demonstração apenas para testes públicos.  
-> Algumas funções (Editar e Excluir midia) ainda estão em desenvolvimento.
+> Algumas funções ainda estão em desenvolvimento.
 
 
 **Informações da build:**
-- Versão: `1.0.3`
+- Versão: `1.0.4`
 - Tipo: `Preview (Release APK)`
-- Data de build: **29/11/2025**
+- Data de build: **15/12/2025**
 - Tamanho: ~91 MB
 - Compatibilidade: Android 7.0 (Nougat) ou superior
 - Status: ✅ Testado e funcional via EAS Build
@@ -55,28 +55,30 @@ Você pode acessar a aplicação em produção pelo link abaixo:
     <th>🟣 Tela de Login</th>
   </tr>
   <tr>
-    <td><img src="https://i.imgur.com/uZTG6rh.jpeg" width="220"></td>
-    <td><img src="https://i.imgur.com/Y9vGG3V.jpeg" width="220"></td>
+    <td><img src="https://i.imgur.com/EPSBsMs.jpeg" width="220"></td>
+    <td><img src="https://i.imgur.com/9R5l7yZ.jpeg" width="220"></td>
   </tr>
 </table>
 
 <table>
   <tr>
-    <th>🔵 Tela de Biblioteca</th>
-    <th>🟠 Detalhes da Mídia</th>
+    <th>🔵 Tela de Menu</th>
+    <th>🟠 Tela de Biblioteca</th>
   </tr>
   <tr>
-    <td><img src="https://i.imgur.com/4H88Umu.jpeg" width="220"></td>
-    <td><img src="https://i.imgur.com/FAFZoCk.jpeg" width="220"></td>
+    <td><img src="https://i.imgur.com/XaHoKue.jpeg" width="220"></td>
+    <td><img src="https://i.imgur.com/EY488Y8.jpeg" width="220"></td>
   </tr>
 </table>
 
 <table>
   <tr>
-    <th>🟡 Tela de Edição de Usuário</th>
+    <th>🟡 Detalhes da Mídia</th>
+    <th>🔴 Tela Editar Usuário</th>
   </tr>
   <tr>
-    <td><img src="https://i.imgur.com/qEQceER.jpeg" width="220"></td>
+    <td><img src="https://i.imgur.com/Tkzx7cM.jpeg" width="220"></td>
+    <td><img src="https://i.imgur.com/2Kq1TNx.jpeg" width="220"></td>
   </tr>
 </table>
 
@@ -145,7 +147,7 @@ Abaixo está a tabela de funcionalidades organizadas por área do projeto.
 | Cadastro de mídias com dados do MusicBrainz API (Músicas)                    |   ⏳     |  ⏳ |   ⏳   |
 | Cadastro de mídias com dados do RAWG API (Games)                             |   ⏳     |  ⏳ |   ⏳   |
 | Notícias de entretenimento rotativas a cada 10 min                            |   ✓     |  ✓  |   ⏳    |
-| Upload de imagem de capa                                                      |   ⏳     |  ⏳ |   ⏳   |
+| Upload de imagem do usuário                                                      |   ⏳     |  ⏳ |   ⏳   |
 | Validação de campos obrigatórios                                              |   ✓     |  ✓  |   ✓    |
 | Dashboard com exibição das mídias cadastradas                                |   ✓     |  ✓  |   ✓    |
 | Filtro e busca por título                                                     |   ✓     |  ✓  |   ✓    |
@@ -248,7 +250,7 @@ Você precisa gerar uma **chave de API** gratuita para usar os recursos de busca
 <table>
   <tr>
     <th align="center">🎬 TMDB — The Movie Database</th>
-    <th align="center">📰 NEWSDATA.io</th>
+    <th align="center">📰 NEWSDATA — Dados de Notícias</th>
   </tr>
   <tr>
     <td>
@@ -265,6 +267,7 @@ Você precisa gerar uma **chave de API** gratuita para usar os recursos de busca
       <ul>
         <li>Notícias atualizadas</li>
         <li>Conteúdos relacionados a entretenimento</li>
+        <li>Opção de tipos de notícias</li>
       </ul>
       <b>Documentação:</b><br>
       🔗 https://newsdata.io/<br>
