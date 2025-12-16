@@ -9,7 +9,7 @@ Sistema para colecionadores de mídias físicas (Blu-ray, DVD, VHS, LP, CD, Cart
 
 Baixe a versão mais recente do aplicativo **FanCollectionMidia** para Android:
 
-👉 [⬇️ FanCollectionMidia v1.0.3 (Preview)](https://drive.google.com/file/d/1lVqr5j5UbxkNCYZPqwbskK8DQLqcBkjw/view?usp=sharing)
+👉 [⬇️ FanCollectionMidia v1.0.4 (Preview)](https://drive.google.com/file/d/1lVqr5j5UbxkNCYZPqwbskK8DQLqcBkjw/view?usp=sharing)
 
 👤 Usuário de Teste
 
