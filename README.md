@@ -9,7 +9,7 @@ Sistema para colecionadores de mídias físicas (Blu-ray, DVD, VHS, LP, CD, Cart
 
 Baixe a versão mais recente do aplicativo **FanCollectionMidia** para Android:
 
-👉 [⬇️ FanCollectionMidia v1.0.5 (Preview)](https://drive.google.com/file/d/1NGUucQjm7UalSCeTtW9cTSrlwuVl2wKd/view?usp=sharing)
+👉 [⬇️ FanCollectionMidia v1.0.6 (Preview)](https://drive.google.com/file/d/1UBEqRF84vd-iuxwS5AfYNQY2bTbkiC-J/view?usp=sharing)
 
 👤 Usuário de Teste
 
@@ -20,12 +20,18 @@ Baixe a versão mais recente do aplicativo **FanCollectionMidia** para Android:
 > Algumas funções ainda estão em desenvolvimento.
 
 **Informações da build:**
-- Versão: `1.0.5`
+- Versão: `1.0.6`
 - Tipo: `Preview (Release APK)`
-- Data de build: **28/12/2025**
+- Data de build: **31/12/2025**
 - Tamanho: ~91 MB
 - Compatibilidade: Android 7.0 (Nougat) ou superior
 - Status: ✅ Testado e funcional via EAS Build
+
+**Novidades desta versão (1.0.6):**
+- 🎨 Padronização do layout do modal de exclusão de mídia, seguindo o visual e a identidade do restante do aplicativo.
+- 🔐 Implementada a opção **“Permanecer conectado”** na tela de login, permitindo manter a sessão ativa mesmo após fechar o aplicativo.
+- 🚪 Ajuste no fluxo de logout, garantindo a remoção correta do token e retorno seguro à tela de boas-vindas.
+- 🧭 Melhorias na navegação inicial do app, evitando acessos indevidos quando o usuário não está autenticado.
 
 ---
 
