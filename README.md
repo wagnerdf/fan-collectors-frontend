@@ -195,6 +195,41 @@ cp .env.example .env
 # Rode o frontend
 npm start
 ```
+---
+
+## 🌐 API: TMDB e NEWSDATA
+
+Este projeto usa a API pública do TMDB e NEWSDATA.  
+Você precisa gerar uma **chave de API** gratuita para usar os recursos de busca automática de filmes e séries e para receber notícias.
+
+<table>
+  <tr>
+    <th align="center">🎬 TMDB — The Movie Database</th>
+    <th align="center">📰 NEWSDATA — Dados de Notícias</th>
+  </tr>
+  <tr>
+    <td>
+      <ul>
+        <li>Obtenção de filmes e séries</li>
+        <li>Imagens, gêneros, notas e metadados</li>
+        <li>Busca automática de títulos</li>
+      </ul>
+      <b>Documentação:</b><br>
+      🔗 https://developer.themoviedb.org/<br>
+      🔗 https://developer.themoviedb.org/reference/intro/getting-started
+    </td>
+    <td>
+      <ul>
+        <li>Notícias atualizadas</li>
+        <li>Conteúdos relacionados a entretenimento</li>
+        <li>Opção de tipos de notícias</li>
+      </ul>
+      <b>Documentação:</b><br>
+      🔗 https://newsdata.io/<br>
+      🔗 https://newsdata.io/documentation
+    </td>
+  </tr>
+</table>
 
 ---
 
@@ -242,42 +277,6 @@ spring.jpa.hibernate.ddl-auto=validate
 ## 🤝 Contribuição
 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir uma _issue_, enviar _pull requests_ ou sugerir melhorias.
-
----
-
-## 🌐 API: TMDB e NEWSDATA
-
-Este projeto usa a API pública do TMDB e NEWSDATA.  
-Você precisa gerar uma **chave de API** gratuita para usar os recursos de busca automática de filmes e séries e para receber notícias.
-
-<table>
-  <tr>
-    <th align="center">🎬 TMDB — The Movie Database</th>
-    <th align="center">📰 NEWSDATA — Dados de Notícias</th>
-  </tr>
-  <tr>
-    <td>
-      <ul>
-        <li>Obtenção de filmes e séries</li>
-        <li>Imagens, gêneros, notas e metadados</li>
-        <li>Busca automática de títulos</li>
-      </ul>
-      <b>Documentação:</b><br>
-      🔗 https://developer.themoviedb.org/<br>
-      🔗 https://developer.themoviedb.org/reference/intro/getting-started
-    </td>
-    <td>
-      <ul>
-        <li>Notícias atualizadas</li>
-        <li>Conteúdos relacionados a entretenimento</li>
-        <li>Opção de tipos de notícias</li>
-      </ul>
-      <b>Documentação:</b><br>
-      🔗 https://newsdata.io/<br>
-      🔗 https://newsdata.io/documentation
-    </td>
-  </tr>
-</table>
 
 ---
 
