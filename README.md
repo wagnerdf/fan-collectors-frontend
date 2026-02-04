@@ -1,5 +1,5 @@
 # 🎥 fanCollectorsMedia 
-[![License](https://img.shields.io/github/license/wagnerdf/fan-collectors-frontend)](https://github.com/wagnerdf/fan-collectors-frontend/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/wagnerdf/fanCollectorsMedia-mobile)](https://github.com/wagnerdf/fanCollectorsMedia-mobile/blob/main/LICENSE)
 [![Java](https://img.shields.io/badge/Java-17+-orange?logo=java&logoColor=white)](https://www.java.com/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3+-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
@@ -21,7 +21,7 @@ O sistema conta com autenticação de usuários, integração com a API do TMDB 
 
 Baixe a versão mais recente do aplicativo **FanCollectionMidia** para Android:
 
-👉 [⬇️ FanCollectionMidia v1.0.7 (Preview)](https://drive.google.com/file/d/1NWKB1J-982PyKBwnqUT_Jwqk1Re5Lae-/view?usp=sharing)
+👉 [⬇️ FanCollectionMidia v1.0.8 (Preview)](https://drive.google.com/file/d/1fY_KbXFb9BgPhkoeN13AJYJ3GG865fwG/view?usp=sharing)
 
 👤 Usuário de Teste
 
@@ -32,19 +32,19 @@ Baixe a versão mais recente do aplicativo **FanCollectionMidia** para Android:
 > Algumas funções ainda estão em desenvolvimento.
 
 **Informações da build:**
-- Versão: `1.0.7`
+- Versão: `1.0.8`
 - Tipo: `Preview (Release APK)`
 - Data de build: **02/02/2026**
-- Tamanho: ~91 MB
+- Tamanho: ~93 MB
 - Compatibilidade: Android 7.0 (Nougat) ou superior
 - Status: ✅ Testado e funcional via EAS Build
 
-**Novidades desta versão (1.0.7):**
-- 🔐 Correção no login em dispositivos Android, garantindo compatibilidade total com o SecureStore.
-- 🚪 Ajuste definitivo no fluxo de logout no Web e Mobile, evitando travamentos e erros de sessão.
-- 🧹 Limpeza completa dos dados de autenticação e usuário ao sair da aplicação.
-- 🧠 Alinhamento do armazenamento de sessão entre Web (localStorage) e Mobile (SecureStore).
-- 🐛 Correção de erros e warnings no console, aumentando a estabilidade geral do app.
+**Novidades desta versão (1.0.8):**
+- 🎨 Atualização completa da identidade visual do app (ícone e splash screen).
+- 📱 Correção definitiva do ícone branco no launcher Android.
+- 🖼️ Implementação correta do Adaptive Icon para Android.
+- 🚀 Sincronização dos assets visuais com o build via Expo / EAS.
+- 🧹 Limpeza e reconstrução do projeto nativo para garantir consistência de build.
 
 ---
 
