@@ -21,7 +21,7 @@ O sistema conta com autenticação de usuários, integração com a API do TMDB 
 
 Baixe a versão mais recente do aplicativo **FanCollectionMidia** para Android:
 
-👉 [⬇️ FanCollectionMidia v1.0.8 (Preview)](https://drive.google.com/file/d/1fY_KbXFb9BgPhkoeN13AJYJ3GG865fwG/view?usp=sharing)
+👉 [⬇️ FanCollectionMidia v1.0.9 (Preview)](https://drive.google.com/file/d/1jQHkYVBA_N1a0uDZ3CUlJxzB0toAugFn/view?usp=sharing)
 
 👤 Usuário de Teste
 
@@ -32,19 +32,20 @@ Baixe a versão mais recente do aplicativo **FanCollectionMidia** para Android:
 > Algumas funções ainda estão em desenvolvimento.
 
 **Informações da build:**
-- Versão: `1.0.8`
+- Versão: `1.0.9`
 - Tipo: `Preview (Release APK)`
-- Data de build: **02/02/2026**
-- Tamanho: ~93 MB
+- Data de build: **26/03/2026**
+- Tamanho: ~96 MB
 - Compatibilidade: Android 7.0 (Nougat) ou superior
 - Status: ✅ Testado e funcional via EAS Build
 
-**Novidades desta versão (1.0.8):**
-- 🎨 Atualização completa da identidade visual do app (ícone e splash screen).
-- 📱 Correção definitiva do ícone branco no launcher Android.
-- 🖼️ Implementação correta do Adaptive Icon para Android.
-- 🚀 Sincronização dos assets visuais com o build via Expo / EAS.
-- 🧹 Limpeza e reconstrução do projeto nativo para garantir consistência de build.
+**Novidades desta versão (1.0.9):**
+- 🎨 Ajuste no posicionamento dos botões nas telas de Welcome, Login e Register para melhor experiência do usuário.
+- 🔁 Padronização da navegação (Voltar à esquerda, ações principais à direita).
+- ⌨️ Correção do comportamento do teclado virtual, garantindo que os campos de input não fiquem ocultos durante a digitação.
+- 🐛 Correção de inconsistência nos gêneros vindos da API TMDB (mistura de inglês e português).
+- 🛠️ Normalização dos gêneros no backend para garantir consistência nos filtros e listagens.
+- 🔐 Ajuste no campo de senha para iniciar com teclado em minúsculo
 
 ---
 
