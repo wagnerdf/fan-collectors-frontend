@@ -17,6 +17,22 @@ O sistema conta com autenticação de usuários, integração com a API do TMDB 
 
 ---
 
+## 🧩 Arquitetura do Projeto
+
+O **fanCollectorsMedia** é dividido em três camadas principais, seguindo uma arquitetura moderna e escalável:
+
+<div align="center">
+
+| Camada | Descrição | Link |
+|--------|----------|------|
+| 🧠 Backend | API REST com regras de negócio, autenticação JWT e persistência de dados | [Acessar Repositório](https://github.com/wagnerdf/fanCollectorsMedia) |
+| 📱 Mobile | Aplicativo mobile desenvolvido com React Native + Expo | [Acessar Repositório](https://github.com/wagnerdf/fanCollectorsMedia-mobile) |
+| 🌐 Web | Interface web em React para gerenciamento completo da coleção | [Acessar Repositório](https://github.com/wagnerdf/fan-collectors-frontend) |
+
+</div>
+
+---
+
 ## 📱 Download do APK
 
 Baixe a versão mais recente do aplicativo **FanCollectionMidia** para Android:
@@ -72,8 +88,8 @@ Você pode acessar a aplicação em produção pelo link abaixo:
     <th>🟣 Tela de Login</th>
   </tr>
   <tr>
-    <td><img src="https://i.imgur.com/EPSBsMs.jpeg" width="220"></td>
-    <td><img src="https://i.imgur.com/9R5l7yZ.jpeg" width="220"></td>
+    <td><img src="https://i.imgur.com/12qSyGb.jpeg" width="220"></td>
+    <td><img src="https://i.imgur.com/IrpiyUT.jpeg" width="220"></td>
   </tr>
 </table>
 
@@ -83,8 +99,8 @@ Você pode acessar a aplicação em produção pelo link abaixo:
     <th>🟠 Tela de Biblioteca</th>
   </tr>
   <tr>
-    <td><img src="https://i.imgur.com/XaHoKue.jpeg" width="220"></td>
-    <td><img src="https://i.imgur.com/EY488Y8.jpeg" width="220"></td>
+    <td><img src="https://i.imgur.com/c8Ms2ZO.jpeg" width="220"></td>
+    <td><img src="https://i.imgur.com/uFKP02R.jpeg" width="220"></td>
   </tr>
 </table>
 
@@ -94,8 +110,8 @@ Você pode acessar a aplicação em produção pelo link abaixo:
     <th>🔴 Tela Editar Usuário</th>
   </tr>
   <tr>
-    <td><img src="https://i.imgur.com/Tkzx7cM.jpeg" width="220"></td>
-    <td><img src="https://i.imgur.com/2Kq1TNx.jpeg" width="220"></td>
+    <td><img src="https://i.imgur.com/I0If6Eb.jpeg" width="220"></td>
+    <td><img src="https://i.imgur.com/myI4vWM.jpeg" width="220"></td>
   </tr>
 </table>
 
