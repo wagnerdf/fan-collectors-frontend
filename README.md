@@ -35,6 +35,20 @@ O **fanCollectorsMedia** é dividido em três camadas principais, seguindo uma a
 
 ## 📱 Download do APK
 
+> ⚠️ **Aviso Temporário**
+>
+> No momento, o aplicativo **FanCollectionMidia** está **temporariamente indisponível** para uso completo.
+>
+> Isso ocorre porque o serviço de backend hospedado na Railway está passando por uma instabilidade/indisponibilidade.
+>
+> 💡 Você ainda pode baixar e explorar o aplicativo, mas algumas funcionalidades que dependem da API (como login, cadastro e sincronização de dados) podem não funcionar corretamente.
+>
+> 🚧 Estamos trabalhando para normalizar o serviço o mais breve possível.
+>
+> Agradecemos pela compreensão!
+
+---
+
 Baixe a versão mais recente do aplicativo **FanCollectionMidia** para Android:
 
 👉 [⬇️ FanCollectionMidia v1.0.9 (Preview)](https://drive.google.com/file/d/1jQHkYVBA_N1a0uDZ3CUlJxzB0toAugFn/view?usp=sharing)
